@@ -6,3 +6,57 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+// Sidebar styles
+.bg-dark {
+    background-color: #1a1e21;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-pills .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 0.5rem;
+    &.active {
+        color: #fff;
+        background-color: #6c757d;
+    }
+}
+
+.dropdown-menu-dark {
+    background-color: #343a40;
+    .dropdown-item {
+        &:hover {
+            background-color: #495057;
+        }
+    }
+}
+
+// Content styles
+.p-3 {
+    background-color: #f8f9fa;
+}
+
+.header {
+    align-items: center;
+    h2 {
+        color: #4a4a4a;
+    }
+}
+
+// Footer (optional)
+footer {
+    background-color: #1a1e21;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.sidebar {
+    width: 280px; // Or your preferred width
+    min-height: 100vh; // Full viewport height
+    background-color: #343a40; // Dark background color
+    // Rest of the sidebar styles
+}
