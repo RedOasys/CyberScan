@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\FileUploadController;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,16 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
-
 Auth::routes();
-
-
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
 Route::get('/upload', [FileUploadController::class, 'index'])->name('upload')->middleware('auth');
-Route::post('/upload/file',[FileUploadController::class, 'upload'])->name('upload.submit')->middleware('auth');
-Route::middleware(['auth'])->group(function () {
-    // Protected routes here
-    Route::get('/upload', [FileUploadController::class, 'index'])->name('upload');
-    Route::post('/upload/file', [FileUploadController::class, 'upload'])->name('upload.submit');
-});
+Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload')->middleware('auth');
+
+

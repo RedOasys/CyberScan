@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -21,7 +22,7 @@
                 <a href="{{ route('home') }}" class="nav-link {{ Request::is('/') ? 'active' : '' }}" id="homebutton" aria-current="page">Home</a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('upload') }}" class="nav-link {{ Request::is('upload*') ? 'active' : '' }}" id="upload">Upload Files</a>
+                <a href="{{ route('upload') }}" class="nav-link {{ Request::is('upload*') ? 'active' : '' }}" id="upload">Upload</a>
             </li>
             <!-- Add more sidebar items with similar structure -->
         </ul>
@@ -53,7 +54,7 @@
     <div class="b-example-divider"></div>
     <div class="p-3 w-100">
         <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
-            <h2>Dashboard</h2>
+            <h2>@yield('title', 'Dashboard')</h2>
         </header>
         @yield('content')
     </div>
@@ -76,5 +77,6 @@
         });
     });
 </script>
+@stack('scripts')
 </body>
 </html>

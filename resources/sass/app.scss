@@ -60,3 +60,9 @@ footer {
     background-color: #343a40; // Dark background color
     // Rest of the sidebar styles
 }
+.table td {
+    max-width: 200px; /* Adjust as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
