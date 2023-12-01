@@ -18,16 +18,14 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
-                                    <th>Size (KB)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <!-- Loop through recent uploads -->
-                                @foreach ($recentUploads as $upload)
+                                @foreach ($recentUploads as $index => $upload)
                                     <tr>
-                                        <td>{{ $upload->id }}</td>
+                                        <td>{{ $index + 1 }}</td>
                                         <td class="text-truncate" style="max-width: 200px;">{{ $upload->file_name }}</td>
-                                        <td>{{ $upload->file_size_kb }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>

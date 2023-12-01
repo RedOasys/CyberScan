@@ -20,5 +20,3 @@ Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
 Route::get('/upload', [FileUploadController::class, 'index'])->name('upload')->middleware('auth');
 Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload')->middleware('auth');
-
-
