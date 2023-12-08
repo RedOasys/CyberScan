@@ -8,10 +8,8 @@
                     <div class="card-header">{{ __('Login') }}</div>
 
                     <div class="card-body">
-                        <!-- Back Button -->
-                        <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">
-                            <i class="bi bi-arrow-left"></i> Back
-                        </a>
+
+
 
                         <!-- Login Form -->
                         <form method="POST" action="{{ route('login') }}">

@@ -30,13 +30,18 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- Back Button -->
 
                         <div class="row mb-0">
+
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Send Password Reset Link') }}
                                 </button>
+
+
                             </div>
+
                         </div>
                     </form>
                 </div>

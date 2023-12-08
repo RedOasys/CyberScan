@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\CuckooApiService;
 use App\Models\FileUpload;
+use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
 {
@@ -115,6 +116,40 @@ class FileUploadController extends Controller
 
         return redirect()->route('analysis')->with('analysisResults', $analysisResults);
     }
+
+    public function showFiles()
+    {
+        // Logic to retrieve files and pass them to the view
+        $files = FileUpload::all(); // Example, modify as needed for your logic
+        return view('files', compact('files'));
+    }
+
+    public function deleteFile($id)
+    {
+        $file = FileUpload::findOrFail($id);
+        Storage::delete($file->file_path); // Delete the file from storage
+        $file->delete(); // Delete the file record from the database
+
+        return redirect()->route('files')->with('success', 'File deleted successfully.');
+    }
+
+    public function viewFile($id)
+    {
+        $file = FileUpload::findOrFail($id);
+        // Return a view or JSON data containing file information
+        return response()->json($file);
+    }
+    public function getTableData(Request $request)
+    {
+        $pageSize = $request->input('size', 10); // Ensure the default is set to 10
+        $files = FileUpload::where('user_id', auth()->id())
+            ->simplePaginate($pageSize); // Or use paginate if you want more control
+
+        return view('partials.files_table_rows', compact('files'));
+    }
+
+
+
 
 
 }

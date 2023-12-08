@@ -23,3 +23,7 @@ Route::get('/analysis', function () {
 Route::post('/analyze', [FileUploadController::class, 'analyze'])->name('analyze')->middleware('auth');
 
 
+Route::get('/files', [FileUploadController::class, 'showFiles'])->middleware('auth')->name('files');
+Route::post('/files/delete/{id}', [FileUploadController::class, 'deleteFile'])->name('files.delete');
+Route::get('/files/view/{id}', [FileUploadController::class, 'viewFile'])->name('files.view');
+Route::get('/files/data', [FileUploadController::class, 'getTableData'])->name('files.data');

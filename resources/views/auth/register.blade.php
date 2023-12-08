@@ -9,7 +9,7 @@
 
                     <div class="card-body">
                         <!-- Back Button -->
-                        <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">
+                        <a href="{{ route('login') }}" class="btn btn-secondary mb-3">
                             <i class="bi bi-arrow-left"></i> Back
                         </a>
 
