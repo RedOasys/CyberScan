@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
+use App\Services\CuckooApiService;
+use App\Models\FileUpload;
 
 class FileUploadController extends Controller
 {
+    protected $apiService;
+
+    public function __construct(CuckooApiService $apiService)
+    {
+        $this->apiService = $apiService;
+    }
+
     public function index()
     {
         return view('upload');
@@ -42,7 +49,7 @@ class FileUploadController extends Controller
             $md5Hash = md5_file($file);
 
             // Check if file is already uploaded
-            $duplicate = \App\Models\FileUpload::where('md5_hash', $md5Hash)->first();
+            $duplicate = FileUpload::where('md5_hash', $md5Hash)->first();
             if ($duplicate) {
                 $skippedFiles[] = $file->getClientOriginalName() . ' (Duplicate)';
                 continue; // Skip this file as it's a duplicate
@@ -63,7 +70,7 @@ class FileUploadController extends Controller
             $path = $file->storeAs('uploads', $newFileName);
 
             // Save file information to the database
-            \App\Models\FileUpload::create([
+            FileUpload::create([
                 'user_id' => auth()->id(),
                 'file_name' => $newFileName,
                 'file_path' => $path,
@@ -71,7 +78,7 @@ class FileUploadController extends Controller
                 'file_size_kb' => $file->getSize() / 1024,
             ]);
 
-            $uploadedFiles[] = $file->getClientOriginalName();
+            $uploadedFiles[] = $newFileName;
             $uploadedCount++;
         }
 
@@ -81,4 +88,33 @@ class FileUploadController extends Controller
             'message' => $uploadedCount > 0 ? 'Files uploaded successfully.' : 'No files uploaded.',
         ]);
     }
+
+    public function analyze(Request $request)
+    {
+        $uploadedFilesJson = $request->input('uploadedFiles'); // This is a JSON string
+        $uploadedFiles = json_decode($uploadedFilesJson, true); // Decode it into an array
+
+        if (!is_array($uploadedFiles)) {
+            // Handle the error if $uploadedFiles is not an array
+            return redirect()->back()->with('error', 'Invalid uploaded files data.');
+        }
+
+        $analysisResults = [];
+        foreach ($uploadedFiles as $fileName) {
+            $fileModel = FileUpload::where('file_name', $fileName)->first();
+            if ($fileModel) {
+                $filePath = storage_path('app/' . $fileModel->file_path);
+                $submitResponse = $this->apiService->submitFile($filePath);
+                if (isset($submitResponse['analysis_id'])) {
+                    $analysisId = $submitResponse['analysis_id'];
+                    // Optionally, implement a delay or a loop to wait for analysis to complete
+                    $analysisResults[$fileName] = $this->apiService->getAnalysisResults($analysisId);
+                }
+            }
+        }
+
+        return redirect()->route('analysis')->with('analysisResults', $analysisResults);
+    }
+
+
 }

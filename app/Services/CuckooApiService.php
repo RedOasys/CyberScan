@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CuckooApiService
 {
@@ -17,14 +18,39 @@ class CuckooApiService
 
     public function submitFile($filePath, $additionalSettings = [])
     {
+        // Default settings if not provided
+        if (empty($additionalSettings)) {
+            $additionalSettings = [
+                'platforms' => [
+                    ['platform' => 'windows', 'os_version' => '10']
+                ],
+                'timeout' => 120
+            ];
+        }
+
+        $url = $this->baseUrl . '/submit/file';
+        Log::info("Cuckoo API URL: " . $url);
+
+        return Http::withHeaders([
+            'Authorization' => 'token ' . $this->apiKey,
+        ])->attach(
+            'file', file_get_contents($filePath), basename($filePath)
+        )->post($url, [
+            'settings' => json_encode($additionalSettings)
+        ]);
+    }
+
+
+    // CuckooApiService.php
+
+    public function getAnalysisResults($analysisId)
+    {
         $response = Http::withHeaders([
             'Authorization' => 'token ' . $this->apiKey,
-        ])->post($this->baseUrl . '/submit/file', [
-            'file' => $filePath,
-            'settings' => json_encode($additionalSettings),
-        ]);
+        ])->get($this->baseUrl . '/analysis/' . $analysisId);
 
         return $response->json();
     }
+
 
 }

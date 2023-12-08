@@ -51,11 +51,17 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalOkayBtn">Okay</button>
-                    <button type="button" class="btn btn-primary" id="analyzeBtn" style="display: none;">Analyze</button>
+                    <!-- Analyze button inside a form -->
+                    <form action="{{ route('analyze') }}" method="post" style="display: inline;">
+                        @csrf
+                        <input type="hidden" name="uploadedFiles" id="uploadedFilesInput"> <!-- Hidden input to hold the list of uploaded files -->
+                        <button type="submit" class="btn btn-primary" id="analyzeBtn" style="display: none;">Analyze</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
 
 @endsection
 
@@ -112,6 +118,7 @@
 
                         if (response.uploaded.length > 0) {
                             $('#analyzeBtn').show();
+                            $('#uploadedFilesInput').val(JSON.stringify(response.uploaded));
                         } else {
                             $('#analyzeBtn').hide();
                         }
@@ -128,6 +135,7 @@
 
             $('#analyzeBtn').click(function() {
                 alert('Analyze logic goes here.');
+
             });
         });
     </script>

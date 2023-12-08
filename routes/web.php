@@ -14,3 +14,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload', [FileUploadController::class, 'index'])->name('upload');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 });
+Route::get('/analysis', function () {
+    return view('analysis');
+})->middleware('auth')->name('analysis');
+
+// web.php
+
+Route::post('/analyze', [FileUploadController::class, 'analyze'])->name('analyze')->middleware('auth');
+
+
