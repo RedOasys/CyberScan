@@ -13,7 +13,7 @@
                             <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Uploaded Samples</span></div>
                             <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-calendar fa-2x text-gray-300"></i></div>
+                        <div class="col-auto"><i class="fas fa-upload fa-2x text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                             <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Analyzed Samples</span></div>
                             <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
+                        <div class="col-auto"><i class="fas fa-hdd fa-2x text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
+                        <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-percent fa-2x text-gray-300">
+                                <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path>
+                            </svg></div>
                     </div>
                 </div>
             </div>
@@ -61,7 +63,9 @@
                             <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span>Queued Analysis</span></div>
                             <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-comments fa-2x text-gray-300"></i></div>
+                        <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-cloud-haze2-fill fa-2x text-gray-300">
+                                <path d="M8.5 2a5.001 5.001 0 0 1 4.905 4.027A3 3 0 0 1 13 12H3.5A3.5 3.5 0 0 1 .035 9H5.5a.5.5 0 0 0 0-1H.035a3.5 3.5 0 0 1 3.871-2.977A5.001 5.001 0 0 1 8.5 2zm-6 8a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zM0 13.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5z"></path>
+                            </svg></div>
                     </div>
                 </div>
             </div>
@@ -141,9 +145,6 @@
                             <div class="col me-2">
                                 <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">10:30 AM</span>
                             </div>
-                            <div class="col-auto">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1"><label class="form-check-label" for="formCheck-1"></label></div>
-                            </div>
                         </div>
                     </li>
                     <li class="list-group-item">
@@ -151,18 +152,12 @@
                             <div class="col me-2">
                                 <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">11:30 AM</span>
                             </div>
-                            <div class="col-auto">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-2"><label class="form-check-label" for="formCheck-2"></label></div>
-                            </div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row align-items-center no-gutters">
                             <div class="col me-2">
                                 <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">12:30 AM</span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-3"><label class="form-check-label" for="formCheck-3"></label></div>
                             </div>
                         </div>
                     </li>
