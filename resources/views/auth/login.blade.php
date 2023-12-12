@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.chips.main')
 @section('title', 'Login')
 @section('content')
     <div class="container">

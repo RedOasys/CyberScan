@@ -10,4 +10,11 @@ class FileUpload extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'file_name', 'file_path', 'md5_hash', 'file_size_kb'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+
+

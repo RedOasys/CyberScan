@@ -3,151 +3,54 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\CuckooApiService;
 use App\Models\FileUpload;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class FileUploadController extends Controller
 {
-    protected $apiService;
-
-    public function __construct(CuckooApiService $apiService)
-    {
-        $this->apiService = $apiService;
-    }
-
-    public function index()
-    {
-        return view('upload');
-    }
-
     public function upload(Request $request)
     {
-        // Validate the request
-        $this->validate($request, [
-            'files' => [
-                'required',
-                'array',
-                'max:10', // Limit to 10 files
-            ],
-            'files.*' => [
-                'file',
-                function ($attribute, $file, $fail) {
-                    $allowedExtensions = ['exe'];
-                    if (!in_array(strtolower($file->getClientOriginalExtension()), $allowedExtensions)) {
-                        $fail('Only .exe files are allowed.');
-                    }
-                },
-            ],
+        $request->validate([
+            'file' => 'required|file',
         ]);
 
-        $files = $request->file('files');
-        $uploadedCount = 0;
-        $uploadedFiles = [];
-        $skippedFiles = [];
+        $file = $request->file('file');
+        $md5Hash = md5_file($file->getRealPath());
 
-        foreach ($files as $file) {
-            $md5Hash = md5_file($file);
-
-            // Check if file is already uploaded
-            $duplicate = FileUpload::where('md5_hash', $md5Hash)->first();
-            if ($duplicate) {
-                $skippedFiles[] = $file->getClientOriginalName() . ' (Duplicate)';
-                continue; // Skip this file as it's a duplicate
-            }
-
-            // Check if reached the upload limit
-            if ($uploadedCount >= 10) {
-                $skippedFiles[] = $file->getClientOriginalName() . ' (Maximum files reached)';
-                continue; // Skip this file as the limit is reached
-            }
-
-            // Construct the new file name
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $uploaderName = str_replace(' ', '_', auth()->user()->name); // Replace spaces with underscores
-            $date = date('dmY');
-            $newFileName = "{$originalName}_{$md5Hash}_{$uploaderName}_{$date}.{$file->getClientOriginalExtension()}";
-
-            $path = $file->storeAs('uploads', $newFileName);
-
-            // Save file information to the database
-            FileUpload::create([
-                'user_id' => auth()->id(),
-                'file_name' => $newFileName,
-                'file_path' => $path,
-                'md5_hash' => $md5Hash,
-                'file_size_kb' => $file->getSize() / 1024,
-            ]);
-
-            $uploadedFiles[] = $newFileName;
-            $uploadedCount++;
+        // Check if the file already exists in the database
+        $existingFile = FileUpload::where('md5_hash', $md5Hash)->first();
+        if ($existingFile) {
+            // File already exists, return a response or handle as needed
+            return response()->json(['message' => 'File already exists', 'id' => $existingFile->id]);
         }
 
-        return response()->json([
-            'uploaded' => $uploadedFiles,
-            'skipped' => $skippedFiles,
-            'message' => $uploadedCount > 0 ? 'Files uploaded successfully.' : 'No files uploaded.',
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+
+        // Use the username instead of the user ID
+        $username = Auth::user()->username; // Replace with your username field
+
+        // Truncate the original filename to the first 25 characters if it's longer than 25
+        $name = strlen($originalName) > 25 ? substr($originalName, 0, 25) . 'xxx' : $originalName;
+
+        // Construct the new filename
+        $filename = $name . '_' . $username . '_' . $md5Hash . '.' . $extension;
+
+        // Store the file
+        $path = $file->storeAs('uploads', $filename, 'public');
+        $fileSize = $file->getSize();
+
+        // Save file details to the database
+        $upload = FileUpload::create([
+            'user_id' => Auth::id(),
+            'file_name' => $filename,
+            'file_path' => $path,
+            'md5_hash' => $md5Hash,
+            'file_size_kb' => $fileSize / 1024,
         ]);
+
+        return response()->json(['id' => $upload->id]);
     }
-
-    public function analyze(Request $request)
-    {
-        $uploadedFilesJson = $request->input('uploadedFiles'); // This is a JSON string
-        $uploadedFiles = json_decode($uploadedFilesJson, true); // Decode it into an array
-
-        if (!is_array($uploadedFiles)) {
-            // Handle the error if $uploadedFiles is not an array
-            return redirect()->back()->with('error', 'Invalid uploaded files data.');
-        }
-
-        $analysisResults = [];
-        foreach ($uploadedFiles as $fileName) {
-            $fileModel = FileUpload::where('file_name', $fileName)->first();
-            if ($fileModel) {
-                $filePath = storage_path('app/' . $fileModel->file_path);
-                $submitResponse = $this->apiService->submitFile($filePath);
-                if (isset($submitResponse['analysis_id'])) {
-                    $analysisId = $submitResponse['analysis_id'];
-                    // Optionally, implement a delay or a loop to wait for analysis to complete
-                    $analysisResults[$fileName] = $this->apiService->getAnalysisResults($analysisId);
-                }
-            }
-        }
-
-        return redirect()->route('analysis')->with('analysisResults', $analysisResults);
-    }
-
-    public function showFiles()
-    {
-        // Logic to retrieve files and pass them to the view
-        $files = FileUpload::all(); // Example, modify as needed for your logic
-        return view('files', compact('files'));
-    }
-
-    public function deleteFile($id)
-    {
-        $file = FileUpload::findOrFail($id);
-        Storage::delete($file->file_path); // Delete the file from storage
-        $file->delete(); // Delete the file record from the database
-
-        return redirect()->route('files')->with('success', 'File deleted successfully.');
-    }
-
-    public function viewFile($id)
-    {
-        $file = FileUpload::findOrFail($id);
-        // Return a view or JSON data containing file information
-        return response()->json($file);
-    }
-    public function getTableData(Request $request)
-    {
-        $pageSize = $request->input('size', 10); // Ensure the default is set to 10
-        $files = FileUpload::where('user_id', auth()->id())
-            ->simplePaginate($pageSize); // Or use paginate if you want more control
-
-        return view('partials.files_table_rows', compact('files'));
-    }
-
 
 
 
