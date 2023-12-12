@@ -5,71 +5,84 @@
         <h3 class="text-dark mb-0">Dashboard</h3>
     </div>
     <div class="row">
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-start-primary py-2">
-                <div class="card-body">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col me-2">
-                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Uploaded Samples</span></div>
-                            <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
+        <div class="row">
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-start-primary py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col me-2">
+                                <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Uploaded Samples</span></div>
+                                <div class="text-dark fw-bold h5 mb-0"><span id="uploadedSamples">Loading...</span></div>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-upload fa-2x text-gray-300"></i></div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-upload fa-2x text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-start-success py-2">
-                <div class="card-body">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col me-2">
-                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Analyzed Samples</span></div>
-                            <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
+
+{{--            xx--}}
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-start-success py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col me-2">
+                                <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Analyzed Samples</span></div>
+                                <div class="text-dark fw-bold h5 mb-0"><span id="analyzedSamples">Loading...</span></div>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-hdd fa-2x text-gray-300"></i></div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-hdd fa-2x text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-start-info py-2">
-                <div class="card-body">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col me-2">
-                            <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Detected Malware</span></div>
-                            <div class="row g-0 align-items-center">
-                                <div class="col-auto">
-                                    <div class="text-dark fw-bold h5 mb-0 me-3"><span>ph</span></div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-info" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;"><span class="visually-hidden">50%</span></div>
+
+{{--            xx--}}
+
+            <!-- Analyzed Samples -->
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-start-info py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col me-2">
+                                <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Detected Malware</span></div>
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-auto">
+                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span>ph</span></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar bg-info" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;"><span class="visually-hidden">50%</span></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-percent fa-2x text-gray-300">
+                                    <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path>
+                                </svg></div>
                         </div>
-                        <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-percent fa-2x text-gray-300">
-                                <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path>
-                            </svg></div>
+                    </div>
+                </div>
+            </div>
+
+{{--            xx--}}
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-start-warning py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center no-gutters">
+                            <div class="col me-2">
+                                <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span>Queued Analysis</span></div>
+                                <div class="text-dark fw-bold h5 mb-0"><span id="queuedSamples">Loading...</span></div>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-cloud-haze2-fill fa-2x text-gray-300"></i></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3 mb-4">
-            <div class="card shadow border-start-warning py-2">
-                <div class="card-body">
-                    <div class="row align-items-center no-gutters">
-                        <div class="col me-2">
-                            <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span>Queued Analysis</span></div>
-                            <div class="text-dark fw-bold h5 mb-0"><span>ph</span></div>
-                        </div>
-                        <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-cloud-haze2-fill fa-2x text-gray-300">
-                                <path d="M8.5 2a5.001 5.001 0 0 1 4.905 4.027A3 3 0 0 1 13 12H3.5A3.5 3.5 0 0 1 .035 9H5.5a.5.5 0 0 0 0-1H.035a3.5 3.5 0 0 1 3.871-2.977A5.001 5.001 0 0 1 8.5 2zm-6 8a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zM0 13.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5z"></path>
-                            </svg></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+{{--        xx--}}
+
     </div>
     <div class="row">
         <div class="col-lg-7 col-xl-8">
@@ -200,5 +213,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function updateDashboardData() {
+            fetch('http://127.0.0.1:8000/dashboard-data')
+                .then(response => response.json())
+                .then(data => {
+                    const uploadedElem = document.getElementById('uploadedSamples');
+                    const analyzedElem = document.getElementById('analyzedSamples');
+                    const queuedElem = document.getElementById('queuedSamples');
+                    if (uploadedElem && analyzedElem && queuedElem) {
+                        uploadedElem.textContent = data.uploadedSamples;
+                        analyzedElem.textContent = data.analyzedSamples;
+                        queuedElem.textContent = data.queuedSamples;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboardData();
+            setInterval(updateDashboardData, 10000); // Update every 10 seconds
+        });
+    </script>
 
 @endsection

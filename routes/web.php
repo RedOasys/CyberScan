@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\FileDisplayController;
+use App\Http\Controllers\DashboardController;
 
 Auth::routes();
 
@@ -20,3 +21,6 @@ Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.uplo
 Route::get('/search-files', [FileDisplayController::class, 'searchFiles'])->name('searchFiles');
 
 Route::get('/fetch-all-files', [FileDisplayController::class, 'fetchAllFiles'])->name('fetchAllFiles');
+
+Route::get('/dashboard-data', [DashboardController::class, 'dashboardData'])->name('dashboard-data');
+

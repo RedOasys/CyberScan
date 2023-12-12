@@ -10,17 +10,24 @@ class FileDisplayController extends Controller
 {
     public function index()
     {
-        // Fetch the recent files for the authenticated user, ordered by creation date
+        // Fetch the recent files for the authenticated user
         $recentFiles = FileUpload::where('user_id', Auth::id())
-            ->latest('created_at') // Ensure we're getting the latest files
-            ->take(10) // Limit to 10 recent files
+            ->latest('created_at')
+            ->take(10) // Get 10 recent files
             ->get();
 
-        // Calculate the total size of files in GB
-        $totalSizeGB = number_format($recentFiles->sum('file_size_kb') / 1024, 2);
+        // Fetch the total size of all files for the authenticated user
+        $totalSizeKB = FileUpload::where('user_id', Auth::id())
+            ->sum('file_size_kb'); // Sum of file sizes in KB
 
-        return view('files', ['recentFiles' => $recentFiles, 'totalSizeGB' => $totalSizeGB]);
+        $totalSizeGB = number_format($totalSizeKB / 1024, 2); // Convert KB to GB
+
+        return view('files', [
+            'recentFiles' => $recentFiles,
+            'totalSizeGB' => $totalSizeGB
+        ]);
     }
+
 
     public function searchFiles(Request $request)
     {
