@@ -16,7 +16,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-grid">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >
                                     + Upload
                                 </button>
                             </div>
@@ -37,13 +37,7 @@
                         <div class="card-body">
                             <div class="fm-search">
                                 <div class="mb-0">
-                                    <form action="{{ route('searchFiles') }}" method="GET">
-                                        <div class="input-group input-group-lg">
-                                            <span class="bg-transparent input-group-text input-group-text"><i class="fa fa-search"></i></span>
-                                            <input id="searchInput" class="form-control form-control" type="text" name="search" placeholder="Search the files" />
-                                            <button type="submit" class="btn btn-primary">Search</button>
-                                        </div>
-                                    </form>
+                                    <input id="searchInput" class="form-control form-control-lg" type="text" placeholder="Search the files" />
                                 </div>
                             </div>
                             <div class="d-flex align-items-center">
@@ -64,6 +58,7 @@
                                         <th></th>
                                     </tr>
                                     </thead>
+
                                     <tbody>
                                     @foreach ($recentFiles as $file)
                                         <tr data-filename="{{ $file->file_name }}">
@@ -142,11 +137,11 @@
                 overflow-y: auto;
             }
         </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/r-2.5.0/datatables.min.js"></script>
-
-        <!-- FilePond JavaScript -->
         <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
         <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+
         <script>
             $(document).ready(function() {
                 // Initialize FilePond
@@ -233,8 +228,15 @@
                     var allFilesTable = $('#allFilesTable').DataTable();
                     allFilesTable.clear().draw();
                 });
+
+                // Instant search for Recent Files table
+                $("#searchInput").on("keyup", function() {
+                    var value = $(this).val().toLowerCase();
+                    $("#recentFilesTable tbody tr").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
             });
         </script>
-
     </div>
 @endsection

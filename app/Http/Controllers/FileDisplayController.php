@@ -10,10 +10,10 @@ class FileDisplayController extends Controller
 {
     public function index()
     {
-        // Fetch the recent files for the authenticated user
+        // Fetch the recent files for the authenticated user, ordered by creation date
         $recentFiles = FileUpload::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->take(10) // example to get 10 recent files
+            ->latest('created_at') // Ensure we're getting the latest files
+            ->take(10) // Limit to 10 recent files
             ->get();
 
         // Calculate the total size of files in GB
