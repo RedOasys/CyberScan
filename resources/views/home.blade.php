@@ -152,35 +152,30 @@
                 <div class="card-header py-3">
                     <h6 class="text-primary fw-bold m-0">Analysis Queue</h6>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <div class="row align-items-center no-gutters">
-                            <div class="col me-2">
-                                <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">10:30 AM</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="row align-items-center no-gutters">
-                            <div class="col me-2">
-                                <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">11:30 AM</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="row align-items-center no-gutters">
-                            <div class="col me-2">
-                                <h6 class="mb-0"><strong>Lunch meeting</strong></h6><span class="text-xs">12:30 AM</span>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table" id="analysisQueueTable">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Target</th>
+                                <th>Created On</th>
+                                <th>State</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-lg-5 col-xl-4 col-xxl-6">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Detection Type</h6>
+
                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                         <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
                             <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another action</a>
@@ -213,7 +208,8 @@
             </div>
         </div>
     </div>
-
+    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <script>
         function updateDashboardData() {
             fetch('http://127.0.0.1:8000/dashboard-data')
@@ -235,7 +231,25 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             updateDashboardData();
-            setInterval(updateDashboardData, 10000); // Update every 10 seconds
+            setInterval(updateDashboardData, 10); // Update every 10 seconds
+            function fetchQueueData() {
+                fetch('http://127.0.0.1:8000/api/queue') // Adjust the endpoint as needed
+                    .then(response => response.json())
+                    .then(data => {
+                        $('#analysisQueueTable').DataTable({
+                            data: data.queue,
+                            columns: [
+                                { data: 'id' },
+                                { data: 'target' },
+                                { data: 'created_on' },
+                                { data: 'state' }
+                            ]
+                        });
+                    })
+                    .catch(error => console.error('Error fetching queue data:', error));
+            }
+
+            fetchQueueData();
         });
     </script>
 
