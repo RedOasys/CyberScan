@@ -24,7 +24,7 @@ class DashboardController extends Controller
             foreach ($data['analyses'] as $analysis) {
                 if ($analysis['state'] === 'finished') {
                     $analyzedSamples++;
-                } elseif ($analysis['state'] === 'pending') {
+                } elseif ($analysis['state'] === 'pending_pre' | $analysis['state'] === 'tasks_pending') {
                     $queuedSamples++;
                 }
             }

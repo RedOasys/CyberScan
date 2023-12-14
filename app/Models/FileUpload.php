@@ -15,6 +15,9 @@ class FileUpload extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function staticAnalysis()
+    {
+        return $this->hasOne(StaticAnalysis::class);
+    }
 }
-
-

@@ -231,25 +231,39 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             updateDashboardData();
-            setInterval(updateDashboardData, 10); // Update every 10 seconds
-            function fetchQueueData() {
-                fetch('http://127.0.0.1:8000/api/queue') // Adjust the endpoint as needed
+            setInterval(updateDashboardData, 10000); // Update every 10 seconds
+
+            // Function to fetch queue data from the Cuckoo API and initialize DataTable
+            function fetchAndProcessQueueData() {
+                const baseUrl = '{{ env('CUCKOO_API_BASE_URL') }}';
+                const apiToken = '{{ env('CUCKOO_API_TOKEN') }}';
+                const headers = { 'Authorization': 'token ' + apiToken };
+
+                fetch(baseUrl + '/analyses/', { headers: headers })
                     .then(response => response.json())
                     .then(data => {
-                        $('#analysisQueueTable').DataTable({
-                            data: data.queue,
-                            columns: [
-                                { data: 'id' },
-                                { data: 'target' },
-                                { data: 'created_on' },
-                                { data: 'state' }
-                            ]
-                        });
+                        const queueData = data.analyses.filter(analysis => analysis.state === 'pending_pre' || analysis.state === 'tasks_pending');
+
+                        initializeDataTable(queueData);
                     })
-                    .catch(error => console.error('Error fetching queue data:', error));
+                    .catch(error => console.error('Error fetching Cuckoo API data:', error));
             }
 
-            fetchQueueData();
+            // Function to initialize DataTable with queue data
+            function initializeDataTable(queueData) {
+                $('#analysisQueueTable').DataTable({
+                    data: queueData,
+                    columns: [
+                        { data: 'id' },
+                        { data: 'target.target' }, // Adjust based on actual data structure
+                        { data: 'created_on' },
+                        { data: 'state' }
+                    ],
+                    destroy: true // Allows reinitialization
+                });
+            }
+
+            fetchAndProcessQueueData();
         });
     </script>
 

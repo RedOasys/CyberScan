@@ -20,17 +20,34 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('analysis*') ? 'active' : '' }}" href="#analysisSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="far fa-hdd"></i><span>Analysis</span>
+                    </a>
+                    <ul class="collapse list-unstyled {{ request()->is('analysis*') ? 'show' : '' }}" id="analysisSubmenu">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.create') ? 'active' : '' }}" href="{{ route('analysis.tasks.create') }}">Task Creation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.queue') ? 'active' : '' }}" href="{{ route('analysis.tasks.queue') }}">Task Queue</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.status') ? 'active' : '' }}" href="{{ route('analysis.tasks.status') }}">Analysis Status</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.logs') ? 'active' : '' }}" href="{{ route('analysis.logs') }}">Logs</a>
+                        </li>
+                    </ul>
+                </li>
+
+
 {{--                <li class="nav-item">--}}
 {{--                    <a class="nav-link {{ request()->routeIs('upload') ? 'active' : '' }}" href="{{ route('upload') }}">--}}
 {{--                        <i class="far fa-paper-plane"></i><span>Upload</span>--}}
 {{--                    </a>--}}
 {{--                </li>--}}
 
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link {{ request()->routeIs('analysis') ? 'active' : '' }}" href="{{ route('analysis') }}">--}}
-{{--                        <i class="far fa-hdd"></i><span>Analyze</span>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+
 
 
 
