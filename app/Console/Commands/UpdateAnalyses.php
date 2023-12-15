@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\FileUpload;
 use App\Models\StaticAnalysis;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class UpdateAnalyses extends Command
 {
@@ -34,20 +35,40 @@ class UpdateAnalyses extends Command
             ])->get(env('CUCKOO_API_BASE_URL') . '/analysis/' . $analysis->analysis_id);
 
             if ($response->successful()) {
+
                 $analysisDetails = $response->json();
 
-                // Update the analysis record with new details
-                $analysis->update([
-                    'state' => $analysisDetails['state'] ?? null,
-                    'score' => $analysisDetails['score'] ?? 0,
-                    'kind' => $analysisDetails['kind'] ?? null,
-                    // ... other fields ...
-                ]);
+                // Assuming that the analysis details contain a 'submitted' section with an 'md5' hash
+                $submitted = $analysisDetails['submitted'] ?? [];
+                $fileUpload = FileUpload::where('md5_hash', $submitted['md5'] ?? '')->first();
 
-                $this->info("Updated analysis: " . $analysis->analysis_id);
+                if ($fileUpload) {
+                    // Map the extracted data
+                    $updateData = [
+                        'file_upload_id' => $fileUpload->id, // Associate with the correct file upload ID
+                        'analysis_id' => $analysisDetails['id'] ?? null,
+                        'score' => $analysisDetails['score'] ?? 0,
+                        'kind' => $analysisDetails['kind'] ?? null,
+                        'state' => $analysisDetails['state'] ?? null,
+                        'media_type' => $submitted['media_type'] ?? null,
+                        'md5' => $submitted['md5'] ?? null,
+                        'sha1' => $submitted['sha1'] ?? null,
+                        'sha256' => $submitted['sha256'] ?? null,
+                        'created_at' => $analysisDetails['created_on'] ?? null,
+                        'updated_at' => now(),
+                    ];
+                    Log::info('API Response for analysis ' . $analysis->analysis_id . ': ', $analysisDetails);
+                    $analysis->update($updateData);
+
+                    $this->info("Updated analysis: " . $analysis->analysis_id);
+                } else {
+                    $this->error("Failed to find matching file upload for analysis: " . $analysis->analysis_id);
+                }
             } else {
                 $this->error("Failed to fetch details for analysis: " . $analysis->analysis_id);
+
             }
+
         }
     }
 

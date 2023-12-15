@@ -9,7 +9,18 @@ class StaticAnalysis extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['file_upload_id', 'analysis_id', 'score', 'details'];
+    protected $fillable = [
+        'file_upload_id',
+        'analysis_id',
+        'score',
+        'kind',
+        'state',
+        'media_type',
+        'md5',
+        'sha1',
+        'sha256',
+
+    ];
 
     public function fileUpload()
     {

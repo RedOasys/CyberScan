@@ -12,7 +12,7 @@ class CreateStaticAnalysesTable extends Migration
             $table->id();
             $table->foreignId('file_upload_id')->constrained()->onDelete('cascade');
             $table->string('analysis_id')->unique();
-            $table->integer('score');
+            $table->integer('score')->default(0);
             $table->string('kind')->nullable();
             $table->string('state')->nullable();
             $table->string('media_type')->nullable();

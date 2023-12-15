@@ -30,27 +30,31 @@ class AnalysisController extends Controller
 
         // Find the file upload record based on the selected ID from the dropdown
         $fileUpload = FileUpload::find($validated['uploaded_file']);
-
-        // Construct the file path
-        $filePath = storage_path('app/public/' . $fileUpload->file_path);
-
-        // Check if the file exists
-        if (!file_exists($filePath)) {
+        if (!$fileUpload) {
             return back()->withErrors('File not found.');
         }
 
+        // Construct the file path
+        $filePath = storage_path('app/public/' . $fileUpload->file_path);
+        if (!file_exists($filePath)) {
+            return back()->withErrors('File not found on server.');
+        }
+
+        // Prepare settings for analysis
         $settings = [
             'platforms' => [
                 ['platform' => 'windows', 'os_version' => '10']
             ],
-            'timeout' => (int)$validated['timeout'] // Cast timeout to integer
+            'timeout' => (int)$validated['timeout'], // Cast timeout to integer
+            // ... any additional settings ...
         ];
 
         if (!empty($validated['options'])) {
             $settings['options'] = json_decode($validated['options'], true);
         }
 
-        $response = Http::withHeaders([
+        // Submit the file for analysis
+        $submitResponse = Http::withHeaders([
             'Authorization' => 'token ' . env('CUCKOO_API_TOKEN'),
         ])->attach(
             'file', file_get_contents($filePath), basename($filePath)
@@ -58,14 +62,40 @@ class AnalysisController extends Controller
             'settings' => json_encode($settings)
         ]);
 
-        if ($response->successful()) {
-            $this->populatePreAnalysisData();
-            return back()->with('message', 'Task submitted successfully!');
-        } else {
-            return back()->withErrors('Failed to submit task. ' . $response->body());
-        }
+        // Check if the submission was successful
+        if ($submitResponse->successful()) {
+            // Wait for a short period to ensure the analysis is created
+            sleep(5); // Adjust the sleep duration as needed
 
+            // Fetch the analyses to find the newly created one
+            $analyses = $this->cuckooService->getAnalyses();
+
+            // Find the analysis with the matching MD5 hash
+            $analysisId = null;
+            foreach ($analyses['analyses'] as $analysis) {
+                if ($analysis['target']['md5'] === $fileUpload->md5_hash) {
+                    $analysisId = $analysis['id'];
+                    break;
+                }
+            }
+
+            if ($analysisId) {
+                // Create a new StaticAnalysis record with the file upload ID and analysis ID
+                StaticAnalysis::create([
+                    'file_upload_id' => $fileUpload->id,
+                    'analysis_id' => $analysisId,
+                    // ... other necessary fields ...
+                ]);
+
+                return back()->with('message', 'Task submitted successfully!, Analysis ID is: ' . $analysisId );
+            } else {
+                return back()->withErrors('Failed to find the analysis for the submitted file.');
+            }
+        } else {
+            return back()->withErrors('Failed to submit task. ' . $submitResponse->body());
+        }
     }
+
     public function populatePreAnalysisData()
     {
         // Fetch analyses from the API
@@ -84,16 +114,16 @@ class AnalysisController extends Controller
 
                     if (!$existingAnalysis) {
                         $newAnalysisData = [
-                            'file_upload_id' => $fileUpload->id,
-                            'analysis_id' => $analysis['id'],
-                            'score' => $analysis['score'] ?? 0,
-                            'kind' => $analysis['kind'] ?? null,
-                            'state' => $analysis['state'] ?? null,
-                            'media_type' => $analysis['target']['media_type'] ?? null,
-                            'md5' => $analysis['target']['md5'] ?? null,
-                            'sha1' => $analysis['target']['sha1'] ?? null,
-                            'sha256' => $analysis['target']['sha256'] ?? null,
-                            // ... more fields ...
+                            'analysis_id' => $analysisDetails['id'] ?? null,
+                            'score' => $analysisDetails['score'] ?? 0,
+                            'kind' => $analysisDetails['kind'] ?? null,
+                            'state' => $analysisDetails['state'] ?? null,
+                            'media_type' => $submitted['media_type'] ?? null,
+                            'md5' => $submitted['md5'] ?? null,
+                            'sha1' => $submitted['sha1'] ?? null,
+                            'sha256' => $submitted['sha256'] ?? null,
+                            'created_at' => $analysisDetails['created_on'] ?? null,
+                            'updated_at' => now(),
                         ];
 
                         // Log the data to be inserted

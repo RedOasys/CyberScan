@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('update:analyses')->everyMinute(); // Or adjust the frequency as needed
+        $schedule->command('update:analyses')->everyTenSeconds(); // Or adjust the frequency as needed
     }
 
     /**
