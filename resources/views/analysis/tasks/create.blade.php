@@ -18,12 +18,19 @@
 
             <div class="mb-3">
                 <label for="uploadedFile" class="form-label">Select File for Analysis</label>
-                <select class="form-select" id="uploadedFile" name="uploaded_file">
-                    @foreach ($unanalyzedFiles as $file)
-                        <option value="{{ $file->id }}">{{ $file->file_name }}</option>
-                    @endforeach
-                </select>
+                @if($unanalyzedFiles->isEmpty())
+                    <div class="alert alert-warning" role="alert">
+                        All Uploaded Files have been analyzed / Are queued for analysis.
+                    </div>
+                @else
+                    <select class="form-select" id="uploadedFile" name="uploaded_file">
+                        @foreach ($unanalyzedFiles as $file)
+                            <option value="{{ $file->id }}">{{ $file->file_name }}</option>
+                        @endforeach
+                    </select>
+                @endif
             </div>
+
 
             {{-- Analysis timeout --}}
             <div class="mb-3">
