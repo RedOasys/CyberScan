@@ -3,7 +3,7 @@ name: Deploy to Web Server
 on:
   push:
     branches:
-      - main # Replace 'main' with 'master' if your main branch is named 'master'
+      - main # Replace 'main' with your branch name if different
 
 jobs:
   deploy:
@@ -14,10 +14,17 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.8.0
+      uses: webfactory/ssh-agent@v0.5
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Deploy to Web Server
+      env:
+        WORK_DIR: ${{ secrets.WORK_DIR }}
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git fetch origin main && git reset --hard origin/main"
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          git config --global --add safe.directory $WORK_DIR
+          cd $WORK_DIR
+          git fetch origin main
+          git reset --hard origin/main
+        EOF
