@@ -214,7 +214,8 @@
         function updateDashboardData() {
             const endpoint = '/dashboard-data';
             const fetchUrl = `${window.location.origin}${endpoint}`;
-            fetch(fetchUrl)  
+            fetch(fetchUrl)
+                
                 .then(response => response.json())
                 .then(data => {
                     const uploadedElem = document.getElementById('uploadedSamples');
