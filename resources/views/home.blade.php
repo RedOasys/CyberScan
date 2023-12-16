@@ -212,7 +212,9 @@
     <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <script>
         function updateDashboardData() {
-            fetch('http://127.0.0.1:8000/dashboard-data')
+            const endpoint = '/dashboard-data';
+            const fetchUrl = `${window.location.origin}${endpoint}`;
+            fetch(fetchUrl)
                 .then(response => response.json())
                 .then(data => {
                     const uploadedElem = document.getElementById('uploadedSamples');
