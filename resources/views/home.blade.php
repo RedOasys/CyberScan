@@ -226,6 +226,7 @@
                         analyzedElem.textContent = data.analyzedSamples;
                         queuedElem.textContent = data.queuedSamples;
                     }
+                    
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
