@@ -3,7 +3,7 @@ name: Deploy to Web Server
 on:
   push:
     branches:
-      - ${{ secrets.MAIN_BRANCH }}
+      - main # Replace 'main' with 'master' if your main branch is named 'master'
 
 jobs:
   deploy:
@@ -20,5 +20,4 @@ jobs:
 
     - name: Deploy to Web Server
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git fetch origin ${{ secrets.MAIN_BRANCH }} && git reset --hard origin/${{ secrets.MAIN_BRANCH }}"
-
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git fetch origin main && git reset --hard origin/main"
