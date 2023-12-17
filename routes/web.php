@@ -43,4 +43,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Subpage for viewing logs
     Route::get('/analysis/logs', [AnalysisController::class, 'logs'])->name('analysis.logs');
+    Route::get('/analysis/tasks/result/{analysisId}', [AnalysisController::class, 'showAnalysisResult'])->name('analysis.tasks.result');
+    Route::get('/analysis/virustotal/{md5}', [AnalysisController::class, 'checkVirusTotal'])->name('analysis.virustotal');
+
 });
+
