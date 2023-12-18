@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     // Subpage for viewing the task queue
     Route::get('/analysis/tasks/queue', [AnalysisController::class, 'taskQueue'])->name('analysis.tasks.queue');
 
+
     // Subpage for viewing the status of analysis tasks
     Route::get('/analysis/tasks/status', [AnalysisController::class, 'taskStatus'])->name('analysis.tasks.status');
 
@@ -45,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/logs', [AnalysisController::class, 'logs'])->name('analysis.logs');
     Route::get('/analysis/tasks/result/{analysisId}', [AnalysisController::class, 'showAnalysisResult'])->name('analysis.tasks.result');
     Route::get('/analysis/virustotal/{md5}', [AnalysisController::class, 'checkVirusTotal'])->name('analysis.virustotal');
+    Route::get('/update-analysis/{analysis}', [AnalysisController::class, 'updateAnalysisRoute'])->name('analysis.update');
+    Route::get('/analysis/tasks/queue/data', [AnalysisController::class, 'taskQueueData'])->name('analysis.tasks.queue.data');
 
 });
 

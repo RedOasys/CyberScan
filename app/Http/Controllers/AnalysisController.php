@@ -88,6 +88,12 @@ class AnalysisController extends Controller
             return back()->withErrors('Failed to submit task. ' . $submitResponse->body());
         }
     }
+    public function updateAnalysisRoute($analysisId)
+    {
+        $analysis = StaticAnalysis::where('analysis_id', $analysisId)->firstOrFail();
+        $this->updateAnalysisDetails($analysis);
+        return response()->json(['message' => 'Analysis updated successfully']);
+    }
     protected function updateAnalysisDetails($analysis)
     {
         $response = Http::withHeaders([
@@ -169,6 +175,36 @@ class AnalysisController extends Controller
         $analysis = StaticAnalysis::where('analysis_id', $analysisId)->firstOrFail();
         return view('analysis.tasks.result', compact('analysis'));
     }
+
+    public function taskQueueData(Request $request)
+    {
+        $analyses = StaticAnalysis::with('fileUpload')
+            ->where('state', 'pending_pre')
+            ->orWhere('state', 'tasks_pending')
+            ->get();
+
+        $data = $analyses->map(function ($analysis) {
+            return [
+                'DT_RowId' => 'row_' . $analysis->analysis_id,
+                'id' => $analysis->id,
+                'file_name' => $analysis->fileUpload ? $analysis->fileUpload->file_name : 'N/A',
+                'status' => $analysis->state,
+                'actions' => view('partials.analysis_actions', compact('analysis'))->render()
+            ];
+        });
+
+        return response()->json([
+            'draw' => intval($request->draw),
+            'recordsTotal' => $analyses->count(),
+            'recordsFiltered' => $analyses->count(),
+            'data' => $data
+        ]);
+    }
+
+
+
+
+
 
     public function index()
     {

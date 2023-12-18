@@ -45,11 +45,32 @@
                         <input type="text" class="form-control" id="sha256" value="{{ $analysis->sha256 }}" readonly>
                     </div>
                 </div>
-                <a href="{{ route('analysis.tasks.result', ['analysisId' => $analysis->analysis_id]) }}" class="btn btn-secondary">Refresh</a>
+                <a href="javascript:void(0)" onclick="updateAnalysis('{{ $analysis->analysis_id }}')" class="btn btn-secondary">Refresh</a>
+
 
                 <a href="{{ route('analysis.virustotal', ['md5' => $analysis->md5]) }}" class="btn btn-warning">Check VirusTotal</a>
                 <a href="{{ route('analysis.tasks.create') }}" class="btn btn-primary">Create New Task</a>
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        function updateAnalysis(analysisId) {
+            $.ajax({
+                url: '/update-analysis/' + analysisId,
+                type: 'GET',
+                success: function(response) {
+                    // Handle the response
+                    console.log('Analysis Updated:', response);
+                    location.reload(); // Reload the page to update the info
+                },
+                error: function(error) {
+                    // Handle errors
+                    console.error('Update failed:', error);
+                }
+            });
+        }
+    </script>
+
 @endsection
