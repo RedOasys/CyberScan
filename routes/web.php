@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     // Subpage for viewing the task queue
     Route::get('/analysis/tasks/queue', [AnalysisController::class, 'taskQueue'])->name('analysis.tasks.queue');
 
-
+ 
     // Subpage for viewing the status of analysis tasks
     Route::get('/analysis/tasks/all', [AnalysisController::class, 'taskStatus'])->name('analysis.tasks.all');
 
