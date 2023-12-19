@@ -29,24 +29,45 @@
 
     <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var table = $('#analysisQueueTable').DataTable({
                 processing: true,
+                responsive: true,
                 serverSide: true,
                 ajax: "{{ route('analysis.tasks.queue.data') }}",
                 columns: [
-                    { data: 'id' },
-                    { data: 'file_name' },
-                    { data: 'status' },
-                    { data: 'actions', orderable: false, searchable: false }
+                    {data: 'analysis_id'},
+                    {data: 'file_name'},
+                    {data: 'actions', orderable: false, searchable: false},
+                    {data: 'status'}
+
                 ],
+                drawCallback: function (settings) {
+                    // For each 'analysis_id' value in the table
+                    this.api().column(0).data().each(function (analysis_id) {
+                        // AJAX call to update the analysis
+                        $.ajax({
+                            url: '/update-analysis/' + analysis_id,
+                            type: 'GET',
+                            success: function(response) {
+                                // Handle the response
+                                console.log('Analysis Updated:', response);
+                                // Optionally reload the table or handle the update in another way
+                            },
+                            error: function(error) {
+                                // Handle errors
+                                console.error('Update failed:', error);
+                            }
+                        });
+                    });
+                }
             });
 
             // Refresh DataTable every 5 seconds
-            setInterval( function () {
+            setInterval(function () {
                 table.ajax.reload(null, false); // false means don't reset user paging
             }, 5000); // 5000 milliseconds = 5 seconds
         });
-
     </script>
+
 @endsection
