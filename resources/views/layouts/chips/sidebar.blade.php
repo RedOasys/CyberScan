@@ -24,8 +24,9 @@
                     <a class="nav-link {{ request()->is('analysis*') ? 'active' : '' }}" href="#analysisSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <i class="far fa-hdd"></i><span>Analysis</span>
                     </a>
-                    <ul class="collapse list-unstyled {{ request()->is('analysis*') ? 'show' : '' }}" id="analysisSubmenu">
-                        <li class="nav-item">
+                    <ul class="collapse list-unstyled show" id="analysisSubmenu">
+
+                    <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('analysis.tasks.create') ? 'active' : '' }}" href="{{ route('analysis.tasks.create') }}">Task Creation</a>
                         </li>
                         <li class="nav-item">

@@ -1,22 +1,25 @@
 @extends('layouts.chips.main')
 
 @section('content')
-    <div class="container">
-        <h2>Analysis Tasks Queue</h2>
+    <div class="card shadow mb-4 ">
 
-        <table class="table table-bordered" id="analysisQueueTable">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>File Name</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{-- Content will be loaded via DataTables --}}
-            </tbody>
-        </table>
+        <div class="card-body">
+            <div class="table-responsive overflow-hidden ">
+                <table class="table" id="analysisQueueTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Target</th>
+                        <th>Actions</th>
+                        <th>State</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">

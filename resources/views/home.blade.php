@@ -374,7 +374,7 @@
 
                     responsive: true,
                     serverSide: true,
-                    ajax: "{{ route('analysis.tasks.queue.finished') }}",
+                    ajax: "{{ route('analysis.tasks.queue.finishedbrief') }}",
                     columns: [
                         {data: 'analysis_id'},
                         {data: 'file_name'},
