@@ -186,7 +186,31 @@ class AnalysisController extends Controller
         $data = $analyses->map(function ($analysis) {
             return [
                 'DT_RowId' => 'row_' . $analysis->analysis_id,
-                'id' => $analysis->id,
+                'analysis_id' => $analysis->analysis_id,
+                'file_name' => $analysis->fileUpload ? $analysis->fileUpload->file_name : 'N/A',
+                'status' => $analysis->state,
+                'actions' => view('partials.analysis_actions', compact('analysis'))->render()
+            ];
+        });
+
+        return response()->json([
+            'draw' => intval($request->draw),
+            'recordsTotal' => $analyses->count(),
+            'recordsFiltered' => $analyses->count(),
+            'data' => $data
+        ]);
+    }
+
+    public function taskAnalyzedFiles(Request $request)
+    {
+        $analyses = StaticAnalysis::with('fileUpload')
+            ->where('state', 'finished')
+            ->take(2)->get();
+
+        $data = $analyses->map(function ($analysis) {
+            return [
+                'DT_RowId' => 'row_' . $analysis->analysis_id,
+                'analysis_id' => $analysis->analysis_id,
                 'file_name' => $analysis->fileUpload ? $analysis->fileUpload->file_name : 'N/A',
                 'status' => $analysis->state,
                 'actions' => view('partials.analysis_actions', compact('analysis'))->render()

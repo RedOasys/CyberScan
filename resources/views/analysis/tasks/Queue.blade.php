@@ -47,5 +47,6 @@
                 table.ajax.reload(null, false); // false means don't reset user paging
             }, 5000); // 5000 milliseconds = 5 seconds
         });
+
     </script>
 @endsection

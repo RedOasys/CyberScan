@@ -32,7 +32,7 @@
                             <a class="nav-link {{ request()->routeIs('analysis.tasks.queue') ? 'active' : '' }}" href="{{ route('analysis.tasks.queue') }}">Task Queue</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.tasks.status') ? 'active' : '' }}" href="{{ route('analysis.tasks.status') }}">Analysis Status</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.all') ? 'active' : '' }}" href="{{ route('analysis.tasks.all') }}">Tasks Completed</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('analysis.logs') ? 'active' : '' }}" href="{{ route('analysis.logs') }}">Logs</a>
