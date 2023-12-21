@@ -135,7 +135,7 @@ class AnalysisController extends Controller
     }
     public function checkVirusTotal($md5)
     {
-        $apiKey = '2353478852f54143792270d40389c833ad993267b6d654167c306a44d5bf1591';
+        $apiKey = env('VT_API_KEY');
         $response = Http::withHeaders(['x-apikey' => $apiKey])
             ->get('https://www.virustotal.com/api/v3/files/' . $md5);
 
@@ -205,7 +205,7 @@ class AnalysisController extends Controller
     {
         $analyses = StaticAnalysis::with('fileUpload')
             ->where('state', 'finished')->
-            take(2)->get();
+            take(5)->get();
 
         $data = $analyses->map(function ($analysis) {
             return [
@@ -248,6 +248,8 @@ class AnalysisController extends Controller
             'data' => $data
         ]);
     }
+
+
 
 
 
