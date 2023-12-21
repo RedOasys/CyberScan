@@ -308,11 +308,10 @@
                 .then(response => response.json())
                 .then(data => {
                     const uploadedElem = document.getElementById('uploadedSamples');
-                    const analyzedElem = document.getElementById('analyzedSamples');
+
                     const queuedElem = document.getElementById('queuedSamples');
-                    if (uploadedElem && analyzedElem && queuedElem) {
+                    if (uploadedElem && queuedElem) {
                         uploadedElem.textContent = data.uploadedSamples;
-                        analyzedElem.textContent = data.analyzedSamples;
                         queuedElem.textContent = data.queuedSamples;
                     }
 
@@ -322,10 +321,24 @@
                     console.error('Error fetching data:', error);
                 });
         }
+        function updateAnalyzedSamplesCount() {
+            fetch('/analyzed-samples-count') // Directly using the URL path
+                .then(response => response.json())
+                .then(data => {
+                    const analyzedElem = document.getElementById('analyzedSamples');
+                    if (analyzedElem) {
+                        analyzedElem.textContent = data.analyzedSamplesCount;
+                    }
+                })
+                .catch(error => console.error('Error fetching analyzed samples count:', error));
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             updateDashboardData();
             setInterval(updateDashboardData, 10000); // Update every 10 seconds
+            updateAnalyzedSamplesCount();
+            setInterval(updateAnalyzedSamplesCount, 2000); // Update every 2 seconds
+
 
             // Function to fetch queue data from the Cuckoo API and initialize DataTable
             $(document).ready(function () {
@@ -333,7 +346,7 @@
                     processing: true,
                     responsive: true,
                     serverSide: true,
-                    ajax: "{{ route('analysis.tasks.queue.data') }}",
+                    ajax: "{{ route('analysis.tasks.queue.databrief') }}",
                     columns: [
                         {data: 'analysis_id'},
                         {data: 'file_name'},
@@ -405,7 +418,8 @@
 
                 // Refresh DataTable every 5 seconds
                 setInterval(function () {
-                    table.ajax.reload(null, false); // false means don't reset user paging
+                    tableQueue.ajax.reload(null, false); // false means don't reset user paging
+                    tableFinished.ajax.reload(null, false);
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
 

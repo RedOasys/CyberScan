@@ -9,6 +9,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Target</th>
+                        <th>Date</th>
                         <th>Actions</th>
                         <th>State</th>
                     </tr>
@@ -35,13 +36,12 @@
             $(document).ready(function () {
                 var table = $('#analysisQueueFinished').DataTable({
                     processing: true,
-
-                    responsive: true,
                     serverSide: true,
                     ajax: "{{ route('analysis.tasks.queue.finished') }}",
                     columns: [
                         {data: 'analysis_id'},
                         {data: 'file_name'},
+                        {data: 'created_at'},
                         {data: 'actions', orderable: false, searchable: false},
                         {data: 'status'}
 

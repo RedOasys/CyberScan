@@ -45,6 +45,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary" id="submit-button">Submit Task</button>
+            <button type="button" class="btn btn-secondary" id="analyze-all-button">Analyze All</button>
         </form>
 
         {{-- Analysis Information Section --}}
@@ -88,7 +89,17 @@
             </div>
         </div>
     </div>
+    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">
 
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <script>
         $(document).ready(function () {
             let message = "{{ session('message') }}";
@@ -99,6 +110,11 @@
                 $('#analysisForm').hide();
                 fetchAnalysisData(analysisId);
             }
+            $('#analyze-all-button').click(function () {
+                let files = $('#uploadedFile option').map(function () { return $(this).val(); }).get();
+                $('#analysisInfoSection').hide(); // Keep this section hidden
+                submitAllFiles(files);
+            });
         });
 
         function fetchAnalysisData(analysisId) {
@@ -121,6 +137,31 @@
             $('#fileUploadId').val(data.file_upload_id);
             // Update other fields similarly
             $('#analysisInfoSection').show();
+        }
+        function submitAllFiles(fileIds) {
+            let submitPromises = fileIds.map(fileId => {
+                let formData = new FormData();
+                formData.append('_token', $('input[name="_token"]').val()); // Include CSRF token
+                formData.append('uploaded_file', fileId);
+                formData.append('timeout', $('#analysisTimeout').val());
+                formData.append('machine', $('#machineSelection').val());
+                // Add other form data as needed
+
+                return fetch('{{ route('analysis.tasks.submit') }}', {
+                    method: 'POST',
+                    body: formData
+                });
+            });
+
+            Promise.all(submitPromises)
+                .then(responses => {
+                    if (responses.every(response => response.ok)) {
+                        window.location.href = "{{ route('analysis.tasks.all') }}";
+                    } else {
+                        alert('Error submitting one or more files.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 @endsection

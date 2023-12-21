@@ -178,10 +178,65 @@ class AnalysisController extends Controller
 
     public function taskQueueData(Request $request)
     {
+        // Fetch parameters from DataTables request
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $searchValue = $request->input('search.value'); // Get the search value
+
+        // Build the query
+        $query = StaticAnalysis::with('fileUpload')
+            ->where(function ($query) use ($searchValue) {
+                if ($searchValue) {
+                    $query->where('analysis_id', 'like', '%' . $searchValue . '%')
+                        ->orWhereHas('fileUpload', function ($q) use ($searchValue) {
+                            $q->where('file_name', 'like', '%' . $searchValue . '%');
+                        });
+                }
+            })
+            ->where(function ($query) {
+                $query->where('state', 'pending_pre')
+                    ->orWhere('state', 'tasks_pending');
+            });
+
+        // Get total count of records
+        $recordsTotal = StaticAnalysis::count();
+        $recordsFiltered = $query->count();
+
+        // Apply pagination
+        $analyses = $query->skip($start)->take($length)->get();
+
+        // Map the data for DataTables
+        $data = $analyses->map(function ($analysis) {
+            return [
+                'DT_RowId' => 'row_' . $analysis->analysis_id,
+                'analysis_id' => $analysis->analysis_id,
+                'file_name' => $analysis->fileUpload ? $analysis->fileUpload->file_name : 'N/A',
+                'status' => $analysis->state,
+                'actions' => view('partials.analysis_actions', compact('analysis'))->render()
+            ];
+        });
+
+        // Return JSON response
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ]);
+    }
+
+    public function getAnalyzedSamplesCount()
+    {
+        $count = StaticAnalysis::where('state', 'finished')->count();
+        return response()->json(['analyzedSamplesCount' => $count]);
+    }
+
+    public function taskQueueDataBrief(Request $request)
+    {
         $analyses = StaticAnalysis::with('fileUpload')
             ->where('state', 'pending_pre')
-            ->orWhere('state', 'tasks_pending')
-            ->get();
+            ->orWhere('state', 'tasks_pending')->orderBy('id', 'desc')
+           ->take(5) ->get();
 
         $data = $analyses->map(function ($analysis) {
             return [
@@ -204,7 +259,7 @@ class AnalysisController extends Controller
     public function taskAnalyzedFilesBrief(Request $request)
     {
         $analyses = StaticAnalysis::with('fileUpload')
-            ->where('state', 'finished')->
+            ->where('state', 'finished')->orderBy('id', 'desc')->
             take(5)->get();
 
         $data = $analyses->map(function ($analysis) {
@@ -227,27 +282,51 @@ class AnalysisController extends Controller
 
     public function taskAnalyzedFiles(Request $request)
     {
-        $analyses = StaticAnalysis::with('fileUpload')
-            ->where('state', 'finished')
-            ->get();
+        $start = $request->input('start'); // Starting point of records
+        $length = $request->input('length'); // Number of records to fetch
+        $searchValue = $request->input('search.value'); // Get the search value
 
+        // Build the initial query
+        $query = StaticAnalysis::with('fileUpload')
+            ->where('state', 'finished')
+            ->orderBy('id', 'desc');
+
+        // Filter query based on the search value
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('analysis_id', 'LIKE', "%{$searchValue}%")
+                    ->orWhereHas('fileUpload', function ($q) use ($searchValue) {
+                        $q->where('file_name', 'LIKE', "%{$searchValue}%");
+                    });
+            });
+        }
+
+        // Get filtered count
+        $recordsFiltered = $query->count();
+
+        // Apply pagination and get results
+        $analyses = $query->skip($start)->take($length)->get();
+
+        // Map the data for DataTables
         $data = $analyses->map(function ($analysis) {
             return [
                 'DT_RowId' => 'row_' . $analysis->analysis_id,
                 'analysis_id' => $analysis->analysis_id,
                 'file_name' => $analysis->fileUpload ? $analysis->fileUpload->file_name : 'N/A',
+                'created_at' => $analysis->created_at,
                 'status' => $analysis->state,
                 'actions' => view('partials.analysis_actions', compact('analysis'))->render()
             ];
         });
 
         return response()->json([
-            'draw' => intval($request->draw),
-            'recordsTotal' => $analyses->count(),
-            'recordsFiltered' => $analyses->count(),
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => StaticAnalysis::where('state', 'finished')->count(),
+            'recordsFiltered' => $recordsFiltered,
             'data' => $data
         ]);
     }
+
 
 
 
