@@ -185,7 +185,7 @@
                     fileValidateTypeDetectType: (source, type) => new Promise((resolve, reject) => {
                         resolve(type);
                     }),
-                    acceptedFileTypes: ['application/x-msdownload'] // MIME type for .exe files
+                    acceptedFileTypes: ['application/x-msdownload', 'application/zip'] // MIME type for .exe files
                 });
 
                 var allFilesTableInitialized = false;
