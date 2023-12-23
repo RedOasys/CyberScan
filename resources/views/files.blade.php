@@ -224,7 +224,7 @@
                                 {data: "file_name"},
                                 {data: "md5_hash"},
                                 {data: "file_size_kb"},
-                                
+
                                 {data: "actions", orderable: false, searchable: false}
                             ],
                             createdRow: function (row, data, dataIndex) {

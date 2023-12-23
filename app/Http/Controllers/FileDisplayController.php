@@ -76,14 +76,15 @@ class FileDisplayController extends Controller
         // Map data for DataTables
         $data = $files->map(function ($file) {
             $analysis = $file->staticAnalysis; // Get the related StaticAnalysis object
+
+            $analysisId = $analysis ? $analysis->id : 'N/A'; // Check for null
+
             return [
                 'file_id' => $file->id,
-
                 'file_name' => $file->file_name,
                 'md5_hash' => $file->md5_hash,
                 'file_size_kb' => $file->file_size_kb,
-
-                'actions' => view('partials.analysis_actions', compact('file', 'analysis'))->render()
+                'actions' => $analysis ? view('partials.analysis_actions', compact('file', 'analysis'))->render() : 'No Actions'
             ];
         });
 
