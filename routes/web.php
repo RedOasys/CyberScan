@@ -53,7 +53,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/tasks/queue/finishedbrief', [AnalysisController::class, 'taskAnalyzedFilesBrief'])->name('analysis.tasks.queue.finishedbrief');
     Route::get('/analysis/tasks/queue/taskQueueDataBrief', [AnalysisController::class, 'taskQueueDataBrief'])->name('analysis.tasks.queue.databrief');
     Route::get('/analyzed-samples-count', [AnalysisController::class, 'getAnalyzedSamplesCount']);
-
+    Route::get('/analysis/has/{fileId}', [AnalysisController::class, 'hasAnalysis']);
+    Route::get('/analysis/fetch/{fileId}', [AnalysisController::class, 'fetchStaticAnalysisForFile']);
 
 });
 

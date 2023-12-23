@@ -44,13 +44,55 @@ class FileDisplayController extends Controller
         return view('files', ['recentFiles' => $recentFiles, 'totalSizeGB' => $totalSizeGB]);
 
     }
-    public function fetchAllFiles()
+    public function fetchAllFiles(Request $request)
     {
-        $files = FileUpload::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $search = $request->input('search.value', '');
 
-        return response()->json(['files' => $files]);
+        // Query for getting total records
+        $totalQuery = FileUpload::where('user_id', Auth::id());
+        $totalRecords = $totalQuery->count();
+
+        // Query for getting filtered data
+        $filesQuery = FileUpload::where('user_id', Auth::id())
+            ->leftJoin('static_analyses', 'file_uploads.id', '=', 'static_analyses.file_upload_id')
+            ->select('file_uploads.*', 'static_analyses.id as analysis_id')
+            ->with('staticAnalysis');
+
+        // Apply search filter
+        if (!empty($search)) {
+            $filesQuery->where(function($query) use ($search) {
+                $query->where('file_uploads.file_name', 'LIKE', "%{$search}%")
+                    ->orWhere('file_uploads.md5_hash', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $totalFilteredRecords = $filesQuery->count();
+
+        // Apply pagination
+        $files = $filesQuery->skip($start)->take($length)->get();
+
+        // Map data for DataTables
+        $data = $files->map(function ($file) {
+            $analysis = $file->staticAnalysis; // Get the related StaticAnalysis object
+            return [
+                'file_id' => $file->id,
+
+                'file_name' => $file->file_name,
+                'md5_hash' => $file->md5_hash,
+                'file_size_kb' => $file->file_size_kb,
+
+                'actions' => view('partials.analysis_actions', compact('file', 'analysis'))->render()
+            ];
+        });
+
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalFilteredRecords,
+            "data" => $data
+        ]);
     }
 
 

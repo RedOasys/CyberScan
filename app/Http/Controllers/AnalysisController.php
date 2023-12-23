@@ -327,7 +327,24 @@ class AnalysisController extends Controller
         ]);
     }
 
+    public function hasAnalysis($fileId) {
+        $analysisExists = StaticAnalysis::where('file_upload_id', $fileId)->exists();
+        return response()->json(['hasAnalysis' => $analysisExists]);
+    }
 
+    public function fetchStaticAnalysisForFile($fileId) {
+        $staticAnalysis = StaticAnalysis::where('file_upload_id', $fileId)->first();
+
+        if (!$staticAnalysis) {
+            return response()->json(['exists' => false]);
+        }
+
+        return response()->json([
+            'exists' => true,
+            'analysisId' => $staticAnalysis->analysis_id,
+            'md5' => $staticAnalysis->md5,
+        ]);
+    }
 
 
 

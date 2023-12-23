@@ -26,4 +26,8 @@ class StaticAnalysis extends Model
     {
         return $this->belongsTo(FileUpload::class);
     }
+    public function staticAnalysis()
+    {
+        return $this->hasOne(StaticAnalysis::class, 'file_upload_id');
+    }
 }
