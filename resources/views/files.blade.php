@@ -1,7 +1,14 @@
 @extends('layouts.chips.main')
 
 @section('content')
+    <!-- Load jQuery first -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/v/bs5/dt-1.13.8/r-2.5.0/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css">
 
+    <!-- FilePond CSS -->
+    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
     <div class="row">
         <div class="col-12 col-lg-3 col-xxl-3">
             <div class="card">
@@ -161,13 +168,11 @@
         </style>
 
 
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/r-2.5.0/datatables.min.js"></script>
         <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
-        <script
-            src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
-        <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-
+        <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
         <script>
             $(document).ready(function () {
                 // Initialize FilePond with necessary plugins
@@ -206,7 +211,7 @@
                     fileValidateTypeDetectType: (source, type) => new Promise((resolve, reject) => {
                         resolve(type);
                     }),
-                    acceptedFileTypes: ['application/x-msdownload', 'application/zip'] // Adjust MIME types as necessary
+
                 });
 
                 // DataTables initialization for the 'View All Files' modal

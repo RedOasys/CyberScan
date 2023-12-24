@@ -6,6 +6,7 @@ use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\FileDisplayController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnalysisController;
+use App\Http\Controllers\LogController;
 
 Auth::routes();
 
@@ -55,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analyzed-samples-count', [AnalysisController::class, 'getAnalyzedSamplesCount']);
     Route::get('/analysis/has/{fileId}', [AnalysisController::class, 'hasAnalysis']);
     Route::get('/analysis/fetch/{fileId}', [AnalysisController::class, 'fetchStaticAnalysisForFile']);
+    Route::get('/logs', [LogController::class, 'index'])->name('analysis.logs');
 
 });
 

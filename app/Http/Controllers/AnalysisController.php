@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Detection;
 use App\Models\FileUpload;
 use App\Models\StaticAnalysis;
 use Illuminate\Http\Request;
 use App\Services\CuckooService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 
 class AnalysisController extends Controller
@@ -43,7 +45,7 @@ class AnalysisController extends Controller
                 ['platform' => 'windows', 'os_version' => '10']
             ],
             'timeout' => (int)$validated['timeout'],
-            // ... any additional settings ...
+
         ];
 
         if (!empty($validated['options'])) {
@@ -74,7 +76,18 @@ class AnalysisController extends Controller
                 $newAnalysis = StaticAnalysis::create([
                     'file_upload_id' => $fileUpload->id,
                     'analysis_id' => $analysisId,
-                    // ... other necessary fields ...
+
+                ]);
+
+                $vt = $this->checkVT($fileUpload->md5_hash);
+                $detective = $vt['detection'] == 'Detected' ? 1 : 0;
+                $detection = Detection::create([
+                    'file_upload_id' => $fileUpload->id,
+                    'analysis_id' => $newAnalysis->id,
+                    'detected' => $detective,
+                    'malware_type' => $vt['kind'],
+                    'certainty' => $vt['certainty'],
+                    'source' => $vt['source'], // Use the source from the analysis results
                 ]);
 
                 // Fetch and update analysis details immediately
@@ -88,51 +101,58 @@ class AnalysisController extends Controller
             return back()->withErrors('Failed to submit task. ' . $submitResponse->body());
         }
     }
-    public function updateAnalysisRoute($analysisId)
+
+    public function checkVT($md5)
     {
-        $analysis = StaticAnalysis::where('analysis_id', $analysisId)->firstOrFail();
-        $this->updateAnalysisDetails($analysis);
-        return response()->json(['message' => 'Analysis updated successfully']);
+        if ($this->canUseVT()) {
+            $apiKey = env('VT_API_KEY');
+            $response = Http::withHeaders(['x-apikey' => $apiKey])
+                ->get('https://www.virustotal.com/api/v3/files/' . $md5);
+
+            if ($response->successful()) {
+                $this->incrementVTRequestCount();
+                $results = $response->json();
+                $vtResponse = $this->parseVTResponse($results);
+                $vtResponse['source'] = 'VT'; // Add the source as 'VT'
+                return $vtResponse;
+            }
+        }
+
+        return $this->checkCymru($md5);
     }
-    protected function updateAnalysisDetails($analysis)
+
+    protected function canUseVT()
     {
-        $response = Http::withHeaders([
-            'Authorization' => 'token ' . env('CUCKOO_API_TOKEN'),
-        ])->get(env('CUCKOO_API_BASE_URL') . '/analysis/' . $analysis->analysis_id);
+        $limit = 500;
+        $currentCount = Cache::get('vt_request_count', 0);
+        return $currentCount < $limit;
+    }
+
+    protected function incrementVTRequestCount()
+    {
+        $count = Cache::get('vt_request_count', 0);
+        Cache::put('vt_request_count', $count + 1, now()->endOfDay());
+    }
+
+    protected function checkCymru($md5)
+    {
+        $user = env('cymru_user');
+        $password = env('cymru_password');
+        $response = Http::withOptions([
+            'verify' => false, // Disable SSL certificate verification
+        ])->withBasicAuth($user, $password)
+            ->get("https://hash.cymru.com/v2/$md5");
+
 
         if ($response->successful()) {
-            $analysisDetails = $response->json();
-
-            // Assuming the response contains a 'submitted' section with an 'md5' hash
-            $submitted = $analysisDetails['submitted'] ?? [];
-            $fileUpload = FileUpload::where('md5_hash', $submitted['md5'] ?? '')->first();
-
-            if ($fileUpload) {
-                // Map the extracted data
-                $updateData = [
-                    'file_upload_id' => $fileUpload->id, // Associate with the correct file upload ID
-                    'analysis_id' => $analysisDetails['id'] ?? null,
-                    'score' => $analysisDetails['score'] ?? 0,
-                    'kind' => $analysisDetails['kind'] ?? null,
-                    'state' => $analysisDetails['state'] ?? null,
-                    'media_type' => $submitted['media_type'] ?? null,
-                    'md5' => $submitted['md5'] ?? null,
-                    'sha1' => $submitted['sha1'] ?? null,
-                    'sha256' => $submitted['sha256'] ?? null,
-                    'created_at' => $analysisDetails['created_on'] ?? null,
-                    'updated_at' => now(),
-                ];
-
-                $analysis->update($updateData);
-
-                Log::info('Updated analysis data for ID ' . $analysis->analysis_id);
-            } else {
-                Log::error('Failed to find matching file upload for analysis ID: ' . $analysis->analysis_id);
-            }
+            $results = $response->json();
+            // Parse the Cymru response and return similar structure as VT
+            return $this->parseCymruResponse($results);
         } else {
-            Log::error('Failed to fetch details for analysis ID: ' . $analysis->analysis_id);
+            return []; // Or handle the error appropriately
         }
     }
+
     public function checkVirusTotal($md5)
     {
         $apiKey = env('VT_API_KEY');
@@ -168,6 +188,62 @@ class AnalysisController extends Controller
             return back()->withErrors('Failed to fetch data from VirusTotal.');
         }
     }
+
+    protected function parseVTResponse($results)
+    {
+        $detectionCount = 0;
+        $undetectedCount = 0;
+        $kindCounts = [];
+
+        foreach ($results['data']['attributes']['last_analysis_results'] as $engine => $result) {
+            if ($result['category'] === 'malicious') {
+                $detectionCount++;
+                $kind = $result['result'] ?? 'unknown';
+                $kindCounts[$kind] = ($kindCounts[$kind] ?? 0) + 1;
+            } else {
+                $undetectedCount++;
+            }
+        }
+
+        $detection = $detectionCount > 0 ? 'Detected' : 'Undetected';
+        $certainty = ($detectionCount + $undetectedCount) > 0 ? round($detectionCount / ($detectionCount + $undetectedCount) * 100, 2) : 0;
+        arsort($kindCounts);
+        $kind = key($kindCounts) ?: 'Unknown';
+
+        return [
+            'detection' => $detection,
+            'certainty' => $certainty,
+            'kind' => $kind,
+        ];
+    }
+
+    protected function parseCymruResponse($results)
+    {
+        $detection = $results['antivirus_detection_rate'] > 0 ? 'Detected' : 'Undetected';
+        $certainty = $results['antivirus_detection_rate'];
+        $kind = 'Unknown'; // Cymru doesn't provide specific malware types, so we default to 'Unknown'
+
+        return [
+            'detection' => $detection,
+            'certainty' => $certainty,
+            'kind' => $kind,
+            'source' => 'Cymru', // Add the source as 'Cymru'
+        ];
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public function showAnalysisResult($analysisId)
@@ -236,7 +312,7 @@ class AnalysisController extends Controller
         $analyses = StaticAnalysis::with('fileUpload')
             ->where('state', 'pending_pre')
             ->orWhere('state', 'tasks_pending')->orderBy('id', 'desc')
-           ->take(5) ->get();
+            ->take(5) ->get();
 
         $data = $analyses->map(function ($analysis) {
             return [
@@ -346,7 +422,51 @@ class AnalysisController extends Controller
         ]);
     }
 
+    public function updateAnalysisRoute($analysisId)
+    {
+        $analysis = StaticAnalysis::where('analysis_id', $analysisId)->firstOrFail();
+        $this->updateAnalysisDetails($analysis);
+        return response()->json(['message' => 'Analysis updated successfully']);
+    }
+    protected function updateAnalysisDetails($analysis)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'token ' . env('CUCKOO_API_TOKEN'),
+        ])->get(env('CUCKOO_API_BASE_URL') . '/analysis/' . $analysis->analysis_id);
 
+        if ($response->successful()) {
+            $analysisDetails = $response->json();
+
+            // Assuming the response contains a 'submitted' section with an 'md5' hash
+            $submitted = $analysisDetails['submitted'] ?? [];
+            $fileUpload = FileUpload::where('md5_hash', $submitted['md5'] ?? '')->first();
+
+            if ($fileUpload) {
+                // Map the extracted data
+                $updateData = [
+                    'file_upload_id' => $fileUpload->id, // Associate with the correct file upload ID
+                    'analysis_id' => $analysisDetails['id'] ?? null,
+                    'score' => $analysisDetails['score'] ?? 0,
+                    'kind' => $analysisDetails['kind'] ?? null,
+                    'state' => $analysisDetails['state'] ?? null,
+                    'media_type' => $submitted['media_type'] ?? null,
+                    'md5' => $submitted['md5'] ?? null,
+                    'sha1' => $submitted['sha1'] ?? null,
+                    'sha256' => $submitted['sha256'] ?? null,
+                    'created_at' => $analysisDetails['created_on'] ?? null,
+                    'updated_at' => now(),
+                ];
+
+                $analysis->update($updateData);
+
+                Log::info('Updated analysis data for ID ' . $analysis->analysis_id);
+            } else {
+                Log::error('Failed to find matching file upload for analysis ID: ' . $analysis->analysis_id);
+            }
+        } else {
+            Log::error('Failed to fetch details for analysis ID: ' . $analysis->analysis_id);
+        }
+    }
 
 
 

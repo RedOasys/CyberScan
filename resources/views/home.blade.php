@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="row g-0 align-items-center">
                                     <div class="col-auto">
-                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span>ph</span></div>
+                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span>Loading...</span></div>
                                     </div>
                                     <div class="col">
                                         <div class="progress progress-sm">
@@ -105,16 +105,10 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Task Queue</h6>
                     <div class="dropdown no-arrow">
-                        <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false"
-                                data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i>
+
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle"  >
+                            <a class="dropdown-item" href="{{ route('analysis.tasks.queue') }}">Queue</a>
                         </button>
-                        <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item"
-                                                                                          href="#">&nbsp;Action</a><a
-                                class="dropdown-item" href="#">&nbsp;Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">&nbsp;Something else here</a>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -137,18 +131,12 @@
             </div>
             <div class="card shadow mb-4 ">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="text-primary fw-bold m-0">Analyzed Files</h6>
+                    <h6 class="text-primary fw-bold m-0">Tasks Analyzed</h6>
                     <div class="dropdown no-arrow">
-                        <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false"
-                                data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i>
+
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle"  >
+                            <a class="dropdown-item" href="{{ route('analysis.tasks.all') }}">Analyses</a>
                         </button>
-                        <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item"
-                                                                                          href="#">&nbsp;Action</a><a
-                                class="dropdown-item" href="#">&nbsp;Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">&nbsp;Something else here</a>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body">

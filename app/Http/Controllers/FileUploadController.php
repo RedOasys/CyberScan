@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Detection;
 use Illuminate\Http\Request;
 use App\Models\FileUpload;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class FileUploadController extends Controller
 {
@@ -49,8 +51,11 @@ class FileUploadController extends Controller
             'file_size_kb' => $fileSize / 1024,
         ]);
 
+
         return response()->json(['id' => $upload->id]);
     }
+
+
 
 
 
