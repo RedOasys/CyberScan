@@ -48,24 +48,27 @@
                     <div class="card-body">
                         <div class="row align-items-center no-gutters">
                             <div class="col me-2">
-                                <div class="text-uppercase text-info fw-bold text-xs mb-1">
-                                    <span>Detected Malware</span>
+                                <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Detected Malware</span>
                                 </div>
                                 <div class="row g-0 align-items-center">
                                     <div class="col-auto">
-                                        <div class="text-dark fw-bold h5 mb-0 me-3">
-                                            <span id="detectedMalwareCount">Loading...</span>
-                                        </div>
+                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span>Loading...</span></div>
                                     </div>
                                     <div class="col">
                                         <div class="progress progress-sm">
-                                            <div class="progress-bar bg-info" id="percentageProgressBar" aria-valuenow="0" aria-valuemin="0"
-                                                 aria-valuemax="100" style="width: 0%;">
-                                                <span class="visually-hidden" id="percentageDetected">0%</span>
+                                            <div class="progress-bar bg-info" aria-valuenow="50" aria-valuemin="0"
+                                                 aria-valuemax="100" style="width: 50%;"><span class="visually-hidden">50%</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
+                                     viewBox="0 0 16 16" class="bi bi-percent fa-2x text-gray-300">
+                                    <path
+                                        d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -288,24 +291,19 @@
         function updateDashboardData() {
             const endpoint = '/dashboard-data';
             const fetchUrl = `${window.location.origin}${endpoint}`;
-
             fetch(fetchUrl)
+
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('uploadedSamples').textContent = data.uploadedSamples;
-                    document.getElementById('analyzedSamples').textContent = data.analyzedSamples;
-                    document.getElementById('queuedSamples').textContent = data.queuedSamples;
+                    const uploadedElem = document.getElementById('uploadedSamples');
 
-                    // For percentageDetected
-                    const percentage = parseFloat(data.percentageDetected).toFixed(2); // Rounds to 2 decimal places
-                    document.getElementById('detectedMalwareCount').textContent = `${percentage}%`;
-
-                    // Update the progress bar if you have one for the percentage
-                    const progressBar = document.getElementById('percentageProgressBar');
-                    if (progressBar) {
-                        progressBar.style.width = `${percentage}%`;
-                        progressBar.setAttribute('aria-valuenow', percentage);
+                    const queuedElem = document.getElementById('queuedSamples');
+                    if (uploadedElem && queuedElem) {
+                        uploadedElem.textContent = data.uploadedSamples;
+                        queuedElem.textContent = data.queuedSamples;
                     }
+
+
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -412,7 +410,6 @@
                     tableFinished.ajax.reload(null, false);
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
-
 
         });
     </script>
