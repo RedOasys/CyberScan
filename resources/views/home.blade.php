@@ -137,6 +137,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="card shadow mb-4 ">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Tasks Analyzed</h6>
@@ -147,6 +148,7 @@
                         </button>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <div class="table-responsive overflow-hidden ">
                         <table class="table" id="analysisQueueFinished">
@@ -168,6 +170,19 @@
         </div>
 
         <div class="col-lg-5 col-xl-4">
+
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="text-primary fw-bold m-0">Malware Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="malwareTypeChart"></canvas>
+                        </div>
+                        <div class="text-center small mt-4" id="legendContainer"></div>
+                    </div>
+                </div>
+            
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Detection Type</h6>
@@ -183,20 +198,10 @@
                             class="me-2"><i class="fas fa-circle text-info"></i>&nbsp;AI</span></div>
                 </div>
             </div>
+
         </div>
-        <div class="col-lg-5 col-xl-4">
-            <div class="card shadow mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="text-primary fw-bold m-0">Detection Type</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="malwareTypeChart"></canvas>
-                    </div>
-                    <div class="text-center small mt-4" id="legendContainer"></div>
-                </div>
-            </div>
-        </div>
+
+
     </div>
 
 
@@ -322,6 +327,10 @@
                 })
                 .catch(error => console.error('Error fetching analyzed samples count:', error));
         }
+        function updateLegend(chart) {
+            const legendContainer = document.getElementById('legendContainer');
+            legendContainer.innerHTML = chart.generateLegend();
+        }
 
         // Function to fetch malware type data and initialize the chart
         function fetchMalwareTypeData() {
@@ -329,38 +338,32 @@
                 .then(response => response.json())
                 .then(data => {
                     const ctx = document.getElementById('malwareTypeChart').getContext('2d');
-                    const chart = new Chart(ctx, {
+                    const malwareChart = new Chart(ctx, {
                         type: 'doughnut',
                         data: {
                             labels: data.labels,
                             datasets: [{
                                 label: 'Malware Types',
-                                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'], // Adjust colors as needed
                                 borderColor: ['#ffffff', '#ffffff', '#ffffff'],
-                                data: data.counts,
+                                data: data.percentages, // Using percentages directly
                             }],
                         },
                         options: {
                             maintainAspectRatio: false,
-                            legend: { display: false },
-                            title: { display: true, text: 'Malware Types Distribution' }
+                            legend: { display: true }, // Set to false to manually manage the legend
+                            // Additional options as needed
                         }
                     });
 
-                    updateLegend(chart, data.labels);
                 })
-                .catch(error => console.error('Error fetching malware type data:', error));
+                .catch(error => {
+                    console.error('Error fetching malware type data:', error);
+                });
         }
 
         // Function to update legend for the chart
-        function updateLegend(chart, labels) {
-            const legendContainer = document.getElementById('legendContainer');
-            legendContainer.innerHTML = '';
-            labels.forEach((label, index) => {
-                const color = chart.data.datasets[0].backgroundColor[index];
-                legendContainer.innerHTML += `<span class="me-2"><i class="fas fa-circle" style="color: ${color};"></i>&nbsp;${label}</span>`;
-            });
-        }
+
         // DOMContentLoaded event listener
         document.addEventListener('DOMContentLoaded', function () {
             updateDashboardData();
