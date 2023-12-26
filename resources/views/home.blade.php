@@ -1,7 +1,17 @@
 @extends('layouts.chips.main')
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">
 
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <div class="d-sm-flex justify-content-between align-items-center mb-4">
         <h3 class="text-dark mb-0">Dashboard</h3>
     </div>
@@ -174,25 +184,107 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-8 ">
-
-
+        <div class="col-lg-5 col-xl-4">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Detection Type</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="malwareTypeChart"></canvas>
+                    </div>
+                    <div class="text-center small mt-4" id="legendContainer"></div>
+                </div>
+            </div>
         </div>
     </div>
 
 
-    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">
 
-    <script
-        src="https://code.jquery.com/jquery-3.7.1.js"
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-            crossorigin="anonymous"></script>
-
-    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
     <script>
+        var tableQueue;
+        var tableFinished;
+        // Function to initialize DataTables
+        function initializeDataTables() {
+            tableQueue = $('#analysisQueueTable').DataTable({
+                processing: true,
+                responsive: true,
+                serverSide: true,
+                ajax: "{{ route('analysis.tasks.queue.databrief') }}",
+                columns: [
+                    {data: 'analysis_id'},
+                    {data: 'file_name'},
+                    {data: 'actions', orderable: false, searchable: false},
+                    {data: 'status'}
+
+                ],
+                drawCallback: function (settings) {
+                    // For each 'analysis_id' value in the table
+                    this.api().column(0).data().each(function (analysis_id) {
+                        // AJAX call to update the analysis
+                        $.ajax({
+                            url: '/update-analysis/' + analysis_id,
+                            type: 'GET',
+                            success: function(response) {
+                                // Handle the response
+                                console.log('Analysis Updated:', response);
+                                // Optionally reload the table or handle the update in another way
+                            },
+                            error: function(error) {
+                                // Handle errors
+                                console.error('Update failed:', error);
+                            }
+                        });
+                    });
+                }
+            });
+
+            tableFinished = $('#analysisQueueFinished').DataTable({
+                processing: true,
+
+                responsive: true,
+                serverSide: true,
+                ajax: "{{ route('analysis.tasks.queue.finishedbrief') }}",
+                columns: [
+                    {data: 'analysis_id'},
+                    {data: 'file_name'},
+                    {data: 'actions', orderable: false, searchable: false},
+                    {data: 'status'}
+
+                ],
+                drawCallback: function (settings) {
+                    // For each 'analysis_id' value in the table
+                    this.api().column(0).data().each(function (analysis_id) {
+                        // AJAX call to update the analysis
+                        $.ajax({
+                            url: '/update-analysis/' + analysis_id,
+                            type: 'GET',
+                            success: function(response) {
+                                // Handle the response
+                                console.log('Analysis Updated:', response);
+                                // Optionally reload the table or handle the update in another way
+                            },
+                            error: function(error) {
+                                // Handle errors
+                                console.error('Update failed:', error);
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Refresh DataTables every 5 seconds
+            setInterval(function () {
+                if (tableQueue) {
+                    tableQueue.ajax.reload(null, false); // Refresh the queue table
+                }
+                if (tableFinished) {
+                    tableFinished.ajax.reload(null, false); // Refresh the finished table
+                }
+            }, 5000);
+        }
+
+        // Function to update dashboard data
         function updateDashboardData() {
             const endpoint = '/dashboard-data';
             const fetchUrl = `${window.location.origin}${endpoint}`;
@@ -204,11 +296,9 @@
                     document.getElementById('analyzedSamples').textContent = data.analyzedSamples;
                     document.getElementById('queuedSamples').textContent = data.queuedSamples;
 
-                    // For percentageDetected
-                    const percentage = parseFloat(data.percentageDetected).toFixed(2); // Rounds to 2 decimal places
+                    const percentage = parseFloat(data.percentageDetected).toFixed(2);
                     document.getElementById('detectedMalwareCount').textContent = `${percentage}%`;
 
-                    // Update the progress bar if you have one for the percentage
                     const progressBar = document.getElementById('percentageProgressBar');
                     if (progressBar) {
                         progressBar.style.width = `${percentage}%`;
@@ -219,8 +309,10 @@
                     console.error('Error fetching data:', error);
                 });
         }
+
+        // Function to update analyzed samples count
         function updateAnalyzedSamplesCount() {
-            fetch('/analyzed-samples-count') // Directly using the URL path
+            fetch('/analyzed-samples-count')
                 .then(response => response.json())
                 .then(data => {
                     const analyzedElem = document.getElementById('analyzedSamples');
@@ -231,157 +323,54 @@
                 .catch(error => console.error('Error fetching analyzed samples count:', error));
         }
 
+        // Function to fetch malware type data and initialize the chart
+        function fetchMalwareTypeData() {
+            fetch('/malware-stats')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('malwareTypeChart').getContext('2d');
+                    const chart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Malware Types',
+                                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+                                data: data.counts,
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            legend: { display: false },
+                            title: { display: true, text: 'Malware Types Distribution' }
+                        }
+                    });
+
+                    updateLegend(chart, data.labels);
+                })
+                .catch(error => console.error('Error fetching malware type data:', error));
+        }
+
+        // Function to update legend for the chart
+        function updateLegend(chart, labels) {
+            const legendContainer = document.getElementById('legendContainer');
+            legendContainer.innerHTML = '';
+            labels.forEach((label, index) => {
+                const color = chart.data.datasets[0].backgroundColor[index];
+                legendContainer.innerHTML += `<span class="me-2"><i class="fas fa-circle" style="color: ${color};"></i>&nbsp;${label}</span>`;
+            });
+        }
+        // DOMContentLoaded event listener
         document.addEventListener('DOMContentLoaded', function () {
             updateDashboardData();
             setInterval(updateDashboardData, 10000); // Update every 10 seconds
             updateAnalyzedSamplesCount();
             setInterval(updateAnalyzedSamplesCount, 2000); // Update every 2 seconds
 
-
-            // Function to fetch queue data from the Cuckoo API and initialize DataTable
-            $(document).ready(function () {
-                var table = $('#analysisQueueTable').DataTable({
-                    processing: true,
-                    responsive: true,
-                    serverSide: true,
-                    ajax: "{{ route('analysis.tasks.queue.databrief') }}",
-                    columns: [
-                        {data: 'analysis_id'},
-                        {data: 'file_name'},
-                        {data: 'actions', orderable: false, searchable: false},
-                        {data: 'status'}
-
-                    ],
-                    drawCallback: function (settings) {
-                        // For each 'analysis_id' value in the table
-                        this.api().column(0).data().each(function (analysis_id) {
-                            // AJAX call to update the analysis
-                            $.ajax({
-                                url: '/update-analysis/' + analysis_id,
-                                type: 'GET',
-                                success: function(response) {
-                                    // Handle the response
-                                    console.log('Analysis Updated:', response);
-                                    // Optionally reload the table or handle the update in another way
-                                },
-                                error: function(error) {
-                                    // Handle errors
-                                    console.error('Update failed:', error);
-                                }
-                            });
-                        });
-                    }
-                });
-
-                // Refresh DataTable every 5 seconds
-                setInterval(function () {
-                    table.ajax.reload(null, false); // false means don't reset user paging
-                }, 5000); // 5000 milliseconds = 5 seconds
-            });
-
-            $(document).ready(function () {
-                var table = $('#analysisQueueFinished').DataTable({
-                    processing: true,
-
-                    responsive: true,
-                    serverSide: true,
-                    ajax: "{{ route('analysis.tasks.queue.finishedbrief') }}",
-                    columns: [
-                        {data: 'analysis_id'},
-                        {data: 'file_name'},
-                        {data: 'actions', orderable: false, searchable: false},
-                        {data: 'status'}
-
-                    ],
-                    drawCallback: function (settings) {
-                        // For each 'analysis_id' value in the table
-                        this.api().column(0).data().each(function (analysis_id) {
-                            // AJAX call to update the analysis
-                            $.ajax({
-                                url: '/update-analysis/' + analysis_id,
-                                type: 'GET',
-                                success: function(response) {
-                                    // Handle the response
-                                    console.log('Analysis Updated:', response);
-                                    // Optionally reload the table or handle the update in another way
-                                },
-                                error: function(error) {
-                                    // Handle errors
-                                    console.error('Update failed:', error);
-                                }
-                            });
-                        });
-                    }
-                });
-
-                // Refresh DataTable every 5 seconds
-                setInterval(function () {
-                    tableQueue.ajax.reload(null, false); // false means don't reset user paging
-                    tableFinished.ajax.reload(null, false);
-                }, 5000); // 5000 milliseconds = 5 seconds
-            });
-            function fetchMalwareTypeData() {
-                fetch('/malware-type-distribution') // Replace with your actual route
-                    .then(response => response.json())
-                    .then(data => {
-                        const labels = data.labels;
-                        const percentages = data.percentages;
-
-                        // Create a pie chart
-                        const ctx = document.getElementById('malwareTypeChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'pie',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    data: percentages,
-                                    backgroundColor: [
-                                        'red', 'blue', 'green', 'orange', 'purple', // Customize colors as needed
-                                    ],
-                                }],
-                            },
-                            options: {
-                                responsive: true,
-                            },
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching malware type data:', error);
-                    });
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                fetchMalwareTypeData();
-            });
-            fetch('/malware-stats')
-                .then(response => response.json())
-                .then(data => {
-                    const labels = data.labels;
-                    const percentages = data.percentages;
-
-                    // Get the canvas element
-                    const canvas = document.getElementById('malwareTypeChart');
-
-                    // Create the pie chart
-                    new Chart(canvas, {
-                        type: 'pie',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                data: percentages,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.5)', // Color for Malware Type 1
-                                    'rgba(54, 162, 235, 0.5)', // Color for Malware Type 2
-                                    'rgba(255, 206, 86, 0.5)', // Color for Malware Type 3
-                                    // Add more colors if you have more malware types
-                                ],
-                            }],
-                        },
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching malware type distribution data:', error);
-                });
+            // Initialize DataTables and fetch malware type data
+            initializeDataTables();
+            fetchMalwareTypeData();
         });
     </script>
 
