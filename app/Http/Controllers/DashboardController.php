@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\FileUpload; // Assuming this is your model for file uploads
 use App\Models\Detection;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -52,30 +52,28 @@ class DashboardController extends Controller
     }
     public function malwareTypeDistribution()
     {
-        // Query your database to get the malware type distribution data
-        $malwareTypes = Detection::select('malware_type')
-            ->groupBy('malware_type')
+        // Group by a common prefix/category in the malware_type
+        $groupedMalwareTypes = Detection::selectRaw("SUBSTRING_INDEX(malware_type, '.', 1) as category")
+            ->groupBy('category')
             ->get();
 
+        $totalDetections = Detection::count();
         $labels = [];
         $percentages = [];
 
-        // Calculate the count and percentages for each malware type
-        foreach ($malwareTypes as $malwareType) {
-            $label = $malwareType->malware_type;
-            $count = Detection::where('malware_type', $label)->count();
-            $percentage = ($count / $malwareTypes->count()) * 100;
+        foreach ($groupedMalwareTypes as $groupedType) {
+            $category = $groupedType->category;
+            $count = Detection::where('malware_type', 'LIKE', $category . '%')->count();
+            $percentage = ($totalDetections > 0) ? ($count / $totalDetections) * 100 : 0;
 
-            $labels[] = $label;
-            $percentages[] = round($percentage, 2); // Round to 2 decimal places
+            $labels[] = $category;
+            $percentages[] = round($percentage, 2);
         }
 
-        $data = [
+        return response()->json([
             'labels' => $labels,
             'percentages' => $percentages,
-        ];
-
-        return response()->json($data);
+        ]);
     }
 
 }
