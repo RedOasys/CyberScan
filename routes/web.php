@@ -7,6 +7,7 @@ use App\Http\Controllers\FileDisplayController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\DetectionController;
 
 Auth::routes();
 
@@ -58,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/fetch/{fileId}', [AnalysisController::class, 'fetchStaticAnalysisForFile']);
     Route::get('/logs', [LogController::class, 'index'])->name('analysis.logs');
     Route::get('/malware-stats', [DashboardController::class, 'malwareTypeDistribution'])->name('malware.stats');
+    // Route to show the detections page
+    Route::get('/detections', [DetectionController::class, 'index'])->name('analysis.detections');
 
+    // Route to generate and download the PDF
+    Route::get('/analysis/detections/pdf', [DetectionController::class, 'exportPdf'])->name('detections.pdf');
 });
 

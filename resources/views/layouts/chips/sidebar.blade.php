@@ -36,6 +36,9 @@
                             <a class="nav-link {{ request()->routeIs('analysis.tasks.all') ? 'active' : '' }}" href="{{ route('analysis.tasks.all') }}">Tasks Completed</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Malware Detections</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('analysis.logs') ? 'active' : '' }}" href="{{ route('analysis.logs') }}">Logs</a>
                         </li>
                     </ul>
