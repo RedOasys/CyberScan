@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Http;
 use App\Models\FileUpload; // Assuming this is your model for file uploads
 use App\Models\Detection;
+use Illuminate\Http\Request;
+
 
 class DashboardController extends Controller
 {
@@ -46,5 +48,34 @@ class DashboardController extends Controller
             'queuedSamples' => $queuedSamples,
             'percentageDetected' => $percentageDetected, // Add the percentage to the response
         ]);
+
     }
+    public function malwareTypeDistribution()
+    {
+        // Query your database to get the malware type distribution data
+        $malwareTypes = Detection::select('malware_type')
+            ->groupBy('malware_type')
+            ->get();
+
+        $labels = [];
+        $percentages = [];
+
+        // Calculate the count and percentages for each malware type
+        foreach ($malwareTypes as $malwareType) {
+            $label = $malwareType->malware_type;
+            $count = Detection::where('malware_type', $label)->count();
+            $percentage = ($count / $malwareTypes->count()) * 100;
+
+            $labels[] = $label;
+            $percentages[] = round($percentage, 2); // Round to 2 decimal places
+        }
+
+        $data = [
+            'labels' => $labels,
+            'percentages' => $percentages,
+        ];
+
+        return response()->json($data);
+    }
+
 }

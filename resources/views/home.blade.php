@@ -1,5 +1,6 @@
 @extends('layouts.chips.main')
 @section('content')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <div class="d-sm-flex justify-content-between align-items-center mb-4">
         <h3 class="text-dark mb-0">Dashboard</h3>
@@ -196,31 +197,7 @@
                     <h6 class="text-primary fw-bold m-0">Malware Statistics</h6>
                 </div>
                 <div class="card-body">
-                    <h4 class="small fw-bold">ph<span class="float-end">20%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 20%;"><span class="visually-hidden">20%</span></div>
-                    </div>
-                    <h4 class="small fw-bold">ph<span class="float-end">40%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-warning" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 40%;"><span class="visually-hidden">40%</span></div>
-                    </div>
-                    <h4 class="small fw-bold">ph<span class="float-end">60%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-primary" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 60%;"><span class="visually-hidden">60%</span></div>
-                    </div>
-                    <h4 class="small fw-bold">ph<span class="float-end">80%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-info" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 80%;"><span class="visually-hidden">80%</span></div>
-                    </div>
-                    <h4 class="small fw-bold">ph<span class="float-end">Complete!</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-success" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 100%;"><span class="visually-hidden">100%</span></div>
-                    </div>
+                    <canvas id="malwareTypeChart" width="10" height="10"></canvas>
                 </div>
             </div>
             <div class="card shadow mb-4">
@@ -412,8 +389,68 @@
                     tableFinished.ajax.reload(null, false);
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
+            function fetchMalwareTypeData() {
+                fetch('/malware-type-distribution') // Replace with your actual route
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = data.labels;
+                        const percentages = data.percentages;
 
+                        // Create a pie chart
+                        const ctx = document.getElementById('malwareTypeChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: percentages,
+                                    backgroundColor: [
+                                        'red', 'blue', 'green', 'orange', 'purple', // Customize colors as needed
+                                    ],
+                                }],
+                            },
+                            options: {
+                                responsive: true,
+                            },
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching malware type data:', error);
+                    });
+            }
 
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchMalwareTypeData();
+            });
+            fetch('/malware-stats')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.labels;
+                    const percentages = data.percentages;
+
+                    // Get the canvas element
+                    const canvas = document.getElementById('malwareTypeChart');
+
+                    // Create the pie chart
+                    new Chart(canvas, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: percentages,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.5)', // Color for Malware Type 1
+                                    'rgba(54, 162, 235, 0.5)', // Color for Malware Type 2
+                                    'rgba(255, 206, 86, 0.5)', // Color for Malware Type 3
+                                    // Add more colors if you have more malware types
+                                ],
+                            }],
+                        },
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching malware type distribution data:', error);
+                });
         });
     </script>
 

@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/has/{fileId}', [AnalysisController::class, 'hasAnalysis']);
     Route::get('/analysis/fetch/{fileId}', [AnalysisController::class, 'fetchStaticAnalysisForFile']);
     Route::get('/logs', [LogController::class, 'index'])->name('analysis.logs');
+    Route::get('/malware-stats', [DashboardController::class, 'malwareTypeDistribution'])->name('malware.stats');
 
 });
 
