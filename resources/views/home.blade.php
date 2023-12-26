@@ -182,7 +182,7 @@
                         <div class="text-center small mt-4" id="legendContainer"></div>
                     </div>
                 </div>
-            
+
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Detection Type</h6>
@@ -288,7 +288,16 @@
                 }
             }, 5000);
         }
+        function generateColorArray(numColors) {
+            const colors = [];
+            for (let i = 0; i < numColors; i++) {
+                // Generate a random color
 
+                const randomColor = `hsl(${Math.random() * 360}, 100%, 75%)`; // HSL: hue, saturation, lightness
+                colors.push(randomColor);
+            }
+            return colors;
+        }
         // Function to update dashboard data
         function updateDashboardData() {
             const endpoint = '/dashboard-data';
@@ -338,24 +347,25 @@
                 .then(response => response.json())
                 .then(data => {
                     const ctx = document.getElementById('malwareTypeChart').getContext('2d');
+                    const colorArray = generateColorArray(data.labels.length); // Generate a color for each label
                     const malwareChart = new Chart(ctx, {
                         type: 'doughnut',
                         data: {
                             labels: data.labels,
                             datasets: [{
                                 label: 'Malware Types',
-                                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'], // Adjust colors as needed
-                                borderColor: ['#ffffff', '#ffffff', '#ffffff'],
-                                data: data.percentages, // Using percentages directly
+                                backgroundColor: colorArray, // Use the generated array of colors
+                                borderColor: colorArray.map(color => 'rgba(255,255,255,0.5)'), // Border color can be white or any lighter shade
+                                data: data.percentages,
                             }],
                         },
                         options: {
                             maintainAspectRatio: false,
-                            legend: { display: true }, // Set to false to manually manage the legend
-                            // Additional options as needed
+                            legend: { display: false },
+                            title: { display: true, text: 'Malware Types Distribution' },
                         }
                     });
-
+                    updateLegend(malwareChart);
                 })
                 .catch(error => {
                     console.error('Error fetching malware type data:', error);
