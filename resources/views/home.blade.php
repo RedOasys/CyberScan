@@ -336,10 +336,7 @@
                 })
                 .catch(error => console.error('Error fetching analyzed samples count:', error));
         }
-        function updateLegend(chart) {
-            const legendContainer = document.getElementById('legendContainer');
-            legendContainer.innerHTML = chart.generateLegend();
-        }
+
 
         // Function to fetch malware type data and initialize the chart
         function fetchMalwareTypeData() {
@@ -377,7 +374,7 @@
                             }
                         }
                     });
-                    updateLegend(malwareChart);
+
                 })
                 .catch(error => {
                     console.error('Error fetching malware type data:', error);

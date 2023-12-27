@@ -53,7 +53,7 @@ class DashboardController extends Controller
     public function malwareTypeDistribution()
     {
         // Group by a common prefix/category in the malware_type
-        $groupedMalwareTypes = Detection::selectRaw("SUBSTRING_INDEX(malware_type, '.', 4) as category")
+        $groupedMalwareTypes = Detection::selectRaw("SUBSTRING_INDEX(malware_type, '.', 2) as category")
             ->where('malware_type', '!=', 'Unknown') // Exclude 'Unknown' malware types
             ->where('certainty', '>=', 50) // Include only detections with 50% or more certainty
             ->groupBy('category')
