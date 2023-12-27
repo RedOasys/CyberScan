@@ -17,4 +17,8 @@ class Detection extends Model
         'certainty',
         'source',
     ];
+    public function fileUpload()
+    {
+        return $this->belongsTo(FileUpload::class, 'file_upload_id');
+    }
 }

@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Detection;
-use PDF;
+use App\Models\FileUpload;
 
 class DetectionController extends Controller
 {
     public function index()
     {
-        $detections = Detection::all(); // Replace with your logic to fetch detections
+        $detections = Detection::with('fileUpload')->get()->map(function ($detection) {
+            $detection->fileName = FileUpload::find($detection->file_upload_id)->file_name;
+            $detection->detectionStatus = $detection->detected ? 'Detected' : 'Undetected';
+            return $detection;
+        });
+
         return view('analysis.detections', compact('detections'));
+
     }
 
-    public function exportPdf()
-    {
-        $detections = Detection::all();
-        $pdf = PDF::loadView('pdf.detections', compact('detections')); // Ensure you have a view for the PDF
-        return $pdf->download('detections.pdf');
-    }
 }
