@@ -61,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/malware-stats', [DashboardController::class, 'malwareTypeDistribution'])->name('malware.stats');
     // Route to show the detections page
     Route::get('/detections', [DetectionController::class, 'index'])->name('analysis.detections');
+    Route::get('/detections/data', [DetectionController::class, 'detectionsData'])->name('detections.data');
 
     // Route to generate and download the PDF
     Route::get('/analysis/detections/pdf', [DetectionController::class, 'exportPdf'])->name('detections.pdf');

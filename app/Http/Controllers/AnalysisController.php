@@ -10,6 +10,7 @@ use App\Services\CuckooService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 
 class AnalysisController extends Controller
@@ -364,7 +365,7 @@ class AnalysisController extends Controller
 
         // Build the initial query
         $query = StaticAnalysis::with('fileUpload')
-            ->where('state', 'finished')
+            ->where('state', '=', 'finished') // Ensure 'state' matches your column name
             ->orderBy('id', 'desc');
 
         // Filter query based on the search value
@@ -377,14 +378,23 @@ class AnalysisController extends Controller
             });
         }
 
+
+
+
         // Get filtered count
         $recordsFiltered = $query->count();
 
         // Apply pagination and get results
-        $analyses = $query->skip($start)->take($length)->get();
+        $analyses = StaticAnalysis::with('fileUpload')
+            ->where('state', 'finished')->orderBy('id', 'desc')->
+            get();
+
+        $analysesCollection = collect($analyses);
+
 
         // Map the data for DataTables
-        $data = $analyses->map(function ($analysis) {
+        $data = $analysesCollection->map(function ($analysis) {
+
             return [
                 'DT_RowId' => 'row_' . $analysis->analysis_id,
                 'analysis_id' => $analysis->analysis_id,

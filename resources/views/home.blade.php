@@ -214,7 +214,7 @@
             tableQueue = $('#analysisQueueTable').DataTable({
                 processing: true,
                 responsive: true,
-                serverSide: true,
+
                 ajax: "{{ route('analysis.tasks.queue.databrief') }}",
                 columns: [
                     {data: 'analysis_id'},
@@ -248,7 +248,7 @@
                 processing: true,
 
                 responsive: true,
-                serverSide: true,
+
                 ajax: "{{ route('analysis.tasks.queue.finishedbrief') }}",
                 columns: [
                     {data: 'analysis_id'},
@@ -363,6 +363,18 @@
                             maintainAspectRatio: false,
                             legend: { display: false },
                             title: { display: true, text: 'Malware Types Distribution' },
+                            tooltips: {
+                                callbacks: {
+                                    label: function(tooltipItem, data) {
+                                        let label = data.labels[tooltipItem.index] || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += data.datasets[0].data[tooltipItem.index] + '%';
+                                        return label;
+                                    }
+                                }
+                            }
                         }
                     });
                     updateLegend(malwareChart);
@@ -371,6 +383,7 @@
                     console.error('Error fetching malware type data:', error);
                 });
         }
+
 
         // Function to update legend for the chart
 

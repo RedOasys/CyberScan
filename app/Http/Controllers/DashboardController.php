@@ -53,17 +53,23 @@ class DashboardController extends Controller
     public function malwareTypeDistribution()
     {
         // Group by a common prefix/category in the malware_type
-        $groupedMalwareTypes = Detection::selectRaw("SUBSTRING_INDEX(malware_type, '.', 1) as category")
+        $groupedMalwareTypes = Detection::selectRaw("SUBSTRING_INDEX(malware_type, '.', 4) as category")
+            ->where('malware_type', '!=', 'Unknown') // Exclude 'Unknown' malware types
+            ->where('certainty', '>=', 50) // Include only detections with 50% or more certainty
             ->groupBy('category')
             ->get();
 
-        $totalDetections = Detection::count();
+        // Count total detections with certainty 50% or more
+        $totalDetections = Detection::where('certainty', '>=', 50)->count();
         $labels = [];
         $percentages = [];
 
         foreach ($groupedMalwareTypes as $groupedType) {
             $category = $groupedType->category;
-            $count = Detection::where('malware_type', 'LIKE', $category . '%')->count();
+            // Count detections per category with certainty 50% or more
+            $count = Detection::where('malware_type', 'LIKE', $category . '%')
+                ->where('certainty', '>=', 50)
+                ->count();
             $percentage = ($totalDetections > 0) ? ($count / $totalDetections) * 100 : 0;
 
             $labels[] = $category;

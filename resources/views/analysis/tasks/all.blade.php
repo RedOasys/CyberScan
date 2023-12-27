@@ -36,7 +36,7 @@
             $(document).ready(function () {
                 var table = $('#analysisQueueFinished').DataTable({
                     processing: true,
-                    serverSide: true,
+
                     ajax: "{{ route('analysis.tasks.queue.finished') }}",
                     columns: [
                         {data: 'analysis_id'},
