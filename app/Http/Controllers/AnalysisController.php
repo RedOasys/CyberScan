@@ -467,6 +467,7 @@ class AnalysisController extends Controller
                     'updated_at' => now(),
                 ];
 
+
                 $analysis->update($updateData);
 
                 Log::info('Updated analysis data for ID ' . $analysis->analysis_id);

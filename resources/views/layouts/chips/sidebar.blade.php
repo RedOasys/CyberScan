@@ -21,25 +21,35 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('analysis*') ? 'active' : '' }}" href="#analysisSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <a class="nav-link {{ request()->is('analysis*') && !request()->routeIs('analysis.tasks.all') && !request()->routeIs('analysis.detections') ? 'active' : '' }}" href="#analysisSubmenu" data-bs-toggle="collapse" aria-expanded="true">
                         <i class="far fa-hdd"></i><span>Analysis</span>
                     </a>
-                    <ul class="collapse list-unstyled show" id="analysisSubmenu">
+                    <ul class="list-unstyled collapse show" id="analysisSubmenu">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.create') ? 'active' : '' }}" href="{{ route('analysis.tasks.create') }}">Create Analysis Task</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.queue') ? 'active' : '' }}" href="{{ route('analysis.tasks.queue') }}">View Task Queue</a>
+                        </li>
+                    </ul>
+                </li>
 
-                    <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.tasks.create') ? 'active' : '' }}" href="{{ route('analysis.tasks.create') }}">Task Creation</a>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('results*') || request()->routeIs('analysis.tasks.all') || request()->routeIs('analysis.detections') ? 'active' : '' }}" href="#resultsSubmenu" data-bs-toggle="collapse" aria-expanded="true">
+                        <i class="far fa-file-alt"></i><span>Results</span>
+                    </a>
+                    <ul class="list-unstyled collapse show" id="resultsSubmenu">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analysis.tasks.all') ? 'active' : '' }}" href="{{ route('analysis.tasks.all') }}">View Tasks Completed</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.tasks.queue') ? 'active' : '' }}" href="{{ route('analysis.tasks.queue') }}">Task Queue</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">View Malware Detections</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.tasks.all') ? 'active' : '' }}" href="{{ route('analysis.tasks.all') }}">Tasks Completed</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Static Analysis Results</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Malware Detections</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.logs') ? 'active' : '' }}" href="{{ route('analysis.logs') }}">Logs</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Dynamic Analysis Results</a>
                         </li>
                     </ul>
                 </li>

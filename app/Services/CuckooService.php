@@ -58,6 +58,32 @@ class CuckooService
 
         return $response->json();
     }
+    public function fetchAndStorePreAnalysis($analysisId)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'token ' . $this->apiToken,
+        ])->get($this->baseUrl . '/analysis/' . $analysisId . '/pre');
+
+        $data = $response->json();
+
+        // Assuming $data contains the static analysis information
+        // Map the data to your PreAnalysis model's fields accordingly
+
+        $preAnalysis = new PreAnalysis([
+            'static_analysis_id' => $analysisId,
+            'pe_id_signatures' => json_encode($data['static']['pe']['peid_signatures']),
+            'pe_imports' => json_encode($data['static']['pe']['pe_imports']),
+            'pe_sections' => json_encode($data['static']['pe']['pe_sections']),
+            'pe_resources' => json_encode($data['static']['pe']['pe_resources']),
+            'pe_version_info' => json_encode($data['static']['pe']['pe_versioninfo']),
+            'pe_timestamp' => $data['static']['pe']['pe_timestamp'],
+            'signatures' => json_encode($data['signatures']),
+            'errors' => json_encode($data['errors']),
+        ]);
+
+        $preAnalysis->save();
+    }
+
 
 
 
