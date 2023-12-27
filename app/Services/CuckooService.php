@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\PostAnalysis;
+use App\Models\StaticAnalysis;
 use Illuminate\Support\Facades\Http;
+use App\Models\PreAnalysis;
+use Illuminate\Support\Facades\Log;
 
 class CuckooService
 {
@@ -60,29 +64,85 @@ class CuckooService
     }
     public function fetchAndStorePreAnalysis($analysisId)
     {
-        $response = Http::withHeaders([
-            'Authorization' => 'token ' . $this->apiToken,
-        ])->get($this->baseUrl . '/analysis/' . $analysisId . '/pre');
+        $baseUrl = env('CUCKOO_API_BASE_URL');
+        $apiToken = env('CUCKOO_API_TOKEN');
 
-        $data = $response->json();
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'token ' . $apiToken, // Match the format used in curl
+            ])->get($baseUrl . '/analysis/' . $analysisId . '/pre');
 
-        // Assuming $data contains the static analysis information
-        // Map the data to your PreAnalysis model's fields accordingly
+            if ($response->failed()) {
+                Log::error("HTTP request failed for analysis ID $analysisId", ['response' => $response->body()]);
+                return null;
+            }
 
-        $preAnalysis = new PreAnalysis([
-            'static_analysis_id' => $analysisId,
-            'pe_id_signatures' => json_encode($data['static']['pe']['peid_signatures']),
-            'pe_imports' => json_encode($data['static']['pe']['pe_imports']),
-            'pe_sections' => json_encode($data['static']['pe']['pe_sections']),
-            'pe_resources' => json_encode($data['static']['pe']['pe_resources']),
-            'pe_version_info' => json_encode($data['static']['pe']['pe_versioninfo']),
-            'pe_timestamp' => $data['static']['pe']['pe_timestamp'],
-            'signatures' => json_encode($data['signatures']),
-            'errors' => json_encode($data['errors']),
-        ]);
+            $data = $response->json();
 
-        $preAnalysis->save();
+            // Fetch the corresponding static_analysis record's ID
+            $staticAnalysis = StaticAnalysis::where('analysis_id', $analysisId)->first();
+
+            if (!$staticAnalysis) {
+                Log::warning("No matching static analysis record found for analysis ID $analysisId");
+                return null;
+            }
+
+            // Store the response in the database with static_analysis_id
+            $preAnalysis = PreAnalysis::updateOrCreate(
+                ['static_analysis_id' => $staticAnalysis->id], // Key to check
+                ['data' => json_encode($data)] // Values to update or insert
+            );
+
+
+            $preAnalysis->save();
+
+            return $preAnalysis;
+
+        } catch (\Exception $e) {
+            Log::error("Error in fetchAndStorePreAnalysis: " . $e->getMessage());
+            return null;
+        }
     }
+
+    public function fetchAndStorePostAnalysis($analysisId)
+    {
+        $baseUrl = 'http://192.168.100.100:6942'; // Directly use the base URL
+        $apiToken = 'ba9e193747a5e38281b688ebc748febdc5d7532c'; // Directly use the token
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'token ' . $apiToken, // Match the format used in curl
+            ])->get($baseUrl . '/analysis/' . $analysisId . '/task/' . $analysisId . '_1/post');
+
+            if ($response->failed()) {
+                Log::error("HTTP request failed for analysis ID $analysisId", ['response' => $response->body()]);
+                return null;
+            }
+
+            $data = $response->json();
+
+            // Fetch the corresponding static_analysis record's ID
+            $staticAnalysis = StaticAnalysis::where('analysis_id', $analysisId)->first();
+
+            if (!$staticAnalysis) {
+                Log::warning("No matching static analysis record found for analysis ID $analysisId");
+                return null;
+            }
+
+            // Update an existing row or create a new one with static_analysis_id
+            $postAnalysis = PostAnalysis::updateOrCreate(
+                ['static_analysis_id' => $staticAnalysis->id], // Key to check
+                ['data' => json_encode($data)] // Values to update or insert
+            );
+
+            return $postAnalysis;
+
+        } catch (\Exception $e) {
+            Log::error("Error in fetchAndStorePostAnalysis: " . $e->getMessage());
+            return null;
+        }
+    }
+
 
 
 

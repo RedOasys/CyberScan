@@ -436,7 +436,14 @@ class AnalysisController extends Controller
     {
         $analysis = StaticAnalysis::where('analysis_id', $analysisId)->firstOrFail();
         $this->updateAnalysisDetails($analysis);
-        return response()->json(['message' => 'Analysis updated successfully']);
+
+        // Fetch and store pre-analysis data
+        $preAnalysisData = $this->cuckooService->fetchAndStorePreAnalysis($analysisId);
+
+        // Fetch and store post-analysis data
+        $postAnalysisData = $this->cuckooService->fetchAndStorePostAnalysis($analysisId);
+
+
     }
     protected function updateAnalysisDetails($analysis)
     {
