@@ -51,11 +51,11 @@ class FileDisplayController extends Controller
         $search = $request->input('search.value', '');
 
         // Query for getting total records
-        $totalQuery = FileUpload::where('user_id', Auth::id());
+        $totalQuery = FileUpload::query();
         $totalRecords = $totalQuery->count();
 
         // Query for getting filtered data
-        $filesQuery = FileUpload::where('user_id', Auth::id())
+        $filesQuery = FileUpload::query()
             ->leftJoin('static_analyses', 'file_uploads.id', '=', 'static_analyses.file_upload_id')
             ->select('file_uploads.*', 'static_analyses.id as analysis_id')
             ->with('staticAnalysis');
