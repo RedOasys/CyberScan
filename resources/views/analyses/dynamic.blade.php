@@ -14,10 +14,8 @@
             height: auto;     /* This ensures the aspect ratio is maintained */
         }
 
-        /* Optionally, if you want to set a specific height for the slides */
-        .splide__list {
-            height: 300px; /* Adjust the height as needed */
-        }
+
+
     </style>
     <div class="row">
         <div class="col-md-12">
