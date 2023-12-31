@@ -175,7 +175,6 @@
                     if (key === 'screenshot') {
                         const carousel = createCarouselStructure();
                         tabPane.appendChild(carousel);
-                        handleScreenshots(data[key], task_id); // Make sure this line is inside the loop
                     } else {
                         // For other tabs, use existing formatting
                         const formattedText = formatData(data[key]);
@@ -262,7 +261,14 @@
             if (selectedData) {
                 const task_id = selectedData.data.task_id;
                 console.log("Selected Task ID:", task_id);
-                generateTabs(selectedData.data, task_id); // Pass task_id as an argument
+                generateTabs(selectedData.data, task_id); // Continue generating tabs
+
+                // Delayed call to handleScreenshots
+                if (selectedData.data.screenshot) {
+                    setTimeout(() => {
+                        handleScreenshots(selectedData.data.screenshot, task_id);
+                    }, 2000); // 2-second delay
+                }
             } else {
                 dynamicFields.innerHTML = '';
             }
@@ -310,6 +316,7 @@
 
                     // Append the carousel item to the carousel inner container
                     carouselInner.appendChild(item);
+
                 });
             } else {
                 console.error('Carousel inner element not found');
