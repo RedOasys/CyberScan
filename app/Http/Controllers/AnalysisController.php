@@ -65,7 +65,7 @@ class AnalysisController extends Controller
         ]);
 
         if ($submitResponse->successful()) {
-            sleep(5); // Adjust as needed
+            sleep(1); // Adjust as needed
 
             $analyses = $this->cuckooService->getAnalyses();
             $analysisId = null;
@@ -119,7 +119,7 @@ class AnalysisController extends Controller
                 $this->incrementVTRequestCount();
                 $results = $response->json();
                 $vtResponse = $this->parseVTResponse($results);
-                $vtResponse['source'] = 'VT'; // Add the source as 'VT'
+                $vtResponse['source'] = 'Static'; // Add the source as 'VT'
                 return $vtResponse;
             }
         }
@@ -233,7 +233,7 @@ class AnalysisController extends Controller
             'detection' => $detection,
             'certainty' => $certainty,
             'kind' => $kind,
-            'source' => 'Cymru', // Add the source as 'Cymru'
+            'source' => 'Static', // Add the source as 'Cymru'
         ];
     }
 
