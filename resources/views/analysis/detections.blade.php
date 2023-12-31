@@ -38,7 +38,7 @@
                 columns: [
                     { data: 'file_upload_id' }, // Update to 'file_upload_id'
                     { data: 'analysis_id' },
-                    { data: 'detectionStatus' },
+                    { data: 'detection' },
                     { data: 'malware_type' },
                     { data: 'certainty' },
                     { data: 'source' }
