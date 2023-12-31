@@ -63,7 +63,8 @@ Route::middleware(['auth'])->group(function () {
     // Route to show the detections page
     Route::get('/detections', [DetectionController::class, 'index'])->name('analysis.detections');
     Route::get('/detections/data', [DetectionController::class, 'detectionsData'])->name('detections.data');
-    Route::get('/analyses', [AnalysisDisplayController::class, 'index'])->name('analysis.static');
+    Route::get('/analyses/static', [AnalysisDisplayController::class, 'static'])->name('analysis.static');
+    Route::get('/analyses/dynamic', [AnalysisDisplayController::class, 'dynamic'])->name('analysis.dynamic');
 
 
     // Route to generate and download the PDF

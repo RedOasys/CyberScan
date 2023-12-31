@@ -34,8 +34,8 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('results*') || request()->routeIs('analysis.tasks.all') || request()->routeIs('analysis.detections') ? 'active' : '' }}" href="#resultsSubmenu" data-bs-toggle="collapse" aria-expanded="true">
+                <li class="nav-item {{ request()->routeIs('analysis.dynamic') ? 'active' : '' }}">
+                    <a class="nav-link {{ request()->is('results*') || request()->routeIs('analysis.tasks.all') || request()->routeIs('analysis.detections') || request()->routeIs('analysis.static') || request()->routeIs('analysis.dynamic') ? 'active' : '' }}" href="#resultsSubmenu" data-bs-toggle="collapse" aria-expanded="true">
                         <i class="far fa-file-alt"></i><span>Results</span>
                     </a>
                     <ul class="list-unstyled collapse show" id="resultsSubmenu">
@@ -49,13 +49,14 @@
                             <a class="nav-link {{ request()->routeIs('analysis.static') ? 'active' : '' }}" href="{{ route('analysis.static') }}">Static Analysis Results</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Dynamic Analysis Results</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.dynamic') ? 'active' : '' }}" href="{{ route('analysis.dynamic') }}">Dynamic Analysis Results</a>
                         </li>
                     </ul>
                 </li>
 
 
-{{--                <li class="nav-item">--}}
+
+                {{--                <li class="nav-item">--}}
 {{--                    <a class="nav-link {{ request()->routeIs('upload') ? 'active' : '' }}" href="{{ route('upload') }}">--}}
 {{--                        <i class="far fa-paper-plane"></i><span>Upload</span>--}}
 {{--                    </a>--}}

@@ -78,11 +78,7 @@
     </div>
 
 
-    <div class="container">
-        <div class="row">
 
-        </div>
-    </div>
 
     <!-- Include Bootstrap and jQuery scripts for the collapse functionality -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
