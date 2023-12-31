@@ -293,11 +293,17 @@
                     listItem.appendChild(img);
                     carouselList.appendChild(listItem);
                 });
+                console.log('Initializing Splide with data:', data);
 
-                // Initialize Splide
-                new Splide('#image-carousel').mount();
+                setTimeout(() => {
+                    new Splide('#image-carousel', {
+
+                    }).mount();
+                }, 100); // Short delay to ensure DOM is updated
             } else {
                 console.error('Splide list element not found');
+                console.log('Initializing Splide with data:', data);
+
             }
         }
     </script>
