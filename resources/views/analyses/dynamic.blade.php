@@ -1,6 +1,7 @@
 @extends('layouts.chips.main')
 
 @section('content')
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
 
     <div class="row">
         <div class="col-md-12">
@@ -41,6 +42,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 
     <script>
         const analysisSelect = document.getElementById('analysis_id');
@@ -192,34 +194,21 @@
             dynamicFields.appendChild(content);
         }
         function createCarouselStructure() {
-            const carouselDiv = document.createElement('div');
-            carouselDiv.id = 'screenshotCarousel';
-            carouselDiv.className = 'carousel slide';
-            carouselDiv.setAttribute('data-ride', 'carousel');
+            const carouselSection = document.createElement('section');
+            carouselSection.id = 'image-carousel';
+            carouselSection.className = 'splide';
+            carouselSection.setAttribute('aria-label', 'Analysis Screenshots');
 
-            const carouselInner = document.createElement('div');
-            carouselInner.className = 'carousel-inner';
-            carouselDiv.appendChild(carouselInner);
+            const carouselTrack = document.createElement('div');
+            carouselTrack.className = 'splide__track';
 
-            // Previous control
-            const prevControl = document.createElement('a');
-            prevControl.className = 'carousel-control-prev';
-            prevControl.href = '#screenshotCarousel';
-            prevControl.setAttribute('role', 'button');
-            prevControl.setAttribute('data-slide', 'prev');
-            prevControl.innerHTML = '<span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span>';
-            carouselDiv.appendChild(prevControl);
+            const carouselList = document.createElement('ul');
+            carouselList.className = 'splide__list';
 
-            // Next control
-            const nextControl = document.createElement('a');
-            nextControl.className = 'carousel-control-next';
-            nextControl.href = '#screenshotCarousel';
-            nextControl.setAttribute('role', 'button');
-            nextControl.setAttribute('data-slide', 'next');
-            nextControl.innerHTML = '<span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span>';
-            carouselDiv.appendChild(nextControl);
+            carouselTrack.appendChild(carouselList);
+            carouselSection.appendChild(carouselTrack);
 
-            return carouselDiv;
+            return carouselSection;
         }
 
         function clearDynamicFields() {
@@ -267,7 +256,7 @@
                 if (selectedData.data.screenshot) {
                     setTimeout(() => {
                         handleScreenshots(selectedData.data.screenshot, task_id);
-                    }, 2000); // 2-second delay
+                    }, 1); // 2-second delay
                 }
             } else {
                 dynamicFields.innerHTML = '';
@@ -287,39 +276,28 @@
         function handleScreenshots(data, task_id) {
             if (!Array.isArray(data)) return;
 
-            const carouselInner = document.querySelector('.carousel-inner');
+            const carouselList = document.querySelector('.splide__list');
+            if (carouselList) {
+                carouselList.innerHTML = ''; // Clear existing carousel items
 
-            // Check if the element exists
-            if (carouselInner) {
-                carouselInner.innerHTML = ''; // Clear existing carousel items
-
-                data.forEach((screenshot, index) => {
+                data.forEach((screenshot) => {
                     const imageUrl = `/analysis/${task_id}/screenshot/${screenshot.name}`;
-                    console.log("Image URL:", imageUrl); // Debugging: Log the image URL
 
-                    // Create a carousel item
-                    const item = document.createElement('div');
-                    item.className = 'carousel-item';
-                    if (index === 0) {
-                        item.classList.add('active'); // Make the first item active
-                    }
+                    const listItem = document.createElement('li');
+                    listItem.className = 'splide__slide';
 
-                    // Create an image element
                     const img = document.createElement('img');
                     img.src = imageUrl;
-                    img.alt = screenshot.name;
-                    img.style.maxWidth = '100%'; // Set max width to ensure responsiveness
-                    img.style.height = 'auto'; // Maintain aspect ratio
+                    img.alt = 'Screenshot'; // Set an appropriate alt text
 
-                    // Append the image to the carousel item
-                    item.appendChild(img);
-
-                    // Append the carousel item to the carousel inner container
-                    carouselInner.appendChild(item);
-
+                    listItem.appendChild(img);
+                    carouselList.appendChild(listItem);
                 });
+
+                // Initialize Splide
+                new Splide('#image-carousel').mount();
             } else {
-                console.error('Carousel inner element not found');
+                console.error('Splide list element not found');
             }
         }
     </script>
