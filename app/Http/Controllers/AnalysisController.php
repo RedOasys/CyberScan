@@ -494,10 +494,11 @@ class AnalysisController extends Controller
                     } elseif ($updateData['score'] == 10) {
                         $certainty = 90;
                     }
-                    $source = "";
+
                     // Update the detection models
                     foreach ($fileUpload->detection as $detection) {
-                        if (!str_contains($source, 'dynamic') && !str_contains($source, '_dynamic')) {
+                        $source = $detection->detected == 1 ? $detection->source : 'dynamic';
+                        if (!str_contains($source, '_dynamic')) {
                             $source .= '_dynamic';
                         }
 
@@ -506,7 +507,6 @@ class AnalysisController extends Controller
                             'certainty' => $certainty,
                             'source' => $source,
                         ]);
-                    }
 
                         Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
                     }
