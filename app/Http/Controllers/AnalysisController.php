@@ -483,7 +483,6 @@ class AnalysisController extends Controller
 
                 // Check if the detection model needs to be updated
                 if ($updateData['score'] >= 8 && $fileUpload->detection && $fileUpload->detection->detected == 0) {
-                    dd($updateData['score']);
                     $certainty = 0;
                     if ($updateData['score'] == 8) {
                         $certainty = 60;
@@ -494,10 +493,11 @@ class AnalysisController extends Controller
                     }
 
                     // Update the detection model
+                    $source = $fileUpload->detection->detected == 1 ? $fileUpload->detection->source : 'Dynamic';
                     $fileUpload->detection->update([
                         'detected' => 1,
                         'certainty' => $certainty,
-                        'source' => 'Dynamic',
+                        'source' => $source . '_dynamic',
                     ]);
 
                     Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
