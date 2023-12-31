@@ -481,9 +481,8 @@ class AnalysisController extends Controller
 
                 $analysis->update($updateData);
 
-
                 // Check if the detection model needs to be updated
-                if ($updateData['score'] >= 8 && $fileUpload->detection && $fileUpload->detection->detected == 0) {
+                if ($updateData['score'] >= 8 && $fileUpload->detection->where('detected', 0)->count() > 0) {
                     $certainty = 0;
                     dd($updateData['score']);
                     if ($updateData['score'] == 8) {
@@ -497,7 +496,14 @@ class AnalysisController extends Controller
                         $certainty = 90;
                     }
 
-
+                    // Update the detection models
+                    foreach ($fileUpload->detection as $detection) {
+                        $detection->update([
+                            'detected' => 1,
+                            'certainty' => $certainty,
+                            // ... other updates ...
+                        ]);
+                    }
 
                     Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
                 }
