@@ -188,7 +188,7 @@
                     <h6 class="text-primary fw-bold m-0">Detection Type</h6>
 
                 </div>
-                <div class="card-body">
+                
                     <div class="card shadow mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h6 class="text-primary fw-bold m-0">Detection Source</h6>
@@ -200,7 +200,7 @@
                             <div class="text-center small mt-4" id="legendContainer"></div>
                         </div>
                     </div>
-                </div>
+
             </div>
 
         </div>
