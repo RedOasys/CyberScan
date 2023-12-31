@@ -23,4 +23,6 @@ class Detection extends Model
         return $this->belongsTo(FileUpload::class, 'file_upload_id');
     }
 
+
+
 }
