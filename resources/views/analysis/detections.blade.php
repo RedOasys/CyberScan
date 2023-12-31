@@ -36,7 +36,7 @@
                 processing: true,
                 ajax: "{{ route('detections.data') }}",
                 columns: [
-                    { data: 'file_name' },
+                    { data: 'file_upload_id' }, // Update to 'file_upload_id'
                     { data: 'analysis_id' },
                     { data: 'detectionStatus' },
                     { data: 'malware_type' },
