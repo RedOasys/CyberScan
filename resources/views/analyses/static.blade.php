@@ -185,42 +185,43 @@
                 @foreach($analyses as $analysis)
             {
                 id: '{{ $analysis->id }}',
-                analysis_id: '{{ $analysis->parsed_data['analysis_id'] ?? '' }}',
-                score: '{{ $analysis->parsed_data['score'] ?? '' }}',
-                category: '{{ $analysis->parsed_data['category'] ?? '' }}',
+                analysis_id: '{{ isset($analysis->parsed_data['analysis_id']) ? htmlspecialchars($analysis->parsed_data['analysis_id']) : '' }}',
+                score: '{{ isset($analysis->parsed_data['score']) ? htmlspecialchars($analysis->parsed_data['score']) : '' }}',
+                category: '{{ isset($analysis->parsed_data['category']) ? htmlspecialchars($analysis->parsed_data['category']) : '' }}',
                 target: {
-                    filename: '{{ $analysis->parsed_data['target']['filename'] ?? '' }}',
-                    orig_filename: '{{ $analysis->parsed_data['target']['orig_filename'] ?? '' }}',
+                    filename: '{{ isset($analysis->parsed_data['target']['filename']) ? htmlspecialchars($analysis->parsed_data['target']['filename']) : '' }}',
+                    orig_filename: '{{ isset($analysis->parsed_data['target']['orig_filename']) ? htmlspecialchars($analysis->parsed_data['target']['orig_filename']) : '' }}',
                     platforms: [
                             @if(isset($analysis->parsed_data['target']['platforms'][0]))
                         {
-                            platform: '{{ $analysis->parsed_data['target']['platforms'][0]['platform'] ?? '' }}',
-                            os_version: '{{ $analysis->parsed_data['target']['platforms'][0]['os_version'] ?? '' }}',
+                            platform: '{{ isset($analysis->parsed_data['target']['platforms'][0]['platform']) ? htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['platform']) : '' }}',
+                            os_version: '{{ isset($analysis->parsed_data['target']['platforms'][0]['os_version']) ? htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['os_version']) : '' }}',
                         }
                         @endif
                     ],
-                    size: '{{ $analysis->parsed_data['target']['size'] ?? '' }}',
-                    filetype: '{{ $analysis->parsed_data['target']['filetype'] ?? '' }}',
-                    media_type: '{{ $analysis->parsed_data['target']['media_type'] ?? '' }}',
-                    sha256: '{{ $analysis->parsed_data['target']['sha256'] ?? '' }}',
-                    sha1: '{{ $analysis->parsed_data['target']['sha1'] ?? '' }}',
-                    md5: '{{ $analysis->parsed_data['target']['md5'] ?? '' }}',
+                    size: '{{ isset($analysis->parsed_data['target']['size']) ? htmlspecialchars($analysis->parsed_data['target']['size']) : '' }}',
+                    filetype: '{{ isset($analysis->parsed_data['target']['filetype']) ? htmlspecialchars($analysis->parsed_data['target']['filetype']) : '' }}',
+                    media_type: '{{ isset($analysis->parsed_data['target']['media_type']) ? htmlspecialchars($analysis->parsed_data['target']['media_type']) : '' }}',
+                    sha256: '{{ isset($analysis->parsed_data['target']['sha256']) ? htmlspecialchars($analysis->parsed_data['target']['sha256']) : '' }}',
+                    sha1: '{{ isset($analysis->parsed_data['target']['sha1']) ? htmlspecialchars($analysis->parsed_data['target']['sha1']) : '' }}',
+                    md5: '{{ isset($analysis->parsed_data['target']['md5']) ? htmlspecialchars($analysis->parsed_data['target']['md5']) : '' }}',
                 },
                 static: {
                     pe: {
-                        peid_signatures: '{{ $analysis->parsed_data['static']['pe']['peid_signatures'] ?? '' }}',
-                        pe_imports: '{{ $analysis->parsed_data['static']['pe']['pe_imports'] ?? '' }}',
-                        pe_exports: '{{ $analysis->parsed_data['static']['pe']['pe_exports'] ?? '' }}',
-                        pe_sections: '{{ $analysis->parsed_data['static']['pe']['pe_sections'] ?? '' }}',
-                        pe_resources: '{{ $analysis->parsed_data['static']['pe']['pe_resources'] ?? '' }}',
-                        pe_versioninfo: '{{ $analysis->parsed_data['static']['pe']['pe_versioninfo'] ?? '' }}',
-                        pe_imphash: '{{ $analysis->parsed_data['static']['pe']['pe_imphash'] ?? '' }}',
-                        pe_timestamp: '{{ $analysis->parsed_data['static']['pe']['pe_timestamp'] ?? '' }}',
+                        peid_signatures: '{{ isset($analysis->parsed_data['static']['pe']['peid_signatures']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['peid_signatures']) : '' }}',
+                        pe_imports: '{{ isset($analysis->parsed_data['static']['pe']['pe_imports']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imports']) : '' }}',
+                        pe_exports: '{{ isset($analysis->parsed_data['static']['pe']['pe_exports']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_exports']) : '' }}',
+                        pe_sections: '{{ isset($analysis->parsed_data['static']['pe']['pe_sections']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_sections']) : '' }}',
+                        pe_resources: '{{ isset($analysis->parsed_data['static']['pe']['pe_resources']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_resources']) : '' }}',
+                        pe_versioninfo: '{{ isset($analysis->parsed_data['static']['pe']['pe_versioninfo']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_versioninfo']) : '' }}',
+                        pe_imphash: '{{ isset($analysis->parsed_data['static']['pe']['pe_imphash']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imphash']) : '' }}',
+                        pe_timestamp: '{{ isset($analysis->parsed_data['static']['pe']['pe_timestamp']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_timestamp']) : '' }}',
                     },
                 },
             },
             @endforeach
         ];
+        
 
 
         function handlePopulateCards() {
