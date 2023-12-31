@@ -10,6 +10,7 @@ use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\DetectionController;
 
+
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
@@ -65,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/detections/data', [DetectionController::class, 'detectionsData'])->name('detections.data');
     Route::get('/analyses/static', [AnalysisDisplayController::class, 'static'])->name('analysis.static');
     Route::get('/analyses/dynamic', [AnalysisDisplayController::class, 'dynamic'])->name('analysis.dynamic');
+    Route::get('/analysis/{task_id}/screenshot/{filename}', [AnalysisController::class, 'getScreenshot']);
 
 
     // Route to generate and download the PDF

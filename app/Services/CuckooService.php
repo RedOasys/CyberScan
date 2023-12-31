@@ -27,41 +27,7 @@ class CuckooService
 
         return $response->json();
     }
-    public function createTask($file, $options)
-    {
-        $fullPath = storage_path('app/public/uploads/' . $file->file_name);
 
-        if (!file_exists($fullPath)) {
-            return ['error' => 'File not found'];
-        }
-
-        // Prepare settings data
-        $settings = [
-            'timeout' => $options['timeout'] ?? 120, // Default timeout if not provided
-            'platforms' => [
-                [
-                    'platform' => 'windows',
-                    'os_version' => '10' // Example version, adjust as needed
-                ]
-            ],
-            // Add more settings as per your requirement
-        ];
-
-        if (!empty($options['machine'])) {
-            // Include machine-specific settings if provided
-            $settings['platforms'][0]['tags'] = [$options['machine']];
-        }
-
-        $response = Http::withHeaders([
-            'Authorization' => 'token ' . $this->apiToken,
-        ])->attach(
-            'file', file_get_contents($fullPath), $file->file_name
-        )->post($this->baseUrl . '/submit/file', [
-            'settings' => json_encode($settings),
-        ]);
-
-        return $response->json();
-    }
     public function fetchAndStorePreAnalysis($analysisId)
     {
         $baseUrl = env('CUCKOO_API_BASE_URL');
@@ -143,9 +109,4 @@ class CuckooService
         }
     }
 
-
-
-
-
-    // Add other methods to interact with different API endpoints as needed
 }

@@ -22,17 +22,24 @@
                 </h2>
             </div>
             <div id="dynamicFields" class="card-body">
-                <!-- Fields will be dynamically generated here -->
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <!-- Tabs will be dynamically generated here -->
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="myTabContent">
+                    <!-- Content will be dynamically generated here -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Include Bootstrap and jQuery scripts for the collapse functionality -->
+    <!-- Include Bootstrap and jQuery scripts for the tab functionality -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
-
 
     <script>
         const analysisSelect = document.getElementById('analysis_id');
@@ -128,21 +135,151 @@
                 }
             }
         }
+        function generateTabs(data, task_id) {            // Clear existing tabs and content
+            const tabs = document.createElement('ul');
+            tabs.classList.add('nav', 'nav-tabs');
+            tabs.setAttribute('role', 'tablist');
+
+            const content = document.createElement('div');
+            content.classList.add('tab-content');
+
+            let isFirst = true;
+            for (const key in data) {
+                if (data.hasOwnProperty(key) && key !== 'task_id' && key !== 'score' && key !== 'tags' && key !== 'families') {
+                    const tab = document.createElement('li');
+                    tab.classList.add('nav-item');
+
+                    const link = document.createElement('a');
+                    link.classList.add('nav-link');
+                    link.id = `${key}-tab`;
+                    link.href = `#${key}`;
+                    link.setAttribute('data-toggle', 'tab');
+                    link.setAttribute('role', 'tab');
+                    link.textContent = key;
+
+                    if (isFirst) {
+                        link.classList.add('active');
+                        isFirst = false;
+                    }
+
+                    tab.appendChild(link);
+                    tabs.appendChild(tab);
+
+                    const tabPane = document.createElement('div');
+                    tabPane.classList.add('tab-pane', 'fade');
+                    tabPane.id = key;
+                    tabPane.setAttribute('role', 'tabpanel');
+                    tabPane.setAttribute('aria-labelledby', `${key}-tab`);
+
+                    if (key === 'screenshot') {
+                        const carousel = createCarouselStructure();
+                        tabPane.appendChild(carousel);
+                        handleScreenshots(data[key], task_id); // Make sure this line is inside the loop
+                    } else {
+                        // For other tabs, use existing formatting
+                        const formattedText = formatData(data[key]);
+                        tabPane.innerHTML = formattedText;
+                    }
+
+
+
+                    content.appendChild(tabPane);
+                }
+            }
+
+            dynamicFields.innerHTML = ''; // Clear existing fields
+            dynamicFields.appendChild(tabs);
+            dynamicFields.appendChild(content);
+        }
+        function createCarouselStructure() {
+            const carouselDiv = document.createElement('div');
+            carouselDiv.id = 'screenshotCarousel';
+            carouselDiv.className = 'carousel slide';
+            carouselDiv.setAttribute('data-ride', 'carousel');
+
+            const carouselInner = document.createElement('div');
+            carouselInner.className = 'carousel-inner';
+            carouselDiv.appendChild(carouselInner);
+
+            // Previous control
+            const prevControl = document.createElement('a');
+            prevControl.className = 'carousel-control-prev';
+            prevControl.href = '#screenshotCarousel';
+            prevControl.setAttribute('role', 'button');
+            prevControl.setAttribute('data-slide', 'prev');
+            prevControl.innerHTML = '<span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span>';
+            carouselDiv.appendChild(prevControl);
+
+            // Next control
+            const nextControl = document.createElement('a');
+            nextControl.className = 'carousel-control-next';
+            nextControl.href = '#screenshotCarousel';
+            nextControl.setAttribute('role', 'button');
+            nextControl.setAttribute('data-slide', 'next');
+            nextControl.innerHTML = '<span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span>';
+            carouselDiv.appendChild(nextControl);
+
+            return carouselDiv;
+        }
 
         function clearDynamicFields() {
             dynamicFields.innerHTML = ''; // Clear existing fields
+        }
+        function formatObject(obj) {
+            let result = '';
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    const value = obj[key];
+                    if (typeof value === 'object' && value !== null) {
+                        // If the value is an object and not null, format it as a nested object
+                        result += `<strong>${key}:</strong><br>${formatData(value)}<br>`;
+                    } else {
+                        // Treat non-object values (including strings) as simple key-value pairs
+                        result += `<strong>${key}:</strong> ${value}<br>`;
+                    }
+                }
+            }
+            return result;
+        }
+
+        function formatData(data) {
+            if (Array.isArray(data)) {
+                // Format each element in the array
+                return data.map(item => typeof item === 'object' ? formatObject(item) : item.toString()).join('<br><br>');
+            } else if (typeof data === 'object' && data !== null) {
+                // Format the object
+                return formatObject(data);
+            } else {
+                // Format primitive data types (including strings)
+                return data.toString();
+            }
         }
 
         function handlePopulateCards() {
             const selectedId = analysisSelect.value;
             const selectedData = analysisData.find(item => item.id == selectedId);
             if (selectedData) {
-                clearDynamicFields(); // Clear existing fields
-                generateFields(selectedData.data);
+                const task_id = selectedData.data.task_id;
+                console.log("Selected Task ID:", task_id);
+                generateTabs(selectedData.data, task_id); // Pass task_id as an argument
             } else {
-                // Clear the fields if no data found for the selected analysis
-                clearDynamicFields();
+                dynamicFields.innerHTML = '';
             }
+        }
+
+        function handleScreenshots(data, task_id) {
+
+            if (!Array.isArray(data)) return;
+
+            data.forEach(screenshot => {
+                const imageUrl = `/analysis/${task_id}/screenshot/${screenshot.name}`;
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = screenshot.name;
+                img.style = 'max-width: 100%; height: auto;'; // Style as needed
+
+                dynamicFields.appendChild(img); // Append the image to your dynamic fields
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function () {

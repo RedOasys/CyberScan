@@ -7,10 +7,13 @@ use App\Models\FileUpload;
 use App\Models\StaticAnalysis;
 use Illuminate\Http\Request;
 use App\Services\CuckooService;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+
+
 
 
 class AnalysisController extends Controller
@@ -486,6 +489,28 @@ class AnalysisController extends Controller
         }
     }
 
+    public function getScreenshot($task_id, $filename)
+    {
+        $baseUrl = env('CUCKOO_API_BASE_URL', 'http://192.168.100.100:6942');
+        $apiKey = env('CUCKOO_API_TOKEN', '');
+
+        // Construct the API URL
+        $apiUrl = "{$baseUrl}/analysis/" . explode('_', $task_id)[0] . "/task/{$task_id}/screenshot/{$filename}";
+
+        // Make the HTTP request to the API
+        $response = Http::withHeaders(['Authorization' => 'token ' . $apiKey])->get($apiUrl);
+
+        if ($response->successful()) {
+            // Return the image content as a response
+            return new Response($response->body(), 200, ['Content-Type' => 'image/jpeg']);
+        }
+
+        return response('Image not found', 404);
+    }
+
+
+
+
 
 
 
@@ -511,8 +536,5 @@ class AnalysisController extends Controller
         return view('analysis.tasks.all');
     }
 
-    public function logs()
-    {
-        return view('analysis.logs'); // View for logs
-    }
+
 }
