@@ -76,12 +76,14 @@ class AnalysisController extends Controller
                 }
             }
 
+
             if ($analysisId) {
                 $newAnalysis = StaticAnalysis::create([
                     'file_upload_id' => $fileUpload->id,
                     'analysis_id' => $analysisId,
 
                 ]);
+                $this->updateAnalysisDetails($newAnalysis);
 
                 $vt = $this->checkVT($fileUpload->md5_hash);
                 $detective = $vt['detection'] == 'Detected' ? 1 : 0;

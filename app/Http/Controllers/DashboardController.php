@@ -16,7 +16,7 @@ class DashboardController extends Controller
         // Count queued samples
         $queuedSamples = StaticAnalysis::whereIn('state', ['pending_pre', 'tasks_pending'])->count();
 
-        
+
         // Count analyzed samples
         $analyzedSamples = StaticAnalysis::where('state', 'finished')->count();
 
@@ -69,5 +69,38 @@ class DashboardController extends Controller
             'percentages' => $percentages,
         ]);
     }
+    public function malwareDetectionDistribution()
+    {
+        // Group by the source
+        $groupedSources = Detection::select('source')
+            ->where('certainty', '>=', 50) // Include only detections with 50% or more certainty
+            ->groupBy('source')
+            ->get();
+
+        // Count total detections with certainty 50% or more
+        $totalDetections = Detection::where('certainty', '>=', 50)->count();
+        $labels = [];
+        $percentages = [];
+
+        foreach ($groupedSources as $source) {
+            $sourceType = $source->source;
+
+            // Count detections per source type with certainty 50% or more
+            $count = Detection::where('source', $sourceType)
+                ->where('certainty', '>=', 50)
+                ->count();
+            $percentage = ($totalDetections > 0) ? ($count / $totalDetections) * 100 : 0;
+
+            $labels[] = $sourceType;
+            $percentages[] = round($percentage, 2);
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'percentages' => $percentages,
+        ]);
+    }
+
+
 
 }

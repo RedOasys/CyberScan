@@ -189,13 +189,17 @@
 
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
-                        <canvas
-                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Direct&quot;,&quot;Social&quot;,&quot;Referral&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#1cc88a&quot;,&quot;#36b9cc&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[&quot;50&quot;,&quot;30&quot;,&quot;15&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}}}"></canvas>
+                    <div class="card shadow mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="text-primary fw-bold m-0">Detection Source</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="malwareSourceChart"></canvas>
+                            </div>
+                            <div class="text-center small mt-4" id="legendContainer"></div>
+                        </div>
                     </div>
-                    <div class="text-center small mt-4"><span class="me-2"><i class="fas fa-circle text-primary"></i>&nbsp;Static</span><span
-                            class="me-2"><i class="fas fa-circle text-success"></i>&nbsp;Dynamic</span><span
-                            class="me-2"><i class="fas fa-circle text-info"></i>&nbsp;AI</span></div>
                 </div>
             </div>
 
@@ -360,6 +364,47 @@
                             maintainAspectRatio: false,
                             legend: { display: false },
                             title: { display: true, text: 'Malware Types Distribution' },
+                            tooltips: {
+                                callbacks: {
+                                    label: function(tooltipItem, data) {
+                                        let label = data.labels[tooltipItem.index] || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += data.datasets[0].data[tooltipItem.index] + '%';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error fetching malware type data:', error);
+                });
+        }
+        function fetchMalwareSourceData() {
+            fetch('/malware-stats-source')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('malwareSourceChart').getContext('2d');
+                    const colorArray = generateColorArray(data.labels.length); // Generate a color for each label
+                    const malwareChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Malware Detection Source',
+                                backgroundColor: colorArray, // Use the generated array of colors
+                                borderColor: colorArray.map(color => 'rgba(255,255,255,0.5)'), // Border color can be white or any lighter shade
+                                data: data.percentages,
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            legend: { display: false },
+                            title: { display: true, text: 'Malware Detection Source Distribution' },
                             tooltips: {
                                 callbacks: {
                                     label: function(tooltipItem, data) {
