@@ -19,7 +19,7 @@ class FileUpload extends Model
 
     public function staticAnalysis()
     {
-        return $this->belongsToMany(StaticAnalysis::class);
+        return $this->hasOne(StaticAnalysis::class);
     }
 
     public function detection()

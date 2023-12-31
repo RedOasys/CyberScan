@@ -30,4 +30,5 @@ class StaticAnalysis extends Model
     {
         return $this->hasOne(StaticAnalysis::class, 'file_upload_id');
     }
+
 }
