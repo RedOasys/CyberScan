@@ -23,8 +23,8 @@ class DetectionController extends Controller
     public function detectionsData(Request $request)
     {
         // Fetch parameters from DataTables request
-        $start = $request->input('start', );
-        $length = $request->input('length', );
+        $start = $request->input('start', 0); // Default to 0
+        $length = $request->input('length', 10); // Default to 10
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the query
@@ -39,8 +39,8 @@ class DetectionController extends Controller
         $recordsTotal = Detection::count();
         $recordsFiltered = $query->count();
 
-        // Explicitly set the perPage option for pagination
-        $detections = $query->paginate($length);
+        // Retrieve all detections without pagination
+        $detections = $query->get();
 
         // Map the data for DataTables
         $data = $detections->map(function ($detection) {
@@ -54,12 +54,15 @@ class DetectionController extends Controller
             ];
         });
 
+        // Paginate the data for the DataTables response
+        $pagedData = $data->slice($start, $length)->values();
+
         // Return JSON response
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $data
+            'data' => $pagedData
         ]);
     }
 

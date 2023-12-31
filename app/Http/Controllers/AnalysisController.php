@@ -65,7 +65,7 @@ class AnalysisController extends Controller
         ]);
 
         if ($submitResponse->successful()) {
-            sleep(1); // Adjust as needed
+            sleep(0.25); // Adjust as needed
 
             $analyses = $this->cuckooService->getAnalyses();
             $analysisId = null;
