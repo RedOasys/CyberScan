@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StaticAnalysis;
 use Illuminate\Support\Facades\Http;
 use App\Models\FileUpload; // Assuming this is your model for file uploads
 use App\Models\Detection;
@@ -12,33 +13,20 @@ class DashboardController extends Controller
 {
     public function dashboardData()
     {
-        $baseUrl = env('CUCKOO_API_BASE_URL');
-        $apiToken = env('CUCKOO_API_TOKEN');
-        $headers = ['Authorization' => 'token ' . $apiToken];
+        // Count queued samples
+        $queuedSamples = StaticAnalysis::whereIn('state', ['pending_pre', 'tasks_pending'])->count();
 
-        // Fetch analyses data from Cuckoo API
-        $response = Http::withHeaders($headers)->get($baseUrl . '/analyses/');
-        $data = $response->json();
+        // Count analyzed samples
+        $analyzedSamples = StaticAnalysis::where('state', 'finished')->count();
 
-        $analyzedSamples = 0;
-        $queuedSamples = 0;
-
-        if (isset($data['analyses'])) {
-            foreach ($data['analyses'] as $analysis) {
-                if ($analysis['state'] === 'finished') {
-                    $analyzedSamples++;
-                } elseif ($analysis['state'] === 'pending_pre' | $analysis['state'] === 'tasks_pending') {
-                    $queuedSamples++;
-                }
-            }
-        }
-
-        // Count of uploaded samples
+        // Count uploaded samples
         $uploadedSamples = FileUpload::count();
+
         $detectedMalwareCount = Detection::where('detected', true)
             ->where('certainty', '>=', 50)
             ->count();
-        $totalCount = Detection::count(); // Assuming this is the total count you want to use
+
+        $totalCount = Detection::count();
 
         $percentageDetected = ($detectedMalwareCount / $totalCount) * 100;
 
@@ -46,9 +34,8 @@ class DashboardController extends Controller
             'uploadedSamples' => $uploadedSamples,
             'analyzedSamples' => $analyzedSamples,
             'queuedSamples' => $queuedSamples,
-            'percentageDetected' => $percentageDetected, // Add the percentage to the response
+            'percentageDetected' => $percentageDetected,
         ]);
-
     }
     public function malwareTypeDistribution()
     {
