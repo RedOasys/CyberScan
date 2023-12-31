@@ -185,43 +185,43 @@
                 @foreach($analyses as $analysis)
             {
                 id: '{{ $analysis->id }}',
-                analysis_id: '{{ isset($analysis->parsed_data['analysis_id']) ? htmlspecialchars($analysis->parsed_data['analysis_id']) : '' }}',
-                score: '{{ isset($analysis->parsed_data['score']) ? htmlspecialchars($analysis->parsed_data['score']) : '' }}',
-                category: '{{ isset($analysis->parsed_data['category']) ? htmlspecialchars($analysis->parsed_data['category']) : '' }}',
+                analysis_id: @if(isset($analysis->parsed_data['analysis_id']) && is_string($analysis->parsed_data['analysis_id'])) '{{ htmlspecialchars($analysis->parsed_data['analysis_id']) }}' @else '' @endif,
+                score: @if(isset($analysis->parsed_data['score']) && is_string($analysis->parsed_data['score'])) '{{ htmlspecialchars($analysis->parsed_data['score']) }}' @else '' @endif,
+                category: @if(isset($analysis->parsed_data['category']) && is_string($analysis->parsed_data['category'])) '{{ htmlspecialchars($analysis->parsed_data['category']) }}' @else '' @endif,
                 target: {
-                    filename: '{{ isset($analysis->parsed_data['target']['filename']) ? htmlspecialchars($analysis->parsed_data['target']['filename']) : '' }}',
-                    orig_filename: '{{ isset($analysis->parsed_data['target']['orig_filename']) ? htmlspecialchars($analysis->parsed_data['target']['orig_filename']) : '' }}',
+                    filename: @if(isset($analysis->parsed_data['target']['filename']) && is_string($analysis->parsed_data['target']['filename'])) '{{ htmlspecialchars($analysis->parsed_data['target']['filename']) }}' @else '' @endif,
+                    orig_filename: @if(isset($analysis->parsed_data['target']['orig_filename']) && is_string($analysis->parsed_data['target']['orig_filename'])) '{{ htmlspecialchars($analysis->parsed_data['target']['orig_filename']) }}' @else '' @endif,
                     platforms: [
                             @if(isset($analysis->parsed_data['target']['platforms'][0]))
                         {
-                            platform: '{{ isset($analysis->parsed_data['target']['platforms'][0]['platform']) ? htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['platform']) : '' }}',
-                            os_version: '{{ isset($analysis->parsed_data['target']['platforms'][0]['os_version']) ? htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['os_version']) : '' }}',
+                            platform: @if(is_string($analysis->parsed_data['target']['platforms'][0]['platform'])) '{{ htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['platform']) }}' @else '' @endif,
+                            os_version: @if(is_string($analysis->parsed_data['target']['platforms'][0]['os_version'])) '{{ htmlspecialchars($analysis->parsed_data['target']['platforms'][0]['os_version']) }}' @else '' @endif,
                         }
                         @endif
                     ],
-                    size: '{{ isset($analysis->parsed_data['target']['size']) ? htmlspecialchars($analysis->parsed_data['target']['size']) : '' }}',
-                    filetype: '{{ isset($analysis->parsed_data['target']['filetype']) ? htmlspecialchars($analysis->parsed_data['target']['filetype']) : '' }}',
-                    media_type: '{{ isset($analysis->parsed_data['target']['media_type']) ? htmlspecialchars($analysis->parsed_data['target']['media_type']) : '' }}',
-                    sha256: '{{ isset($analysis->parsed_data['target']['sha256']) ? htmlspecialchars($analysis->parsed_data['target']['sha256']) : '' }}',
-                    sha1: '{{ isset($analysis->parsed_data['target']['sha1']) ? htmlspecialchars($analysis->parsed_data['target']['sha1']) : '' }}',
-                    md5: '{{ isset($analysis->parsed_data['target']['md5']) ? htmlspecialchars($analysis->parsed_data['target']['md5']) : '' }}',
+                    size: @if(isset($analysis->parsed_data['target']['size']) && is_string($analysis->parsed_data['target']['size'])) '{{ htmlspecialchars($analysis->parsed_data['target']['size']) }}' @else '' @endif,
+                    filetype: @if(isset($analysis->parsed_data['target']['filetype']) && is_string($analysis->parsed_data['target']['filetype'])) '{{ htmlspecialchars($analysis->parsed_data['target']['filetype']) }}' @else '' @endif,
+                    media_type: @if(isset($analysis->parsed_data['target']['media_type']) && is_string($analysis->parsed_data['target']['media_type'])) '{{ htmlspecialchars($analysis->parsed_data['target']['media_type']) }}' @else '' @endif,
+                    sha256: @if(isset($analysis->parsed_data['target']['sha256']) && is_string($analysis->parsed_data['target']['sha256'])) '{{ htmlspecialchars($analysis->parsed_data['target']['sha256']) }}' @else '' @endif,
+                    sha1: @if(isset($analysis->parsed_data['target']['sha1']) && is_string($analysis->parsed_data['target']['sha1'])) '{{ htmlspecialchars($analysis->parsed_data['target']['sha1']) }}' @else '' @endif,
+                    md5: @if(isset($analysis->parsed_data['target']['md5']) && is_string($analysis->parsed_data['target']['md5'])) '{{ htmlspecialchars($analysis->parsed_data['target']['md5']) }}' @else '' @endif,
                 },
                 static: {
                     pe: {
-                        peid_signatures: '{{ isset($analysis->parsed_data['static']['pe']['peid_signatures']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['peid_signatures']) : '' }}',
-                        pe_imports: '{{ isset($analysis->parsed_data['static']['pe']['pe_imports']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imports']) : '' }}',
-                        pe_exports: '{{ isset($analysis->parsed_data['static']['pe']['pe_exports']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_exports']) : '' }}',
-                        pe_sections: '{{ isset($analysis->parsed_data['static']['pe']['pe_sections']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_sections']) : '' }}',
-                        pe_resources: '{{ isset($analysis->parsed_data['static']['pe']['pe_resources']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_resources']) : '' }}',
-                        pe_versioninfo: '{{ isset($analysis->parsed_data['static']['pe']['pe_versioninfo']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_versioninfo']) : '' }}',
-                        pe_imphash: '{{ isset($analysis->parsed_data['static']['pe']['pe_imphash']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imphash']) : '' }}',
-                        pe_timestamp: '{{ isset($analysis->parsed_data['static']['pe']['pe_timestamp']) ? htmlspecialchars($analysis->parsed_data['static']['pe']['pe_timestamp']) : '' }}',
+                        peid_signatures: @if(isset($analysis->parsed_data['static']['pe']['peid_signatures']) && is_string($analysis->parsed_data['static']['pe']['peid_signatures'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['peid_signatures']) }}' @else '' @endif,
+                        pe_imports: @if(isset($analysis->parsed_data['static']['pe']['pe_imports']) && is_string($analysis->parsed_data['static']['pe']['pe_imports'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imports']) }}' @else '' @endif,
+                        pe_exports: @if(isset($analysis->parsed_data['static']['pe']['pe_exports']) && is_string($analysis->parsed_data['static']['pe']['pe_exports'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_exports']) }}' @else '' @endif,
+                        pe_sections: @if(isset($analysis->parsed_data['static']['pe']['pe_sections']) && is_string($analysis->parsed_data['static']['pe']['pe_sections'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_sections']) }}' @else '' @endif,
+                        pe_resources: @if(isset($analysis->parsed_data['static']['pe']['pe_resources']) && is_string($analysis->parsed_data['static']['pe']['pe_resources'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_resources']) }}' @else '' @endif,
+                        pe_versioninfo: @if(isset($analysis->parsed_data['static']['pe']['pe_versioninfo']) && is_string($analysis->parsed_data['static']['pe']['pe_versioninfo'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_versioninfo']) }}' @else '' @endif,
+                        pe_imphash: @if(isset($analysis->parsed_data['static']['pe']['pe_imphash']) && is_string($analysis->parsed_data['static']['pe']['pe_imphash'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_imphash']) }}' @else '' @endif,
+                        pe_timestamp: @if(isset($analysis->parsed_data['static']['pe']['pe_timestamp']) && is_string($analysis->parsed_data['static']['pe']['pe_timestamp'])) '{{ htmlspecialchars($analysis->parsed_data['static']['pe']['pe_timestamp']) }}' @else '' @endif,
                     },
                 },
             },
             @endforeach
         ];
-        
+
 
 
         function handlePopulateCards() {
