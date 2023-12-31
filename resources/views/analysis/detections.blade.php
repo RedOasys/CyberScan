@@ -44,7 +44,7 @@
                     { data: 'source' }
                 ],
                 lengthMenu: [10, 25, 50, 100], // Define the available options for rows per page
-                pageLength: 25, // Set the default number of rows per page
+                pageLength: 10, // Set the default number of rows per page
                 // Additional DataTables configuration as needed
             });
 
