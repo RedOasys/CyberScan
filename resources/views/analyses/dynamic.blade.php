@@ -268,6 +268,16 @@
             }
         }
 
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            analysisSelect.addEventListener('change', handlePopulateCards);
+        });
+
+        // Populate card fields with data for the initial selected analysis (if any)
+        if (analysisSelect.value) {
+            handlePopulateCards();
+        }
         function handleScreenshots(data, task_id) {
             if (!Array.isArray(data)) return;
 
@@ -298,15 +308,6 @@
                 // Append the carousel item to the carousel inner container
                 carouselInner.appendChild(item);
             });
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            analysisSelect.addEventListener('change', handlePopulateCards);
-        });
-
-        // Populate card fields with data for the initial selected analysis (if any)
-        if (analysisSelect.value) {
-            handlePopulateCards();
         }
     </script>
 @endsection
