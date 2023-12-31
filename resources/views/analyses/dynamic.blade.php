@@ -281,7 +281,9 @@
         function handleScreenshots(data, task_id) {
             if (!Array.isArray(data)) return;
 
-            const carouselInner = document.querySelector('.carousel-inner');
+            const activeTab = document.querySelector('.tab-pane.active');
+            const carouselInner = activeTab.querySelector('.carousel-inner');
+
             carouselInner.innerHTML = ''; // Clear existing carousel items
 
             data.forEach((screenshot, index) => {
