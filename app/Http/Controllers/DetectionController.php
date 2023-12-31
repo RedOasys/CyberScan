@@ -39,8 +39,8 @@ class DetectionController extends Controller
         $recordsTotal = Detection::count();
         $recordsFiltered = $query->count();
 
-        // Apply pagination
-        $detections = $query->skip($start)->take($length)->get();
+        // Explicitly set the perPage option for pagination
+        $detections = $query->paginate($length);
 
         // Map the data for DataTables
         $data = $detections->map(function ($detection) {
@@ -62,5 +62,6 @@ class DetectionController extends Controller
             'data' => $data
         ]);
     }
+
 
 }
