@@ -494,10 +494,13 @@ class AnalysisController extends Controller
 
                     // Update the detection model
                     $source = $fileUpload->detection->detected == 1 ? $fileUpload->detection->source : 'Dynamic';
+                    if (!str_contains($source, '_dynamic')) {
+                        $source .= '_dynamic';
+                    }
                     $fileUpload->detection->update([
                         'detected' => 1,
                         'certainty' => $certainty,
-                        'source' => $source . '_dynamic',
+                        'source' => $source,
                     ]);
 
                     Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
