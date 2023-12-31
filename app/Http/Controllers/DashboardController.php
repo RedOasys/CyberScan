@@ -16,6 +16,7 @@ class DashboardController extends Controller
         // Count queued samples
         $queuedSamples = StaticAnalysis::whereIn('state', ['pending_pre', 'tasks_pending'])->count();
 
+        
         // Count analyzed samples
         $analyzedSamples = StaticAnalysis::where('state', 'finished')->count();
 
