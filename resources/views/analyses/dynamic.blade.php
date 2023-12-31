@@ -281,35 +281,39 @@
         function handleScreenshots(data, task_id) {
             if (!Array.isArray(data)) return;
 
-            const activeTab = document.querySelector('.tab-pane.active');
-            const carouselInner = activeTab.querySelector('.carousel-inner');
+            const carouselInner = document.querySelector('.carousel-inner');
 
-            carouselInner.innerHTML = ''; // Clear existing carousel items
+            // Check if the element exists
+            if (carouselInner) {
+                carouselInner.innerHTML = ''; // Clear existing carousel items
 
-            data.forEach((screenshot, index) => {
-                const imageUrl = `/analysis/${task_id}/screenshot/${screenshot.name}`;
-                console.log("Image URL:", imageUrl); // Debugging: Log the image URL
+                data.forEach((screenshot, index) => {
+                    const imageUrl = `/analysis/${task_id}/screenshot/${screenshot.name}`;
+                    console.log("Image URL:", imageUrl); // Debugging: Log the image URL
 
-                // Create a carousel item
-                const item = document.createElement('div');
-                item.className = 'carousel-item';
-                if (index === 0) {
-                    item.classList.add('active'); // Make the first item active
-                }
+                    // Create a carousel item
+                    const item = document.createElement('div');
+                    item.className = 'carousel-item';
+                    if (index === 0) {
+                        item.classList.add('active'); // Make the first item active
+                    }
 
-                // Create an image element
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.alt = screenshot.name;
-                img.style.maxWidth = '100%'; // Set max width to ensure responsiveness
-                img.style.height = 'auto'; // Maintain aspect ratio
+                    // Create an image element
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = screenshot.name;
+                    img.style.maxWidth = '100%'; // Set max width to ensure responsiveness
+                    img.style.height = 'auto'; // Maintain aspect ratio
 
-                // Append the image to the carousel item
-                item.appendChild(img);
+                    // Append the image to the carousel item
+                    item.appendChild(img);
 
-                // Append the carousel item to the carousel inner container
-                carouselInner.appendChild(item);
-            });
+                    // Append the carousel item to the carousel inner container
+                    carouselInner.appendChild(item);
+                });
+            } else {
+                console.error('Carousel inner element not found');
+            }
         }
     </script>
 @endsection
