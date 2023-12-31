@@ -2,7 +2,23 @@
 
 @section('content')
     <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <style>
+        .splide__slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        .splide__slide img {
+            max-width: 100%;  /* Adjust the max-width as needed */
+            height: auto;     /* This ensures the aspect ratio is maintained */
+        }
+
+        /* Optionally, if you want to set a specific height for the slides */
+        .splide__list {
+            height: 300px; /* Adjust the height as needed */
+        }
+    </style>
     <div class="row">
         <div class="col-md-12">
             <!-- Dropdown to Select Analysis -->
