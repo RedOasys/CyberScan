@@ -42,20 +42,11 @@ class DetectionController extends Controller
         // Retrieve all detections without pagination
         $detections = $query->get();
 
-        // Map the data for DataTables
-        $data = $detections->map(function ($detection) {
-            return [
-                'file_name' => $detection->fileUpload ? $detection->fileUpload->file_name : 'N/A',
-                'analysis_id' => $detection->analysis_id,
-                'detectionStatus' => $detection->detected ? 'Detected' : 'Undetected',
-                'malware_type' => $detection->malware_type,
-                'certainty' => $detection->certainty,
-                'source' => $detection->source
-            ];
-        });
+        // Calculate the end point for slicing
+        $end = $start + $length;
 
-        // Paginate the data for the DataTables response
-        $pagedData = $data->slice($start, $length)->values();
+        // Slice the data to return only the subset for the current page
+        $pagedData = $detections->slice($start, $length)->values();
 
         // Return JSON response
         return response()->json([
@@ -65,6 +56,7 @@ class DetectionController extends Controller
             'data' => $pagedData
         ]);
     }
+
 
 
 }
