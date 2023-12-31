@@ -481,31 +481,33 @@ class AnalysisController extends Controller
 
                 $analysis->update($updateData);
 
-                // Check if the detection model needs to be updated
-                if ($updateData['score'] >= 8 && $fileUpload->detection->where('detected', 0)->count() > 0) {
+                // Check if the detection models need to be updated
+                if ($updateData['score'] >= 8 && $fileUpload->detection->count() > 0) {
                     $certainty = 0;
 
                     if ($updateData['score'] == 8) {
-
                         $certainty = 60;
                     } elseif ($updateData['score'] == 9) {
-
                         $certainty = 80;
                     } elseif ($updateData['score'] == 10) {
-
                         $certainty = 90;
                     }
 
                     // Update the detection models
                     foreach ($fileUpload->detection as $detection) {
+                        $source = $detection->detected == 1 ? $detection->source : 'Dynamic';
+                        if (!str_contains($source, '_dynamic')) {
+                            $source .= '_dynamic';
+                        }
+
                         $detection->update([
                             'detected' => 1,
                             'certainty' => $certainty,
-
+                            'source' => $source,
                         ]);
-                    }
 
-                    Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
+                        Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
+                    }
                 }
 
                 Log::info('Updated analysis data for ID ' . $analysis->analysis_id);
@@ -516,6 +518,7 @@ class AnalysisController extends Controller
             Log::error('Failed to fetch details for analysis ID: ' . $analysis->analysis_id);
         }
     }
+
 
     public function getScreenshot($task_id, $filename)
     {
