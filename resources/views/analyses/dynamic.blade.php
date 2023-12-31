@@ -268,17 +268,33 @@
         }
 
         function handleScreenshots(data, task_id) {
-
             if (!Array.isArray(data)) return;
 
-            data.forEach(screenshot => {
+            const carouselInner = document.querySelector('.carousel-inner');
+            carouselInner.innerHTML = ''; // Clear existing carousel items
+
+            data.forEach((screenshot, index) => {
                 const imageUrl = `/analysis/${task_id}/screenshot/${screenshot.name}`;
+
+                // Create a carousel item
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                if (index === 0) {
+                    item.classList.add('active'); // Make the first item active
+                }
+
+                // Create an image element
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.alt = screenshot.name;
-                img.style = 'max-width: 100%; height: auto;'; // Style as needed
+                img.style.maxWidth = '100%'; // Set max width to ensure responsiveness
+                img.style.height = 'auto'; // Maintain aspect ratio
 
-                dynamicFields.appendChild(img); // Append the image to your dynamic fields
+                // Append the image to the carousel item
+                item.appendChild(img);
+
+                // Append the carousel item to the carousel inner container
+                carouselInner.appendChild(item);
             });
         }
 
