@@ -23,12 +23,10 @@ class DetectionController extends Controller
     public function detectionsData(Request $request)
     {
         // Fetch parameters from DataTables request
-        $start = $request->input('start', 0); // Default to 0
-        $length = $request->input('length', 10); // Default to 10
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the query
-        $query = Detection::withCount('fileUpload')
+        $query = Detection::with('fileUpload')
             ->when($searchValue, function ($query) use ($searchValue) {
                 $query->whereHas('fileUpload', function ($q) use ($searchValue) {
                     $q->where('file_name', 'like', '%' . $searchValue . '%');
@@ -54,15 +52,12 @@ class DetectionController extends Controller
             ];
         });
 
-        // Paginate the data for the DataTables response
-        $pagedData = $data->slice($start, $length)->values();
-
-        // Return JSON response
+        // Return JSON response with all data
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $pagedData
+            'data' => $data
         ]);
     }
 
