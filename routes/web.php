@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalysisDisplayController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FileUploadController;
@@ -62,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     // Route to show the detections page
     Route::get('/detections', [DetectionController::class, 'index'])->name('analysis.detections');
     Route::get('/detections/data', [DetectionController::class, 'detectionsData'])->name('detections.data');
+    Route::get('/analyses', [AnalysisDisplayController::class, 'index'])->name('analysis.static');
+
 
     // Route to generate and download the PDF
     Route::get('/analysis/detections/pdf', [DetectionController::class, 'exportPdf'])->name('detections.pdf');

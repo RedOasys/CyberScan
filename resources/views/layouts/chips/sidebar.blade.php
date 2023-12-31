@@ -46,7 +46,7 @@
                             <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">View Malware Detections</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Static Analysis Results</a>
+                            <a class="nav-link {{ request()->routeIs('analysis.static') ? 'active' : '' }}" href="{{ route('analysis.static') }}">Static Analysis Results</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('analysis.detections') ? 'active' : '' }}" href="{{ route('analysis.detections') }}">Dynamic Analysis Results</a>
