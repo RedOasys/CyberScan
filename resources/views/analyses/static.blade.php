@@ -194,73 +194,30 @@
                     platforms: [
                             @if(isset($analysis->parsed_data['target']['platforms'][0]))
                         {
-                            platform: '{{ $analysis->parsed_data['target']['platforms'][0]['platform'] }}',
-                            os_version: '{{ $analysis->parsed_data['target']['platforms'][0]['os_version'] }}',
+                            platform: '{{ $analysis->parsed_data['target']['platforms'][0]['platform'] ?? '' }}',
+                            os_version: '{{ $analysis->parsed_data['target']['platforms'][0]['os_version'] ?? '' }}',
                         }
                         @endif
                     ],
-                    size: {{ $analysis->parsed_data['target']['size'] }},
-                    filetype: '{{ $analysis->parsed_data['target']['filetype'] }}',
-                    media_type: '{{ $analysis->parsed_data['target']['media_type'] }}',
-                    sha256: '{{ $analysis->parsed_data['target']['sha256'] }}',
-                    sha1: '{{ $analysis->parsed_data['target']['sha1'] }}',
-                    md5: '{{ $analysis->parsed_data['target']['md5'] }}',
+                    size: '{{ $analysis->parsed_data['target']['size'] ?? '' }}',
+                    filetype: '{{ $analysis->parsed_data['target']['filetype'] ?? '' }}',
+                    media_type: '{{ $analysis->parsed_data['target']['media_type'] ?? '' }}',
+                    sha256: '{{ $analysis->parsed_data['target']['sha256'] ?? '' }}',
+                    sha1: '{{ $analysis->parsed_data['target']['sha1'] ?? '' }}',
+                    md5: '{{ $analysis->parsed_data['target']['md5'] ?? '' }}',
                 },
                 static: {
                     pe: {
-                        peid_signatures: {!! json_encode($analysis->parsed_data['static']['pe']['peid_signatures']) !!},
-                        pe_imports: [
-                                @foreach($analysis->parsed_data['static']['pe']['pe_imports'] as $import)
-                            {
-                                dll: '{{ $import['dll'] }}',
-                                imports: [
-                                        @foreach($import['imports'] as $importItem)
-                                    {
-                                        address: '{{ $importItem['address'] }}',
-                                        name: '{{ $importItem['name'] }}',
-                                    },
-                                    @endforeach
-                                ],
-                            },
-                            @endforeach
-                        ],
-                        pe_exports: {!! json_encode($analysis->parsed_data['static']['pe']['pe_exports']) !!},
-                        pe_sections: [
-                                @foreach($analysis->parsed_data['static']['pe']['pe_sections'] as $section)
-                            {
-                                name: '{{ $section['name'] }}',
-                                virtual_address: '{{ $section['virtual_address'] }}',
-                                virtual_size: '{{ $section['virtual_size'] }}',
-                                size_of_data: '{{ $section['size_of_data'] }}',
-                                entropy: {{ $section['entropy'] }},
-                            },
-                            @endforeach
-                        ],
-                        pe_resources: [
-                                @foreach($analysis->parsed_data['static']['pe']['pe_resources'] as $resource)
-                            {
-                                name: '{{ $resource['name'] }}',
-                                offset: '{{ $resource['offset'] }}',
-                                size: '{{ $resource['size'] }}',
-                                filetype: '{{ $resource['filetype'] }}',
-                                language: '{{ $resource['language'] }}',
-                                sublanguage: '{{ $resource['sublanguage'] }}',
-                            },
-                            @endforeach
-                        ],
-                        pe_versioninfo: [
-                                @foreach($analysis->parsed_data['static']['pe']['pe_versioninfo'] as $versionInfo)
-                            {
-                                name: '{{ $versionInfo['name'] }}',
-                                value: '{{ $versionInfo['value'] }}',
-                            },
-                            @endforeach
-                        ],
-                        pe_imphash: '{{ $analysis->parsed_data['static']['pe']['pe_imphash'] }}',
-                        pe_timestamp: '{{ $analysis->parsed_data['static']['pe']['pe_timestamp'] }}',
-                    }
+                        peid_signatures: '{{ $analysis->parsed_data['static']['pe']['peid_signatures'] ?? '' }}',
+                        pe_imports: '{{ $analysis->parsed_data['static']['pe']['pe_imports'] ?? '' }}',
+                        pe_exports: '{{ $analysis->parsed_data['static']['pe']['pe_exports'] ?? '' }}',
+                        pe_sections: '{{ $analysis->parsed_data['static']['pe']['pe_sections'] ?? '' }}',
+                        pe_resources: '{{ $analysis->parsed_data['static']['pe']['pe_resources'] ?? '' }}',
+                        pe_versioninfo: '{{ $analysis->parsed_data['static']['pe']['pe_versioninfo'] ?? '' }}',
+                        pe_imphash: '{{ $analysis->parsed_data['static']['pe']['pe_imphash'] ?? '' }}',
+                        pe_timestamp: '{{ $analysis->parsed_data['static']['pe']['pe_timestamp'] ?? '' }}',
+                    },
                 },
-
             },
             @endforeach
         ];
