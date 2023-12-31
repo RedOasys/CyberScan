@@ -185,17 +185,19 @@
                 @foreach($analyses as $analysis)
             {
                 id: '{{ $analysis->id }}',
-                analysis_id: '{{ $analysis->parsed_data['analysis_id'] }}',
-                score: {{ $analysis->parsed_data['score'] }},
-                category: '{{ $analysis->parsed_data['category'] }}',
+                analysis_id: '{{ $analysis->parsed_data['analysis_id'] ?? '' }}',
+                score: '{{ $analysis->parsed_data['score'] ?? '' }}',
+                category: '{{ $analysis->parsed_data['category'] ?? '' }}',
                 target: {
-                    filename: '{{ $analysis->parsed_data['target']['filename'] }}',
-                    orig_filename: '{{ $analysis->parsed_data['target']['orig_filename'] }}',
+                    filename: '{{ $analysis->parsed_data['target']['filename'] ?? '' }}',
+                    orig_filename: '{{ $analysis->parsed_data['target']['orig_filename'] ?? '' }}',
                     platforms: [
+                            @if(isset($analysis->parsed_data['target']['platforms'][0]))
                         {
                             platform: '{{ $analysis->parsed_data['target']['platforms'][0]['platform'] }}',
                             os_version: '{{ $analysis->parsed_data['target']['platforms'][0]['os_version'] }}',
                         }
+                        @endif
                     ],
                     size: {{ $analysis->parsed_data['target']['size'] }},
                     filetype: '{{ $analysis->parsed_data['target']['filetype'] }}',
