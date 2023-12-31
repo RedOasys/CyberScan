@@ -34,22 +34,23 @@
         $(document).ready(function () {
             var table = $('#detectionsTable').DataTable({
                 processing: true,
-
-                ajax: "{{ route('detections.data') }}", // Updated to use the new route
+                ajax: "{{ route('detections.data') }}",
                 columns: [
-                    {data: 'file_name'},
-                    {data: 'analysis_id'},
-                    {data: 'detectionStatus'},
-                    {data: 'malware_type'},
-                    {data: 'certainty'},
-                    {data: 'source'}
+                    { data: 'file_name' },
+                    { data: 'analysis_id' },
+                    { data: 'detectionStatus' },
+                    { data: 'malware_type' },
+                    { data: 'certainty' },
+                    { data: 'source' }
                 ],
+                lengthMenu: [10, 25, 50, 100], // Define the available options for rows per page
+                pageLength: 25, // Set the default number of rows per page
                 // Additional DataTables configuration as needed
             });
-            // Refresh DataTable every 5 seconds
+
             setInterval(function () {
-                table.ajax.reload(null, false); // false means don't reset user paging
-            }, 5000); // 5000 milliseconds = 5 seconds
+                table.ajax.reload(null, false);
+            }, 5000); // Refresh every 5 seconds
         });
     </script>
 @endsection
