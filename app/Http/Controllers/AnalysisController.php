@@ -94,6 +94,8 @@ class AnalysisController extends Controller
                     'source' => $vt['source'], // Use the source from the analysis results
                 ]);
 
+
+
                 // Fetch and update analysis details immediately
                 $this->updateAnalysisDetails($newAnalysis);
 
@@ -477,8 +479,28 @@ class AnalysisController extends Controller
                     'updated_at' => now(),
                 ];
 
-
                 $analysis->update($updateData);
+
+                // Check if the detection model needs to be updated
+                if ($updateData['score'] >= 8 && $fileUpload->detection->detected == 0) {
+                    $certainty = 0;
+                    if ($updateData['score'] == 8) {
+                        $certainty = 60;
+                    } elseif ($updateData['score'] == 9) {
+                        $certainty = 80;
+                    } elseif ($updateData['score'] == 10) {
+                        $certainty = 90;
+                    }
+
+                    // Update the detection model
+                    $fileUpload->detection->update([
+                        'detected' => 1,
+                        'certainty' => $certainty,
+                        'source' => 'Dynamic',
+                    ]);
+
+                    Log::info('Updated detection data for file_upload_id: ' . $fileUpload->id);
+                }
 
                 Log::info('Updated analysis data for ID ' . $analysis->analysis_id);
             } else {
