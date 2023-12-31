@@ -485,19 +485,24 @@ class AnalysisController extends Controller
                 if ($updateData['score'] >= 8 && $fileUpload->detection && $fileUpload->detection->detected == 0) {
                     $certainty = 0;
                     if ($updateData['score'] == 8) {
+                        dd($updateData['score']);
                         $certainty = 60;
                     } elseif ($updateData['score'] == 9) {
+                        dd($updateData['score']);
                         $certainty = 80;
                     } elseif ($updateData['score'] == 10) {
+                        dd($updateData['score']);
                         $certainty = 90;
                     }
 
                     // Update the detection model
                     $source = $fileUpload->detection->detected == 1 ? $fileUpload->detection->source : 'Dynamic';
                     if (!str_contains($source, '_dynamic')) {
+                        dd($updateData['score']);
                         $source .= '_dynamic';
                     }
                     $fileUpload->detection->update([
+                        
                         'detected' => 1,
                         'certainty' => $certainty,
                         'source' => $source,
