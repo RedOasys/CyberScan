@@ -22,8 +22,8 @@ class DetectionController extends Controller
 
     public function detectionsData(Request $request)
     {
-        $start = $request->input('start', 0); // Starting point of records
-        $length = $request->input('length', 10); // Number of records to fetch
+        $start = $request->input('start' ); // Starting point of records
+        $length = $request->input('length' ); // Number of records to fetch
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the initial query
