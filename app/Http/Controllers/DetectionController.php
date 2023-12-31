@@ -22,29 +22,25 @@ class DetectionController extends Controller
 
     public function detectionsData(Request $request)
     {
-        $start = $request->input('start' ); // Starting point of records
-        $length = $request->input('length' ); // Number of records to fetch
+        // Fetch parameters from DataTables request
+        $start = $request->input('start', );
+        $length = $request->input('length', );
         $searchValue = $request->input('search.value'); // Get the search value
 
-        // Build the initial query
-        $query = Detection::with('fileUpload')
-            ->orderBy('id', 'desc');
-
-        // Filter query based on the search value
-        if (!empty($searchValue)) {
-            $query->where(function ($q) use ($searchValue) {
-                $q->whereHas('fileUpload', function ($q) use ($searchValue) {
+        // Build the query
+        $query = Detection::withCount('fileUpload')
+            ->when($searchValue, function ($query) use ($searchValue) {
+                $query->whereHas('fileUpload', function ($q) use ($searchValue) {
                     $q->where('file_name', 'like', '%' . $searchValue . '%');
                 });
             });
-        }
 
         // Get total count of records
         $recordsTotal = Detection::count();
         $recordsFiltered = $query->count();
 
-        // Apply pagination manually
-        $detections = $query->skip($start)->take($length)->get();
+        // Explicitly set the perPage option for pagination
+        $detections = $query->paginate($length);
 
         // Map the data for DataTables
         $data = $detections->map(function ($detection) {
@@ -54,7 +50,7 @@ class DetectionController extends Controller
                 'detectionStatus' => $detection->detected ? 'Detected' : 'Undetected',
                 'malware_type' => $detection->malware_type,
                 'certainty' => $detection->certainty,
-                'source' => $detection->source,
+                'source' => $detection->source
             ];
         });
 
@@ -63,7 +59,7 @@ class DetectionController extends Controller
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $data,
+            'data' => $data
         ]);
     }
 
