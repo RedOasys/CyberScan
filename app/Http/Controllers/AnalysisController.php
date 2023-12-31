@@ -480,7 +480,7 @@ class AnalysisController extends Controller
                 ];
 
                 $analysis->update($updateData);
-                dd($fileUpload->detection->detected);
+                dd($fileUpload->detection);
 
                 // Check if the detection model needs to be updated
                 if ($updateData['score'] >= 8 && $fileUpload->detection && $fileUpload->detection->detected == 0) {
