@@ -46,6 +46,7 @@ class FileDisplayController extends Controller
         $start = $request->input('start', 0);
         $length = $request->input('length', 10);
         $search = $request->input('search.value', '');
+        $order = $request->input('order', []);
 
         // Query for getting total records
         $totalQuery = FileUpload::query();
@@ -64,6 +65,7 @@ class FileDisplayController extends Controller
                     ->orWhere('file_uploads.md5_hash', 'LIKE', "%{$search}%");
             });
         }
+
 
         $totalFilteredRecords = $filesQuery->count();
 
@@ -84,6 +86,16 @@ class FileDisplayController extends Controller
                 'actions' => $analysis ? view('partials.analysis_actions', compact('file', 'analysis'))->render() : 'No Actions'
             ];
         });
+        if (!empty($order)) {
+            $orderColumnIndex = $order[0]['column']; // Column index
+            $orderDirection = $order[0]['dir']; // asc or desc
+
+            // Mapping column index to database column names
+            $columns = ['file_id', 'file_name', 'md5_hash', 'file_size_kb']; // Adjust this array based on your actual columns
+            $orderColumn = $columns[$orderColumnIndex];
+
+            $filesQuery->orderBy($orderColumn, $orderDirection);
+        }
 
         return response()->json([
             "draw" => intval($request->input('draw')),
