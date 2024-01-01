@@ -39,46 +39,105 @@
 
 
         function populateFields(data) {
-            // Clear existing content
             const tabs = document.getElementById('analysisTabs');
             const content = document.getElementById('tabContent');
             tabs.innerHTML = '';
             content.innerHTML = '';
 
+            const topLevelTabs = ['Info', 'signatures', 'target', 'ttps', 'tags', 'families', 'platforms', 'virustotal', 'static', 'command', 'errors'];
             let first = true;
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    const tab = document.createElement('li');
-                    tab.className = 'nav-item';
-                    const tabLink = document.createElement('a');
-                    tabLink.className = 'nav-link';
-                    tabLink.id = key + '-tab';
-                    tabLink.href = '#' + key;
-                    tabLink.setAttribute('data-toggle', 'tab');
-                    tabLink.setAttribute('role', 'tab');
-                    tabLink.textContent = key;
-                    if (first) {
-                        tabLink.className += ' active';
-                        first = false;
-                    }
-                    tab.appendChild(tabLink);
+
+            topLevelTabs.forEach(tabName => {
+                if (data[tabName] && Object.keys(data[tabName]).length !== 0) {
+                    const tab = createTab(tabName, first);
                     tabs.appendChild(tab);
 
-                    const tabPane = document.createElement('div');
-                    tabPane.className = 'tab-pane fade';
-                    if (first) {
-                        tabPane.className += ' show active';
+                    const tabPane = createTabPane(tabName, first);
+                    if (tabName === 'Info') {
+                        populateInfoTab(data, tabPane);
+                    } else if (tabName === 'static') {
+                        populateStaticTab(data[tabName], tabPane);
+                    } else {
+                        createTabContent(data[tabName], tabPane);
                     }
-                    tabPane.id = key;
-                    tabPane.setAttribute('role', 'tabpanel');
-                    tabPane.setAttribute('aria-labelledby', key + '-tab');
-
-                    // Call function to create content for each tab
-                    createTabContent(data[key], tabPane);
-
                     content.appendChild(tabPane);
+
+                    first = false;
                 }
+            });
+        }
+
+        function populateInfoTab(data, container) {
+            ['analysis_id', 'score', 'category', 'sha256'].forEach(key => {
+                if (data[key]) {
+                    const field = document.createElement('p');
+                    field.innerHTML = `<strong>${key}:</strong> ${data[key]}`;
+                    container.appendChild(field);
+                }
+            });
+        }
+
+        function populateStaticTab(staticData, container) {
+            if (staticData.pe && staticData.pe.pe_imports) {
+                const select = document.createElement('select');
+                select.classList.add('form-select', 'mb-3');
+                select.addEventListener('change', () => displayImportDetails(staticData.pe.pe_imports, select.value, container));
+
+                staticData.pe.pe_imports.forEach((importItem, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = importItem.dll;
+                    select.appendChild(option);
+                });
+
+                container.appendChild(select);
+                displayImportDetails(staticData.pe.pe_imports, 0, container); // Display details for the first import by default
             }
+        }
+
+        function displayImportDetails(imports, selectedIndex, container) {
+            const detailsContainer = document.getElementById('importDetails') || document.createElement('div');
+            detailsContainer.id = 'importDetails';
+            detailsContainer.innerHTML = ''; // Clear previous details
+
+            const selectedImport = imports[selectedIndex];
+            if (selectedImport) {
+                selectedImport.imports.forEach(importDetail => {
+                    const detail = document.createElement('p');
+                    detail.innerHTML = `<strong>Address:</strong> ${importDetail.address}, <strong>Name:</strong> ${importDetail.name}`;
+                    detailsContainer.appendChild(detail);
+                });
+            }
+
+            container.appendChild(detailsContainer);
+        }
+
+        function createTab(tabName, isActive) {
+            const tab = document.createElement('li');
+            tab.className = 'nav-item';
+
+            const tabLink = document.createElement('a');
+            tabLink.className = 'nav-link' + (isActive ? ' active' : '');
+            tabLink.id = `${tabName}-tab`;
+            tabLink.href = `#${tabName}`;
+            tabLink.setAttribute('data-toggle', 'tab');
+            tabLink.setAttribute('role', 'tab');
+            tabLink.textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+
+            tab.appendChild(tabLink);
+
+            return tab;
+        }
+
+
+        function createTabPane(tabName, isActive) {
+            const tabPane = document.createElement('div');
+            tabPane.className = 'tab-pane fade' + (isActive ? ' show active' : '');
+            tabPane.id = tabName;
+            tabPane.setAttribute('role', 'tabpanel');
+            tabPane.setAttribute('aria-labelledby', `${tabName}-tab`);
+
+            return tabPane;
         }
 
         function createTabContent(data, container) {
