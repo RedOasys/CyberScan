@@ -85,133 +85,7 @@
                 first = false;
             });
         }
-        function populateStaticTab(staticData, container) {
-            // Define the categories and map them to data
-            const mainCategories = {
-                'PE Signatures': staticData.pe?.peid_signatures,
-                'PE Imports': staticData.pe?.pe_imports,
-                'PE Exports': staticData.pe?.pe_exports,
-                'PE Sections': staticData.pe?.pe_sections,
-                'PE Resources': staticData.pe?.pe_resources,
-                'PE VersionInfo': staticData.pe?.pe_versioninfo,
-                'Other': {
-                    'pe_imphash': staticData.pe?.pe_imphash,
-                    'pe_timestamp': staticData.pe?.pe_timestamp,
-                    'signatures': staticData.signatures
-                }
-            };
 
-            // Create dropdown for main categories
-            const select = document.createElement('select');
-            select.classList.add('form-select', 'mb-3');
-            select.addEventListener('change', () => displayStaticDetails(mainCategories, select.value, container));
-
-            // Populate dropdown with main categories
-            for (const category in mainCategories) {
-                if (mainCategories[category]) {
-                    const option = document.createElement('option');
-                    option.value = category;
-                    option.textContent = category;
-                    select.appendChild(option);
-                }
-            }
-
-            container.appendChild(select);
-            displayStaticDetails(mainCategories, Object.keys(mainCategories)[0], container); // Display first category by default
-        }
-
-        function displayStaticDetails(categories, selectedCategory, container) {
-            const detailsContainer = document.getElementById('staticDetails') || document.createElement('div');
-            detailsContainer.id = 'staticDetails';
-            detailsContainer.innerHTML = '';
-
-            const data = categories[selectedCategory];
-            if (data) {
-                // Create and populate table based on selected category
-                const table = createDataTable(data);
-                detailsContainer.appendChild(table);
-            }
-
-            container.appendChild(detailsContainer);
-        }
-        function createDataTable(data) {
-            const table = document.createElement('table');
-            table.classList.add('table', 'table-striped');
-            const thead = document.createElement('thead');
-            const tbody = document.createElement('tbody');
-
-            // Check if data is an array of objects
-            if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object') {
-                // Assuming the first item represents the structure
-                const headers = Object.keys(data[0]);
-                const tr = document.createElement('tr');
-                headers.forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    tr.appendChild(th);
-                });
-                thead.appendChild(tr);
-
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    headers.forEach(header => {
-                        const td = document.createElement('td');
-                        td.textContent = item[header];
-                        row.appendChild(td);
-                    });
-                    tbody.appendChild(row);
-                });
-            } else if (typeof data === 'object' && data !== null) {
-                // Handle object data
-                const tr = document.createElement('tr');
-                tr.innerHTML = '<th>Key</th><th>Value</th>';
-                thead.appendChild(tr);
-
-                Object.keys(data).forEach(key => {
-                    const row = document.createElement('tr');
-                    const tdKey = document.createElement('td');
-                    tdKey.textContent = key;
-                    const tdValue = document.createElement('td');
-                    tdValue.textContent = JSON.stringify(data[key]);
-                    row.appendChild(tdKey);
-                    row.appendChild(tdValue);
-                    tbody.appendChild(row);
-                });
-            }
-
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            return table;
-        }
-        function populateDropdowns(staticData, container) {
-
-            const peImports = staticData.pe?.pe_imports;
-            const dllSelect = document.createElement('select');
-            dllSelect.classList.add('form-select', 'mb-3');
-
-            peImports.forEach(importEntry => {
-                const option = document.createElement('option');
-                option.value = importEntry.dll;
-                option.textContent = importEntry.dll;
-                dllSelect.appendChild(option);
-            });
-
-            dllSelect.addEventListener('change', () => {
-                const selectedDll = dllSelect.value;
-                const importsData = peImports.find(entry => entry.dll === selectedDll)?.imports;
-                displayDetails(importsData, container);
-            });
-
-            container.appendChild(dllSelect);
-            displayDetails(peImports[0].imports, container); // Default to first DLL's imports
-        }
-        function displayDetails(data, container) {
-            container.innerHTML = ''; // Clear previous details
-            if (!data) return;
-
-            const table = createDataTable(data); // Reuse the createDataTable function
-            container.appendChild(table);
-        }
 
         function populateInfoTab(data, container) {
             const infoFields = ['analysis_id', 'score', 'category'];
@@ -331,6 +205,7 @@
             const selectedData = analysisData.find(item => item.id == analysisSelect.value);
             if (selectedData) {
                 populateFields(selectedData.data);
+
             }
         }
     </script>
