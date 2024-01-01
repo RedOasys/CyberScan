@@ -17,12 +17,11 @@
     <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-header bg-primary text-white">
-                <h2 class="mb-0">
-                    PreAnalysis Information
-                </h2>
+                <h2 class="mb-0">PreAnalysis Information</h2>
             </div>
-            <div id="preAnalysisFields" class="card-body">
-                <!-- Content will be dynamically generated here -->
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="analysisTabs"></ul> <!-- Tabs -->
+                <div class="tab-content" id="tabContent"></div> <!-- Tab Content -->
             </div>
         </div>
     </div>
@@ -41,25 +40,81 @@
 
         function populateFields(data) {
             // Clear existing content
-            preAnalysisFields.innerHTML = '';
+            const tabs = document.getElementById('analysisTabs');
+            const content = document.getElementById('tabContent');
+            tabs.innerHTML = '';
+            content.innerHTML = '';
 
-            // Iterate over the data object and create UI elements for each field
+            let first = true;
             for (const key in data) {
                 if (data.hasOwnProperty(key)) {
-                    const value = data[key];
-                    const fieldContainer = document.createElement('div');
-                    fieldContainer.classList.add('mb-3');
+                    const tab = document.createElement('li');
+                    tab.className = 'nav-item';
+                    const tabLink = document.createElement('a');
+                    tabLink.className = 'nav-link';
+                    tabLink.id = key + '-tab';
+                    tabLink.href = '#' + key;
+                    tabLink.setAttribute('data-toggle', 'tab');
+                    tabLink.setAttribute('role', 'tab');
+                    tabLink.textContent = key;
+                    if (first) {
+                        tabLink.className += ' active';
+                        first = false;
+                    }
+                    tab.appendChild(tabLink);
+                    tabs.appendChild(tab);
 
-                    const fieldTitle = document.createElement('h5');
-                    fieldTitle.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                    const tabPane = document.createElement('div');
+                    tabPane.className = 'tab-pane fade';
+                    if (first) {
+                        tabPane.className += ' show active';
+                    }
+                    tabPane.id = key;
+                    tabPane.setAttribute('role', 'tabpanel');
+                    tabPane.setAttribute('aria-labelledby', key + '-tab');
 
-                    const fieldValue = document.createElement('p');
-                    fieldValue.textContent = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+                    // Call function to create content for each tab
+                    createTabContent(data[key], tabPane);
 
-                    fieldContainer.appendChild(fieldTitle);
-                    fieldContainer.appendChild(fieldValue);
-                    preAnalysisFields.appendChild(fieldContainer);
+                    content.appendChild(tabPane);
                 }
+            }
+        }
+
+        function createTabContent(data, container) {
+            if (Array.isArray(data)) {
+                // Handle arrays
+                const list = document.createElement('ul');
+                list.classList.add('list-unstyled');
+                data.forEach((item) => {
+                    const listItem = document.createElement('li');
+                    createTabContent(item, listItem); // Recursive call
+                    list.appendChild(listItem);
+                });
+                container.appendChild(list);
+            } else if (typeof data === 'object') {
+                // Handle objects
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const subContainer = document.createElement('div');
+                        subContainer.classList.add('mb-3');
+
+                        const label = document.createElement('strong');
+                        label.textContent = key + ': ';
+                        subContainer.appendChild(label);
+
+                        const valueContainer = document.createElement('div');
+                        createTabContent(data[key], valueContainer); // Recursive call
+                        subContainer.appendChild(valueContainer);
+
+                        container.appendChild(subContainer);
+                    }
+                }
+            } else {
+                // Handle primitive data types
+                const value = document.createElement('span');
+                value.textContent = data;
+                container.appendChild(value);
             }
         }
 
