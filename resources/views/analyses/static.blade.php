@@ -58,13 +58,54 @@
                     } else if (tabName === 'static') {
                         populateStaticTab(data[tabName], tabPane);
                     } else {
-                        createTabContent(data[tabName], tabPane);
+                        createGeneralTabContent(data[tabName], tabPane, tabName);
                     }
                     content.appendChild(tabPane);
 
                     first = false;
                 }
             });
+        }
+
+        function createGeneralTabContent(data, container, tabName) {
+            if (Array.isArray(data)) {
+                data.forEach(item => createTabContent(item, container));
+            } else if (typeof data === 'object' && data !== null) {
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const subContainer = document.createElement('div');
+                        subContainer.classList.add('mb-3');
+
+                        const label = document.createElement('strong');
+                        label.textContent = key + ': ';
+                        subContainer.appendChild(label);
+
+                        if (Array.isArray(data[key])) {
+                            const list = document.createElement('ul');
+                            data[key].forEach(item => {
+                                const listItem = document.createElement('li');
+                                createTabContent(item, listItem);
+                                list.appendChild(listItem);
+                            });
+                            subContainer.appendChild(list);
+                        } else if (typeof data[key] === 'object') {
+                            const valueContainer = document.createElement('div');
+                            createTabContent(data[key], valueContainer);
+                            subContainer.appendChild(valueContainer);
+                        } else {
+                            const value = document.createElement('span');
+                            value.textContent = data[key];
+                            subContainer.appendChild(value);
+                        }
+
+                        container.appendChild(subContainer);
+                    }
+                }
+            } else {
+                const value = document.createElement('span');
+                value.textContent = data;
+                container.appendChild(value);
+            }
         }
 
         function populateInfoTab(data, container) {
