@@ -14,17 +14,6 @@
         </div>
     </div>
 
-    <!-- Add the dropdown for selecting names -->
-    <div class="col-md-12">
-        <label for="static_names">Select Name:</label>
-        <select id="static_names" class="form-select mb-3">
-            <option value="">Select a Name</option>
-            @foreach($staticData as $name)
-                <option value="{{ $name['name'] }}">{{ $name['name'] }}</option>
-            @endforeach
-        </select>
-    </div>
-
     <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-header bg-primary text-white">
@@ -45,10 +34,9 @@
 
     <script>
         const analysisSelect = document.getElementById('analysis_id');
-        const staticNamesSelect = document.getElementById('static_names');
         const preAnalysisFields = document.getElementById('preAnalysisFields');
         const analysisData = @json($analyses); // JSON data assignment
-        const staticData = @json($staticData); // JSON data for static content
+
 
         function populateFields(data) {
             const tabs = document.getElementById('analysisTabs');
@@ -84,9 +72,6 @@
                 if (tabName === 'Info') {
                     // Populate the Info tab
                     populateInfoTab(data, tabPane);
-                } else if (tabName === 'static') {
-                    // Populate the Static tab with default content
-                    populateStaticTab(tabPane);
                 } else if (data[tabName]) {
                     // Populate other tabs
                     if (tabName === 'target') {
@@ -99,21 +84,6 @@
                 content.appendChild(tabPane);
                 first = false;
             });
-        }
-
-        populateStaticTab
-
-        function populateStaticTabContent(selectedName) {
-            const container = document.getElementById('static');
-            container.innerHTML = '';
-
-            const selectedStaticData = staticData.find(item => item.name === selectedName);
-
-            if (selectedStaticData) {
-                populateStaticTab(selectedStaticData, container);
-            } else {
-                container.textContent = 'No data for selected name';
-            }
         }
 
 
@@ -223,18 +193,12 @@
 
         analysisSelect.addEventListener('change', function () {
             const selectedId = this.value;
-            const selectedAnalysis = analysisData.find(item => item.id == selectedId);
-            if (selectedAnalysis && selectedAnalysis.data) {
-                populateStaticTab(selectedAnalysis.data.static, document.getElementById('tabContent'));
+            const selectedData = analysisData.find(item => item.id == selectedId);
+            if (selectedData) {
+                populateFields(selectedData.data);
             } else {
-                preAnalysisFields.innerHTML = 'No data available for selected analysis';
+                preAnalysisFields.innerHTML = '';
             }
-        });
-
-        staticNamesSelect.addEventListener('change', function () {
-            const selectedName = this.value;
-            // Call a function to populate the Static tab based on the selected name
-            populateStaticTabContent(selectedName);
         });
 
         if (analysisSelect.value) {
