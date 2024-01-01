@@ -36,7 +36,7 @@
     <script>
         const analysisSelect = document.getElementById('analysis_id');
         const preAnalysisFields = document.getElementById('preAnalysisFields');
-        const analysisData = @json($analyses); // Use @json for proper JSON encoding
+        const analysisData = @json($analyses); // JSON data assignment
 
 
         function populateFields(data) {
