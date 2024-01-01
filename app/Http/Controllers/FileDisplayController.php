@@ -76,6 +76,7 @@ class FileDisplayController extends Controller
                 'file_id' => $file->id,
                 'file_name' => $file->file_name,
                 'md5_hash' => $file->md5_hash,
+                'file_size_kb' => $file->file_size_kb, // Include file_size_kb in the response
                 'analysis_id' => $analysis ? $analysis->id : 'N/A',
                 'created_at' => $analysis ? $analysis->created_at : 'N/A',
                 'status' => $analysis ? $analysis->state : 'N/A',
