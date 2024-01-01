@@ -135,7 +135,7 @@
             modal.setAttribute('aria-hidden', 'true');
 
             const modalDialog = document.createElement('div');
-            modalDialog.className = 'modal-dialog';
+            modalDialog.className = 'modal-dialog modal-xl'; // Use modal-xl for extra large modal
             modal.appendChild(modalDialog);
 
             const modalContent = document.createElement('div');
@@ -162,20 +162,35 @@
             modalBody.className = 'modal-body';
             modalContent.appendChild(modalBody);
 
-            if (id === 'pe_imports' && Array.isArray(data)) {
-                modalBody.textContent = ''; // Clear default text content
-                data.forEach((dllImport, index) => {
-                    const dllButton = document.createElement('button');
-                    dllButton.className = 'btn btn-link';
-                    dllButton.type = 'button';
-                    dllButton.setAttribute('data-bs-toggle', 'collapse');
-                    dllButton.setAttribute('data-bs-target', `#collapse${index}`);
-                    dllButton.setAttribute('aria-expanded', 'false');
-                    dllButton.textContent = dllImport.dll;
+            // Create tab navigation
+            const navTabs = document.createElement('ul');
+            navTabs.className = 'nav nav-tabs';
+            navTabs.id = 'dllTabs';
+            modalBody.appendChild(navTabs);
 
-                    const importsCollapse = document.createElement('div');
-                    importsCollapse.id = `collapse${index}`;
-                    importsCollapse.className = 'collapse';
+            // Create tab content
+            const tabContent = document.createElement('div');
+            tabContent.className = 'tab-content';
+            modalBody.appendChild(tabContent);
+
+            if (id === 'pe_imports' && Array.isArray(data)) {
+                data.forEach((dllImport, index) => {
+                    // Tab for each DLL
+                    const tab = document.createElement('li');
+                    tab.className = 'nav-item';
+                    const tabLink = document.createElement('a');
+                    tabLink.className = 'nav-link' + (index === 0 ? ' active' : '');
+                    tabLink.id = `tab-${index}`;
+                    tabLink.setAttribute('data-bs-toggle', 'tab');
+                    tabLink.setAttribute('href', `#dll-${index}`);
+                    tabLink.textContent = dllImport.dll;
+                    tab.appendChild(tabLink);
+                    navTabs.appendChild(tab);
+
+                    // Content for each DLL
+                    const tabPane = document.createElement('div');
+                    tabPane.className = 'tab-pane fade' + (index === 0 ? ' show active' : '');
+                    tabPane.id = `dll-${index}`;
 
                     const importsList = document.createElement('ul');
                     dllImport.imports.forEach(importItem => {
@@ -183,13 +198,14 @@
                         listItem.textContent = `${importItem.name} (${importItem.address})`;
                         importsList.appendChild(listItem);
                     });
-                    importsCollapse.appendChild(importsList);
-
-                    modalBody.appendChild(dllButton);
-                    modalBody.appendChild(importsCollapse);
+                    tabPane.appendChild(importsList);
+                    tabContent.appendChild(tabPane);
                 });
             } else {
-                modalBody.textContent = JSON.stringify(data, null, 2);
+                // Default content for other data types
+                const content = document.createElement('p');
+                content.textContent = JSON.stringify(data, null, 2);
+                tabContent.appendChild(content);
             }
 
             container.appendChild(modal);
