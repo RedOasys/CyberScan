@@ -232,6 +232,34 @@
                     tabPane.appendChild(sectionDetails);
                     tabContent.appendChild(tabPane);
                 });
+            } else if (id === 'pe_resources' && Array.isArray(data)) {
+                data.forEach((resource, index) => {
+                    // Create a tab for each resource
+                    const tab = document.createElement('li');
+                    tab.className = 'nav-item';
+                    const tabLink = document.createElement('a');
+                    tabLink.className = 'nav-link' + (index === 0 ? ' active' : '');
+                    tabLink.id = `${id}-tab-${index}`;
+                    tabLink.setAttribute('data-bs-toggle', 'tab');
+                    tabLink.setAttribute('href', `#${id}-${index}`);
+                    tabLink.textContent = resource.name;
+                    tab.appendChild(tabLink);
+                    navTabs.appendChild(tab);
+
+                    // Create content for each resource
+                    const tabPane = document.createElement('div');
+                    tabPane.className = 'tab-pane fade' + (index === 0 ? ' show active' : '');
+                    tabPane.id = `${id}-${index}`;
+
+                    const resourceDetails = document.createElement('ul');
+                    Object.entries(resource).forEach(([key, value]) => {
+                        const detailItem = document.createElement('li');
+                        detailItem.textContent = `${key}: ${value}`;
+                        resourceDetails.appendChild(detailItem);
+                    });
+                    tabPane.appendChild(resourceDetails);
+                    tabContent.appendChild(tabPane);
+                });
             } else {
                 // Default content for other data types
                 const content = document.createElement('p');
