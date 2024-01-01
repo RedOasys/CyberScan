@@ -101,50 +101,7 @@
             });
         }
 
-        function populateStaticTab(staticData, container) {
-            if (!staticData || typeof staticData !== 'object') {
-                container.textContent = 'No static data available';
-                return;
-            }
-
-            // Assuming staticData is structured as shown in your JSON
-            const peData = staticData.pe;
-
-            if (!peData || typeof peData !== 'object') {
-                container.textContent = 'No PE data available';
-                return;
-            }
-
-            const table = document.createElement('table');
-            table.classList.add('table', 'table-striped'); // Bootstrap classes for styling
-
-            // Creating table header
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            ['Field', 'Value'].forEach(headerTitle => {
-                const headerCell = document.createElement('th');
-                headerCell.textContent = headerTitle;
-                headerRow.appendChild(headerCell);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            // Creating table body
-            const tbody = document.createElement('tbody');
-            Object.keys(peData).forEach(key => {
-                const row = document.createElement('tr');
-                const keyCell = document.createElement('td');
-                keyCell.textContent = key;
-                const valueCell = document.createElement('td');
-                valueCell.textContent = Array.isArray(peData[key]) ? peData[key].join(', ') : JSON.stringify(peData[key]);
-                row.appendChild(keyCell);
-                row.appendChild(valueCell);
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
-            container.appendChild(table);
-        }
+        populateStaticTab
 
         function populateStaticTabContent(selectedName) {
             const container = document.getElementById('static');
@@ -268,7 +225,7 @@
             const selectedId = this.value;
             const selectedAnalysis = analysisData.find(item => item.id == selectedId);
             if (selectedAnalysis && selectedAnalysis.data) {
-                populateStaticTab(selectedAnalysis.data.static, document.getElementById('staticTabContainer'));
+                populateStaticTab(selectedAnalysis.data.static, document.getElementById('tabContent'));
             } else {
                 preAnalysisFields.innerHTML = 'No data available for selected analysis';
             }
