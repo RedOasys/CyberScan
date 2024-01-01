@@ -85,6 +85,73 @@
                 first = false;
             });
         }
+        function populateStaticTab(staticData, container) {
+            const mainCategories = {
+                'PE Signatures': staticData.pe?.peid_signatures,
+                'PE Imports': staticData.pe?.pe_imports,
+                'PE Exports': staticData.pe?.pe_exports,
+                'PE Sections': staticData.pe?.pe_sections,
+                'PE Resources': staticData.pe?.pe_resources,
+                'PE VersionInfo': staticData.pe?.pe_versioninfo,
+                'Other': {
+                    'pe_imphash': staticData.pe?.pe_imphash,
+                    'pe_timestamp': staticData.pe?.pe_timestamp,
+                    'signatures': staticData.signatures
+                }
+            };
+
+            const select = document.createElement('select');
+            select.classList.add('form-select', 'mb-3');
+            select.addEventListener('change', () => displayStaticDetails(mainCategories, select.value, container));
+
+            // Populate dropdown with main categories
+            for (const category in mainCategories) {
+                if (mainCategories[category]) {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    select.appendChild(option);
+                }
+            }
+
+            container.appendChild(select);
+            displayStaticDetails(mainCategories, Object.keys(mainCategories)[0], container); // Default to first category
+        }
+        function displayStaticDetails(categories, selectedCategory, container) {
+            const detailsContainer = document.getElementById('staticDetails') || document.createElement('div');
+            detailsContainer.id = 'staticDetails';
+            detailsContainer.innerHTML = ''; // Clear previous details
+
+            const data = categories[selectedCategory];
+            if (data) {
+                // Display data based on the type of the selected category
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        const p = document.createElement('p');
+                        p.textContent = JSON.stringify(item);
+                        detailsContainer.appendChild(p);
+                    });
+                } else if (typeof data === 'object') {
+                    const table = document.createElement('table');
+                    table.classList.add('table', 'table-striped');
+                    const tbody = document.createElement('tbody');
+                    Object.entries(data).forEach(([key, value]) => {
+                        const row = document.createElement('tr');
+                        const keyCell = document.createElement('td');
+                        keyCell.textContent = key;
+                        const valueCell = document.createElement('td');
+                        valueCell.textContent = JSON.stringify(value);
+                        row.appendChild(keyCell);
+                        row.appendChild(valueCell);
+                        tbody.appendChild(row);
+                    });
+                    table.appendChild(tbody);
+                    detailsContainer.appendChild(table);
+                }
+            }
+
+            container.appendChild(detailsContainer);
+        }
 
         function populateInfoTab(data, container) {
             const infoFields = ['analysis_id', 'score', 'category'];
