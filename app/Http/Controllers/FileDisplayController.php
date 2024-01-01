@@ -46,60 +46,49 @@ class FileDisplayController extends Controller
         $start = $request->input('start'); // Starting point of records
         $length = $request->input('length'); // Number of records to fetch
         $searchValue = $request->input('search.value'); // Get the search value
-        $order = $request->input('order', []);
 
         // Build the initial query
         $query = FileUpload::with('staticAnalysis')
-            ->leftJoin('static_analyses', 'file_uploads.id', '=', 'static_analyses.file_upload_id')
-            ->select('file_uploads.*', 'static_analyses.id as analysis_id');
+            ->whereHas('staticAnalysis', function ($q) {
+                $q->where('state', '=', 'finished'); // Adjust this to your actual logic
+            })
+            ->orderBy('id', 'desc');
 
         // Filter query based on the search value
         if (!empty($searchValue)) {
             $query->where(function($q) use ($searchValue) {
-                $q->where('file_uploads.file_name', 'LIKE', "%{$searchValue}%")
-                    ->orWhere('file_uploads.md5_hash', 'LIKE', "%{$searchValue}%");
+                $q->where('file_name', 'LIKE', "%{$searchValue}%")
+                    ->orWhere('md5_hash', 'LIKE', "%{$searchValue}%");
             });
         }
 
         // Get filtered count
-        $totalFilteredRecords = $query->count();
+        $recordsFiltered = $query->count();
 
-        // Apply pagination and get results
+        // Apply pagination
         $files = $query->skip($start)->take($length)->get();
 
         // Map the data for DataTables
         $data = $files->map(function ($file) {
-            $analysis = $file->staticAnalysis; // Get the related StaticAnalysis object
-            $analysisId = $analysis ? $analysis->id : 'N/A'; // Check for null
+            $analysis = $file->staticAnalysis; // Adjust this based on your relationship
 
             return [
                 'DT_RowId' => 'row_' . $file->id,
                 'file_id' => $file->id,
                 'file_name' => $file->file_name,
                 'md5_hash' => $file->md5_hash,
-                'file_size_kb' => $file->file_size_kb,
+                'analysis_id' => $analysis ? $analysis->id : 'N/A',
+                'created_at' => $analysis ? $analysis->created_at : 'N/A',
+                'status' => $analysis ? $analysis->state : 'N/A',
                 'actions' => $analysis ? view('partials.analysis_actions', compact('file', 'analysis'))->render() : 'No Actions'
             ];
         });
 
-        if (!empty($order)) {
-            $orderColumnIndex = $order[0]['column']; // Column index
-            $orderDirection = $order[0]['dir']; // asc or desc
-
-            // Mapping column index to database column names
-            $columns = ['file_id', 'file_name', 'md5_hash', 'file_size_kb']; // Adjust this array based on your actual columns
-            $orderColumn = $columns[$orderColumnIndex];
-
-            $query->orderBy($orderColumn, $orderDirection);
-        }
-
-        $totalRecords = FileUpload::count();
-
         return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalFilteredRecords,
-            "data" => $data
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => FileUpload::count(),
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
         ]);
     }
 
