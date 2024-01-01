@@ -76,11 +76,9 @@
                     // Populate other tabs
                     if (tabName === 'target') {
                         populateTargetTab(data[tabName], tabPane);
-                    }
-                    if (tabName === 'static' && data['static'] && data['static'].pe) {
+                    } else if (tabName === 'static' && data['static'] && data['static'].pe) {
                         populateStaticTab(data['static'], tabPane);
-                    }
-                    else {
+                    } else {
                         createTabContent(data[tabName], tabPane);
                     }
                 }
