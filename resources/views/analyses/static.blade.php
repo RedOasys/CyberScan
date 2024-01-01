@@ -39,48 +39,76 @@
 
 
         function populateFields(data) {
-            // Clear existing content
             const tabs = document.getElementById('analysisTabs');
             const content = document.getElementById('tabContent');
             tabs.innerHTML = '';
             content.innerHTML = '';
 
+            // Tabs to be displayed
+            const requiredTabs = ['Info', 'target', 'static'];
             let first = true;
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    // Create the tab
-                    const tab = document.createElement('li');
-                    tab.className = 'nav-item';
-                    const tabLink = document.createElement('a');
-                    tabLink.className = 'nav-link' + (first ? ' active' : '');
-                    tabLink.id = key + '-tab';
-                    tabLink.href = '#' + key;
-                    tabLink.setAttribute('data-toggle', 'tab');
-                    tabLink.setAttribute('role', 'tab');
-                    tabLink.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-                    tab.appendChild(tabLink);
-                    tabs.appendChild(tab);
 
-                    // Create the tab pane
-                    const tabPane = document.createElement('div');
-                    tabPane.className = 'tab-pane fade' + (first ? ' show active' : '');
-                    tabPane.id = key;
-                    tabPane.setAttribute('role', 'tabpanel');
-                    tabPane.setAttribute('aria-labelledby', key + '-tab');
+            requiredTabs.forEach(tabName => {
+                // Create the tab
+                const tab = document.createElement('li');
+                tab.className = 'nav-item';
+                const tabLink = document.createElement('a');
+                tabLink.className = 'nav-link' + (first ? ' active' : '');
+                tabLink.id = tabName + '-tab';
+                tabLink.href = '#' + tabName;
+                tabLink.setAttribute('data-toggle', 'tab');
+                tabLink.setAttribute('role', 'tab');
+                tabLink.textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+                tab.appendChild(tabLink);
+                tabs.appendChild(tab);
 
-                    // Special handling for the 'target' tab
-                    if (key === 'target') {
-                        populateTargetTab(data[key], tabPane);
+                // Create the tab pane
+                const tabPane = document.createElement('div');
+                tabPane.className = 'tab-pane fade' + (first ? ' show active' : '');
+                tabPane.id = tabName;
+                tabPane.setAttribute('role', 'tabpanel');
+                tabPane.setAttribute('aria-labelledby', tabName + '-tab');
+
+                if (tabName === 'Info') {
+                    // Populate the Info tab
+                    populateInfoTab(data, tabPane);
+                } else if (data[tabName]) {
+                    // Populate other tabs
+                    if (tabName === 'target') {
+                        populateTargetTab(data[tabName], tabPane);
                     } else {
-                        // General handling for other tabs
-                        createTabContent(data[key], tabPane);
+                        createTabContent(data[tabName], tabPane);
                     }
-
-                    content.appendChild(tabPane);
-                    first = false;
                 }
-            }
+
+                content.appendChild(tabPane);
+                first = false;
+            });
         }
+
+        function populateInfoTab(data, container) {
+            const infoFields = ['analysis_id', 'score', 'category'];
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped');
+            const tbody = document.createElement('tbody');
+
+            infoFields.forEach(field => {
+                if (data.hasOwnProperty(field)) {
+                    const row = document.createElement('tr');
+                    const keyCell = document.createElement('td');
+                    keyCell.textContent = field;
+                    const valueCell = document.createElement('td');
+                    valueCell.textContent = data[field];
+                    row.appendChild(keyCell);
+                    row.appendChild(valueCell);
+                    tbody.appendChild(row);
+                }
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
 
         function populateTargetTab(targetData, container) {
             const table = document.createElement('table');
