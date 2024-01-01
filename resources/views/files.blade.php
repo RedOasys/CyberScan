@@ -220,17 +220,22 @@
                     if (!allFilesTableInitialized) {
                         var allFilesTable = $('#allFilesTable').DataTable({
                             processing: true,
-                            responsive: true,
-                            pageLength: -1,
-                            ajax: "{{ route('fetchAllFiles') }}",
+                            serverSide: true,
+                            ajax: {
+                                url: "{{ route('fetchAllFiles') }}",
+                                type: "GET",
+                                data: function (d) {
+                                    d.start = d.start;
+                                    d.length = d.length;
+                                    d.search = d.search.value;
+                                }
+                            },
                             columns: [
-                                {data: "file_id"},
-
-                                {data: "file_name"},
-                                {data: "md5_hash"},
-                                {data: "file_size_kb"},
-
-                                {data: "actions", orderable: false, searchable: false}
+                                { data: "file_id" },
+                                { data: "file_name" },
+                                { data: "md5_hash" },
+                                { data: "file_size_kb" },
+                                { data: "actions", orderable: false, searchable: false }
                             ],
                             createdRow: function (row, data, dataIndex) {
                                 // Check if an analysis exists for the file
