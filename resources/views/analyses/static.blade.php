@@ -13,6 +13,23 @@
                     @endif
                 @endforeach
             </select>
+            <div class="col-md-12">
+                <div class="card mb-5">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link text-white" data-toggle="collapse" data-target="#basicInfo">
+                                Static Analysis Information
+                            </button>
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><strong>Analysis ID:</strong> <span id="analysis_id_value"></span></li>
+                            <!-- Remove the other card fields here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -27,15 +44,22 @@
 
         function handlePopulateCards() {
             const selectedId = analysisSelect.value;
-            // You can add your logic here to populate the card fields based on the selected ID
-            // Example: fetch data from an API and update the card fields
+            document.getElementById("analysis_id_value").textContent = selectedId;
+            // You can add logic to populate other card fields here if needed
         }
 
-        // Add an event listener to handle changes in the dropdown selection
-        analysisSelect.addEventListener('change', handlePopulateCards);
+        document.addEventListener('DOMContentLoaded', function () {
+            analysisSelect.addEventListener('change', handlePopulateCards);
+        });
 
-        // Call the function to populate the card fields for the initial selected analysis (if any)
-        handlePopulateCards();
+        // Call the function to populate the card fields with data for the selected analysis
+        analysisSelect.addEventListener('change', function () {
+            handlePopulateCards();
+        });
+
+        // Populate card fields with data for the initial selected analysis (if any)
+        if (analysisSelect.value) {
+            handlePopulateCards();
+        }
     </script>
-
 @endsection
