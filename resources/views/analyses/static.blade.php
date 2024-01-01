@@ -86,14 +86,22 @@
             });
         }
         function populateStaticTab(staticData, container) {
-            // Main categories and their corresponding data mapping
+            // Define the categories
             const mainCategories = {
                 'PE Signatures': staticData.pe?.peid_signatures,
                 'PE Imports': staticData.pe?.pe_imports,
                 'PE Exports': staticData.pe?.pe_exports,
-                // ... Add other categories as needed
+                'PE Sections': staticData.pe?.pe_sections,
+                'PE Resources': staticData.pe?.pe_resources,
+                'PE VersionInfo': staticData.pe?.pe_versioninfo,
+                'Other': {
+                    'pe_imphash': staticData.pe?.pe_imphash,
+                    'pe_timestamp': staticData.pe?.pe_timestamp,
+                    'signatures': staticData.signatures
+                }
             };
 
+            // Create dropdown for main categories
             const select = document.createElement('select');
             select.classList.add('form-select', 'mb-3');
             select.addEventListener('change', () => displayStaticDetails(mainCategories, select.value, container));
@@ -109,11 +117,13 @@
             }
 
             container.appendChild(select);
-            displayStaticDetails(mainCategories, Object.keys(mainCategories)[0], container); // Default to first category
+            displayStaticDetails(mainCategories, Object.keys(mainCategories)[0], container); // Display first category by default
         }
+
         function displayStaticDetails(categories, selectedCategory, container) {
-            const detailsContainer = document.createElement('div');
-            detailsContainer.innerHTML = ''; // Clear previous details
+            const detailsContainer = document.getElementById('staticDetails') || document.createElement('div');
+            detailsContainer.id = 'staticDetails';
+            detailsContainer.innerHTML = '';
 
             const data = categories[selectedCategory];
             if (data) {
@@ -290,7 +300,6 @@
             }
         });
 
-        // Initialize fields if an analysis is already selected
         if (analysisSelect.value) {
             const selectedData = analysisData.find(item => item.id == analysisSelect.value);
             if (selectedData) {
