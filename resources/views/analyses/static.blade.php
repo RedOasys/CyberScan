@@ -86,18 +86,12 @@
             });
         }
         function populateStaticTab(staticData, container) {
+            // Main categories and their corresponding data mapping
             const mainCategories = {
                 'PE Signatures': staticData.pe?.peid_signatures,
                 'PE Imports': staticData.pe?.pe_imports,
                 'PE Exports': staticData.pe?.pe_exports,
-                'PE Sections': staticData.pe?.pe_sections,
-                'PE Resources': staticData.pe?.pe_resources,
-                'PE VersionInfo': staticData.pe?.pe_versioninfo,
-                'Other': {
-                    'pe_imphash': staticData.pe?.pe_imphash,
-                    'pe_timestamp': staticData.pe?.pe_timestamp,
-                    'signatures': staticData.signatures
-                }
+                // ... Add other categories as needed
             };
 
             const select = document.createElement('select');
@@ -106,7 +100,7 @@
 
             // Populate dropdown with main categories
             for (const category in mainCategories) {
-                if (mainCategories[category]) {
+                if (mainCategories.hasOwnProperty(category)) {
                     const option = document.createElement('option');
                     option.value = category;
                     option.textContent = category;
@@ -118,39 +112,68 @@
             displayStaticDetails(mainCategories, Object.keys(mainCategories)[0], container); // Default to first category
         }
         function displayStaticDetails(categories, selectedCategory, container) {
-            const detailsContainer = document.getElementById('staticDetails') || document.createElement('div');
-            detailsContainer.id = 'staticDetails';
+            const detailsContainer = document.createElement('div');
             detailsContainer.innerHTML = ''; // Clear previous details
 
             const data = categories[selectedCategory];
             if (data) {
-                // Display data based on the type of the selected category
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        const p = document.createElement('p');
-                        p.textContent = JSON.stringify(item);
-                        detailsContainer.appendChild(p);
-                    });
-                } else if (typeof data === 'object') {
-                    const table = document.createElement('table');
-                    table.classList.add('table', 'table-striped');
-                    const tbody = document.createElement('tbody');
-                    Object.entries(data).forEach(([key, value]) => {
-                        const row = document.createElement('tr');
-                        const keyCell = document.createElement('td');
-                        keyCell.textContent = key;
-                        const valueCell = document.createElement('td');
-                        valueCell.textContent = JSON.stringify(value);
-                        row.appendChild(keyCell);
-                        row.appendChild(valueCell);
-                        tbody.appendChild(row);
-                    });
-                    table.appendChild(tbody);
-                    detailsContainer.appendChild(table);
-                }
+                // Create and populate table based on selected category
+                const table = createDataTable(data);
+                detailsContainer.appendChild(table);
             }
 
             container.appendChild(detailsContainer);
+        }
+        function createDataTable(data) {
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            // Create headers and rows for array data
+            if (Array.isArray(data)) {
+                // Assuming the first item represents the structure
+                const headers = data.length > 0 ? Object.keys(data[0]) : [];
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    tr.appendChild(th);
+                });
+                thead.appendChild(tr);
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = item[header];
+                        row.appendChild(td);
+                    });
+                    tbody.appendChild(row);
+                });
+            }
+            // Create headers and rows for object data
+            else if (typeof data === 'object' && data !== null) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<th>Key</th><th>Value</th>';
+                thead.appendChild(tr);
+
+                Object.keys(data).forEach(key => {
+                    const row = document.createElement('tr');
+                    const tdKey = document.createElement('td');
+                    tdKey.textContent = key;
+                    const tdValue = document.createElement('td');
+                    // Check if value is an array or object and convert to string
+                    tdValue.textContent = Array.isArray(data[key]) || typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
+                    row.appendChild(tdKey);
+                    row.appendChild(tdValue);
+                    tbody.appendChild(row);
+                });
+            }
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            return table;
         }
 
         function populateInfoTab(data, container) {
