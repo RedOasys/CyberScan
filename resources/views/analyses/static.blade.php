@@ -200,6 +200,37 @@
                     });
                     tabPane.appendChild(importsList);
                     tabContent.appendChild(tabPane);
+                }   );}
+
+
+
+            else if (id === 'pe_sections' && Array.isArray(data)) {
+                data.forEach((section, index) => {
+                    // Create a tab for each section
+                    const tab = document.createElement('li');
+                    tab.className = 'nav-item';
+                    const tabLink = document.createElement('a');
+                    tabLink.className = 'nav-link' + (index === 0 ? ' active' : '');
+                    tabLink.id = `${id}-tab-${index}`;
+                    tabLink.setAttribute('data-bs-toggle', 'tab');
+                    tabLink.setAttribute('href', `#${id}-${index}`);
+                    tabLink.textContent = section.name;
+                    tab.appendChild(tabLink);
+                    navTabs.appendChild(tab);
+
+                    // Create content for each section
+                    const tabPane = document.createElement('div');
+                    tabPane.className = 'tab-pane fade' + (index === 0 ? ' show active' : '');
+                    tabPane.id = `${id}-${index}`;
+
+                    const sectionDetails = document.createElement('ul');
+                    Object.entries(section).forEach(([key, value]) => {
+                        const detailItem = document.createElement('li');
+                        detailItem.textContent = `${key}: ${value}`;
+                        sectionDetails.appendChild(detailItem);
+                    });
+                    tabPane.appendChild(sectionDetails);
+                    tabContent.appendChild(tabPane);
                 });
             } else {
                 // Default content for other data types
