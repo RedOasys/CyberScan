@@ -86,7 +86,7 @@
             });
         }
         function populateStaticTab(staticData, container) {
-            // Define the categories
+            // Define the categories and map them to data
             const mainCategories = {
                 'PE Signatures': staticData.pe?.peid_signatures,
                 'PE Imports': staticData.pe?.pe_imports,
@@ -108,7 +108,7 @@
 
             // Populate dropdown with main categories
             for (const category in mainCategories) {
-                if (mainCategories.hasOwnProperty(category)) {
+                if (mainCategories[category]) {
                     const option = document.createElement('option');
                     option.value = category;
                     option.textContent = category;
@@ -140,9 +140,10 @@
             const thead = document.createElement('thead');
             const tbody = document.createElement('tbody');
 
-            if (Array.isArray(data)) {
-                // Create headers and rows for array data
-                const headers = data.length > 0 ? Object.keys(data[0]) : [];
+            // Check if data is an array of objects
+            if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object') {
+                // Assuming the first item represents the structure
+                const headers = Object.keys(data[0]);
                 const tr = document.createElement('tr');
                 headers.forEach(header => {
                     const th = document.createElement('th');
@@ -161,7 +162,7 @@
                     tbody.appendChild(row);
                 });
             } else if (typeof data === 'object' && data !== null) {
-                // Create headers and rows for object data
+                // Handle object data
                 const tr = document.createElement('tr');
                 tr.innerHTML = '<th>Key</th><th>Value</th>';
                 thead.appendChild(tr);
@@ -171,7 +172,7 @@
                     const tdKey = document.createElement('td');
                     tdKey.textContent = key;
                     const tdValue = document.createElement('td');
-                    tdValue.textContent = Array.isArray(data[key]) || typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
+                    tdValue.textContent = JSON.stringify(data[key]);
                     row.appendChild(tdKey);
                     row.appendChild(tdValue);
                     tbody.appendChild(row);
