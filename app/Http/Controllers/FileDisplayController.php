@@ -43,8 +43,6 @@ class FileDisplayController extends Controller
     }
     public function fetchAllFiles(Request $request)
     {
-        $start = (int) $request->input('start', 0); // Ensure $start is an integer
-        $length = (int) $request->input('length', 10); // Ensure $length is an integer
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the initial query
@@ -62,15 +60,8 @@ class FileDisplayController extends Controller
             });
         }
 
+        $files = $query->get(); // Fetch all files
 
-        // Get filtered count
-        $recordsFiltered = $query->count();
-
-        if ($length == -1) {
-            $files = $query->get(); // Get all files if length is -1
-        } else {
-            $files = $query->skip($start)->take($length)->get();
-        }
         // Map the data for DataTables
         $data = $files->map(function ($file) {
             $analysis = $file->staticAnalysis; // Adjust this based on your relationship
@@ -91,7 +82,7 @@ class FileDisplayController extends Controller
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => FileUpload::count(),
-            'recordsFiltered' => $recordsFiltered,
+            'recordsFiltered' => $files->count(),
             'data' => $data
         ]);
     }

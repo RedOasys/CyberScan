@@ -219,16 +219,9 @@
                 $('#viewAllFilesModal').on('shown.bs.modal', function () {
                     if (!allFilesTableInitialized) {
                         var allFilesTable = $('#allFilesTable').DataTable({
-                            processing: true,
-                            
                             ajax: {
                                 url: "{{ route('fetchAllFiles') }}",
-                                type: "GET",
-                                data: function (d) {
-                                    d.start = d.start;
-                                    d.length = d.length;
-                                    d.search = d.search.value;
-                                }
+                                dataSrc: 'data'
                             },
                             columns: [
                                 { data: "file_id" },
