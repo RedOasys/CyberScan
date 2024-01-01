@@ -140,9 +140,8 @@
             const thead = document.createElement('thead');
             const tbody = document.createElement('tbody');
 
-            // Create headers and rows for array data
             if (Array.isArray(data)) {
-                // Assuming the first item represents the structure
+                // Create headers and rows for array data
                 const headers = data.length > 0 ? Object.keys(data[0]) : [];
                 const tr = document.createElement('tr');
                 headers.forEach(header => {
@@ -161,9 +160,8 @@
                     });
                     tbody.appendChild(row);
                 });
-            }
-            // Create headers and rows for object data
-            else if (typeof data === 'object' && data !== null) {
+            } else if (typeof data === 'object' && data !== null) {
+                // Create headers and rows for object data
                 const tr = document.createElement('tr');
                 tr.innerHTML = '<th>Key</th><th>Value</th>';
                 thead.appendChild(tr);
@@ -173,7 +171,6 @@
                     const tdKey = document.createElement('td');
                     tdKey.textContent = key;
                     const tdValue = document.createElement('td');
-                    // Check if value is an array or object and convert to string
                     tdValue.textContent = Array.isArray(data[key]) || typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
                     row.appendChild(tdKey);
                     row.appendChild(tdValue);
