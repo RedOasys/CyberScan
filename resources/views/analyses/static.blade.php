@@ -14,6 +14,17 @@
         </div>
     </div>
 
+    <!-- Add the dropdown for selecting names -->
+    <div class="col-md-12">
+        <label for="static_names">Select Name:</label>
+        <select id="static_names" class="form-select mb-3">
+            <option value="">Select a Name</option>
+            @foreach($staticData as $name)
+                <option value="{{ $name['name'] }}">{{ $name['name'] }}</option>
+            @endforeach
+        </select>
+    </div>
+
     <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-header bg-primary text-white">
@@ -34,9 +45,10 @@
 
     <script>
         const analysisSelect = document.getElementById('analysis_id');
+        const staticNamesSelect = document.getElementById('static_names');
         const preAnalysisFields = document.getElementById('preAnalysisFields');
         const analysisData = @json($analyses); // JSON data assignment
-
+        const staticData = @json($staticData); // JSON data for static content
 
         function populateFields(data) {
             const tabs = document.getElementById('analysisTabs');
@@ -72,6 +84,9 @@
                 if (tabName === 'Info') {
                     // Populate the Info tab
                     populateInfoTab(data, tabPane);
+                } else if (tabName === 'static') {
+                    // Populate the Static tab with default content
+                    populateStaticTab(tabPane);
                 } else if (data[tabName]) {
                     // Populate other tabs
                     if (tabName === 'target') {
@@ -84,6 +99,69 @@
                 content.appendChild(tabPane);
                 first = false;
             });
+        }
+
+        function populateStaticTab(container) {
+            const staticData = @json($staticData); // Assuming $staticData is available in your blade
+
+            if (!staticData || typeof staticData !== 'object') {
+                container.textContent = 'No static data available';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped'); // Bootstrap classes for styling
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headerKey = document.createElement('th');
+            headerKey.textContent = 'Key';
+            const headerValue = document.createElement('th');
+            headerValue.textContent = 'Value';
+            headerRow.appendChild(headerKey);
+            headerRow.appendChild(headerValue);
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+
+            Object.keys(staticData).forEach(key => {
+                const row = document.createElement('tr');
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                const valueCell = document.createElement('td');
+
+                // Special handling for arrays and objects
+                if (Array.isArray(staticData[key])) {
+                    valueCell.textContent = staticData[key].map(item => JSON.stringify(item)).join(', ');
+                } else if (typeof staticData[key] === 'object' && staticData[key] !== null) {
+                    valueCell.textContent = JSON.stringify(staticData[key]);
+                } else {
+                    valueCell.textContent = staticData[key];
+                }
+
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function populateStaticTabContent(selectedName) {
+            const container = document.getElementById('static');
+            container.innerHTML = '';
+
+            const selectedStaticData = staticData.find(item => item.name === selectedName);
+
+            if (selectedStaticData) {
+                populateStaticTab(selectedStaticData, container);
+            } else {
+                container.textContent = 'No data for selected name';
+            }
         }
 
 
@@ -201,11 +279,16 @@
             }
         });
 
+        staticNamesSelect.addEventListener('change', function () {
+            const selectedName = this.value;
+            // Call a function to populate the Static tab based on the selected name
+            populateStaticTabContent(selectedName);
+        });
+
         if (analysisSelect.value) {
             const selectedData = analysisData.find(item => item.id == analysisSelect.value);
             if (selectedData) {
                 populateFields(selectedData.data);
-
             }
         }
     </script>
