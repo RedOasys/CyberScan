@@ -48,37 +48,81 @@
             let first = true;
             for (const key in data) {
                 if (data.hasOwnProperty(key)) {
+                    // Create the tab
                     const tab = document.createElement('li');
                     tab.className = 'nav-item';
                     const tabLink = document.createElement('a');
-                    tabLink.className = 'nav-link';
+                    tabLink.className = 'nav-link' + (first ? ' active' : '');
                     tabLink.id = key + '-tab';
                     tabLink.href = '#' + key;
                     tabLink.setAttribute('data-toggle', 'tab');
                     tabLink.setAttribute('role', 'tab');
-                    tabLink.textContent = key;
-                    if (first) {
-                        tabLink.className += ' active';
-                        first = false;
-                    }
+                    tabLink.textContent = key.charAt(0).toUpperCase() + key.slice(1);
                     tab.appendChild(tabLink);
                     tabs.appendChild(tab);
 
+                    // Create the tab pane
                     const tabPane = document.createElement('div');
-                    tabPane.className = 'tab-pane fade';
-                    if (first) {
-                        tabPane.className += ' show active';
-                    }
+                    tabPane.className = 'tab-pane fade' + (first ? ' show active' : '');
                     tabPane.id = key;
                     tabPane.setAttribute('role', 'tabpanel');
                     tabPane.setAttribute('aria-labelledby', key + '-tab');
 
-                    // Call function to create content for each tab
-                    createTabContent(data[key], tabPane);
+                    // Special handling for the 'target' tab
+                    if (key === 'target') {
+                        populateTargetTab(data[key], tabPane);
+                    } else {
+                        // General handling for other tabs
+                        createTabContent(data[key], tabPane);
+                    }
 
                     content.appendChild(tabPane);
+                    first = false;
                 }
             }
+        }
+
+        function populateTargetTab(targetData, container) {
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped'); // Bootstrap classes for styling
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headerKey = document.createElement('th');
+            headerKey.textContent = 'Info';
+            const headerValue = document.createElement('th');
+            headerValue.textContent = 'Value';
+            headerRow.appendChild(headerKey);
+            headerRow.appendChild(headerValue);
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+
+            Object.keys(targetData).forEach(key => {
+                const row = document.createElement('tr');
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                const valueCell = document.createElement('td');
+
+                // Special handling for arrays and objects
+                if (Array.isArray(targetData[key])) {
+                    valueCell.textContent = targetData[key].map(item => JSON.stringify(item)).join(', ');
+                } else if (typeof targetData[key] === 'object' && targetData[key] !== null) {
+                    valueCell.textContent = JSON.stringify(targetData[key]);
+                } else {
+                    valueCell.textContent = targetData[key];
+                }
+
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
         }
 
         function createTabContent(data, container) {
@@ -86,13 +130,13 @@
                 // Handle arrays
                 const list = document.createElement('ul');
                 list.classList.add('list-unstyled');
-                data.forEach((item) => {
+                data.forEach(item => {
                     const listItem = document.createElement('li');
                     createTabContent(item, listItem); // Recursive call
                     list.appendChild(listItem);
                 });
                 container.appendChild(list);
-            } else if (typeof data === 'object') {
+            } else if (typeof data === 'object' && data !== null) {
                 // Handle objects
                 for (const key in data) {
                     if (data.hasOwnProperty(key)) {
