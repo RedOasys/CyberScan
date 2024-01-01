@@ -43,8 +43,8 @@ class FileDisplayController extends Controller
     }
     public function fetchAllFiles(Request $request)
     {
-        $start = $request->input('start'); // Starting point of records
-        $length = $request->input('length'); // Number of records to fetch
+        $start = (int) $request->input('start', 0); // Ensure $start is an integer
+        $length = (int) $request->input('length', 10); // Ensure $length is an integer
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the initial query
@@ -67,7 +67,6 @@ class FileDisplayController extends Controller
 
         // Apply pagination
         $files = $query->skip($start)->take($length)->get();
-
         // Map the data for DataTables
         $data = $files->map(function ($file) {
             $analysis = $file->staticAnalysis; // Adjust this based on your relationship
