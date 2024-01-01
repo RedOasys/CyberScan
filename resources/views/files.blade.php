@@ -220,7 +220,7 @@
                     if (!allFilesTableInitialized) {
                         var allFilesTable = $('#allFilesTable').DataTable({
                             processing: true,
-                            serverSide: true,
+                            
                             ajax: {
                                 url: "{{ route('fetchAllFiles') }}",
                                 type: "GET",
