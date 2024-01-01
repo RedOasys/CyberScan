@@ -58,54 +58,13 @@
                     } else if (tabName === 'static') {
                         populateStaticTab(data[tabName], tabPane);
                     } else {
-                        createGeneralTabContent(data[tabName], tabPane, tabName);
+                        createTabContent(data[tabName], tabPane);
                     }
                     content.appendChild(tabPane);
 
                     first = false;
                 }
             });
-        }
-
-        function createGeneralTabContent(data, container, tabName) {
-            if (Array.isArray(data)) {
-                data.forEach(item => createTabContent(item, container));
-            } else if (typeof data === 'object' && data !== null) {
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const subContainer = document.createElement('div');
-                        subContainer.classList.add('mb-3');
-
-                        const label = document.createElement('strong');
-                        label.textContent = key + ': ';
-                        subContainer.appendChild(label);
-
-                        if (Array.isArray(data[key])) {
-                            const list = document.createElement('ul');
-                            data[key].forEach(item => {
-                                const listItem = document.createElement('li');
-                                createTabContent(item, listItem);
-                                list.appendChild(listItem);
-                            });
-                            subContainer.appendChild(list);
-                        } else if (typeof data[key] === 'object') {
-                            const valueContainer = document.createElement('div');
-                            createTabContent(data[key], valueContainer);
-                            subContainer.appendChild(valueContainer);
-                        } else {
-                            const value = document.createElement('span');
-                            value.textContent = data[key];
-                            subContainer.appendChild(value);
-                        }
-
-                        container.appendChild(subContainer);
-                    }
-                }
-            } else {
-                const value = document.createElement('span');
-                value.textContent = data;
-                container.appendChild(value);
-            }
         }
 
         function populateInfoTab(data, container) {
@@ -116,49 +75,6 @@
                     container.appendChild(field);
                 }
             });
-        }
-        function populateTargetTab(targetData, container) {
-            // Create a table
-            const table = document.createElement('table');
-            table.classList.add('table');
-
-            // Create table header
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            const headerKey = document.createElement('th');
-            headerKey.textContent = 'Info';
-            const headerValue = document.createElement('th');
-            headerValue.textContent = 'Value';
-            headerRow.appendChild(headerKey);
-            headerRow.appendChild(headerValue);
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            // Create table body
-            const tbody = document.createElement('tbody');
-
-            Object.keys(targetData).forEach(key => {
-                const row = document.createElement('tr');
-                const keyCell = document.createElement('td');
-                keyCell.textContent = key;
-                const valueCell = document.createElement('td');
-
-                // Handle arrays and objects differently
-                if (Array.isArray(targetData[key])) {
-                    valueCell.textContent = targetData[key].map(item => JSON.stringify(item)).join(', ');
-                } else if (typeof targetData[key] === 'object' && targetData[key] !== null) {
-                    valueCell.textContent = JSON.stringify(targetData[key]);
-                } else {
-                    valueCell.textContent = targetData[key];
-                }
-
-                row.appendChild(keyCell);
-                row.appendChild(valueCell);
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
-            container.appendChild(table);
         }
 
         function populateStaticTab(staticData, container) {
@@ -186,38 +102,11 @@
 
             const selectedImport = imports[selectedIndex];
             if (selectedImport) {
-                // Create a table
-                const table = document.createElement('table');
-                table.classList.add('table');
-
-                // Create table header
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                const headerAddress = document.createElement('th');
-                headerAddress.textContent = 'Address';
-                const headerName = document.createElement('th');
-                headerName.textContent = 'Name';
-                headerRow.appendChild(headerAddress);
-                headerRow.appendChild(headerName);
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                // Create table body
-                const tbody = document.createElement('tbody');
-
                 selectedImport.imports.forEach(importDetail => {
-                    const row = document.createElement('tr');
-                    const addressCell = document.createElement('td');
-                    addressCell.textContent = importDetail.address;
-                    const nameCell = document.createElement('td');
-                    nameCell.textContent = importDetail.name;
-                    row.appendChild(addressCell);
-                    row.appendChild(nameCell);
-                    tbody.appendChild(row);
+                    const detail = document.createElement('p');
+                    detail.innerHTML = `<strong>Address:</strong> ${importDetail.address}, <strong>Name:</strong> ${importDetail.name}`;
+                    detailsContainer.appendChild(detail);
                 });
-
-                table.appendChild(tbody);
-                detailsContainer.appendChild(table);
             }
 
             container.appendChild(detailsContainer);
@@ -256,13 +145,13 @@
                 // Handle arrays
                 const list = document.createElement('ul');
                 list.classList.add('list-unstyled');
-                data.forEach(item => {
+                data.forEach((item) => {
                     const listItem = document.createElement('li');
-                    createTabContent(item, listItem); // Recursive call for each item
+                    createTabContent(item, listItem); // Recursive call
                     list.appendChild(listItem);
                 });
                 container.appendChild(list);
-            } else if (typeof data === 'object' && data !== null) {
+            } else if (typeof data === 'object') {
                 // Handle objects
                 for (const key in data) {
                     if (data.hasOwnProperty(key)) {
@@ -273,16 +162,9 @@
                         label.textContent = key + ': ';
                         subContainer.appendChild(label);
 
-                        if (typeof data[key] === 'object' && data[key] !== null) {
-                            const valueContainer = document.createElement('div');
-                            createTabContent(data[key], valueContainer); // Recursive call for nested objects
-                            subContainer.appendChild(valueContainer);
-                        } else {
-                            // Handle primitive data types within an object
-                            const value = document.createElement('span');
-                            value.textContent = data[key];
-                            subContainer.appendChild(value);
-                        }
+                        const valueContainer = document.createElement('div');
+                        createTabContent(data[key], valueContainer); // Recursive call
+                        subContainer.appendChild(valueContainer);
 
                         container.appendChild(subContainer);
                     }
