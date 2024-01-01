@@ -14,6 +14,7 @@ class AnalysisDisplayController extends Controller
             $analysis->parsed_data = json_decode($analysis->data, true);
             return $analysis;
         });
+        $analyses = PreAnalysis::all();
 
         // Create the analysisData array
         $analysisData = $preAnalyses->map(function ($analysis) {
@@ -28,7 +29,7 @@ class AnalysisDisplayController extends Controller
         });
 
         // Pass the preAnalyses and analysisData to the view
-        return view('analyses.static', compact('preAnalyses', 'analysisData'));
+        return view('analyses.static', compact('preAnalyses', 'analyses'));
     }
 
     public function dynamic()
