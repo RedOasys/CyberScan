@@ -109,13 +109,50 @@
         }
 
         function populateInfoTab(data, container) {
-            ['analysis_id', 'score', 'category', 'sha256'].forEach(key => {
+            // Create a table
+            const table = document.createElement('table');
+            table.classList.add('table');
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headerKey = document.createElement('th');
+            headerKey.textContent = 'Key';
+            const headerValue = document.createElement('th');
+            headerValue.textContent = 'Value';
+            headerRow.appendChild(headerKey);
+            headerRow.appendChild(headerValue);
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+
+            // List of keys to display in the Info tab
+            const infoKeys = ['filename', 'orig_filename', 'platforms', 'size', 'filetype', 'media_type', 'extrpath', 'password', 'machine_tags', 'container', 'sha256', 'sha1', 'md5'];
+
+            infoKeys.forEach(key => {
                 if (data[key]) {
-                    const field = document.createElement('p');
-                    field.innerHTML = `<strong>${key}:</strong> ${data[key]}`;
-                    container.appendChild(field);
+                    const row = document.createElement('tr');
+                    const keyCell = document.createElement('td');
+                    keyCell.textContent = key;
+                    const valueCell = document.createElement('td');
+
+                    // Special handling for objects like 'platforms'
+                    if (typeof data[key] === 'object' && data[key] !== null) {
+                        valueCell.textContent = JSON.stringify(data[key]);
+                    } else {
+                        valueCell.textContent = data[key];
+                    }
+
+                    row.appendChild(keyCell);
+                    row.appendChild(valueCell);
+                    tbody.appendChild(row);
                 }
             });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
         }
 
         function populateStaticTab(staticData, container) {
