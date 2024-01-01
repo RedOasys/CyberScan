@@ -28,7 +28,7 @@ class AnalysisDisplayController extends Controller
         });
 
         // Pass the preAnalyses and analysisData to the view
-        return view('pre_analyses.display', compact('preAnalyses', 'analysisData'));
+        return view('analyses.static', compact('preAnalyses', 'analysisData'));
     }
 
     public function dynamic()
