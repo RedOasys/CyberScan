@@ -34,9 +34,7 @@
 
     <script>
         const analysisSelect = document.getElementById('analysis_id');
-        const preAnalysisFields = document.getElementById('preAnalysisFields');
         const analysisData = @json($analyses); // JSON data assignment
-
 
         function populateFields(data) {
             const tabs = document.getElementById('analysisTabs');
@@ -44,114 +42,52 @@
             tabs.innerHTML = '';
             content.innerHTML = '';
 
-            // Tabs to be displayed
-            const requiredTabs = ['Info', 'target', 'static'];
-            let first = true;
+            // Define the hierarchical structure
+            const hierarchy = {
+                "Info": ["analysis_id", "score", "category"],
+                "target": ["pe", "dll", "imports", "name"], // Adjust this hierarchy as needed
+                "static": ["pe", "pe_imports", "dll", "imports", "name"] // Adjust this hierarchy as needed
+                // Add more categories and their subcategories as needed
+            };
 
-            requiredTabs.forEach(tabName => {
-                // Create the tab
-                const tab = document.createElement('li');
-                tab.className = 'nav-item';
-                const tabLink = document.createElement('a');
-                tabLink.className = 'nav-link' + (first ? ' active' : '');
-                tabLink.id = tabName + '-tab';
-                tabLink.href = '#' + tabName;
-                tabLink.setAttribute('data-toggle', 'tab');
-                tabLink.setAttribute('role', 'tab');
-                tabLink.textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-                tab.appendChild(tabLink);
-                tabs.appendChild(tab);
+            // Create tabs and content based on the hierarchy
+            for (const tabName in hierarchy) {
+                if (hierarchy.hasOwnProperty(tabName)) {
+                    const tab = document.createElement('li');
+                    tab.className = 'nav-item';
+                    const tabLink = document.createElement('a');
+                    tabLink.className = 'nav-link';
+                    tabLink.id = tabName + '-tab';
+                    tabLink.href = '#' + tabName;
+                    tabLink.setAttribute('data-toggle', 'tab');
+                    tabLink.setAttribute('role', 'tab');
+                    tabLink.textContent = tabName;
+                    tab.appendChild(tabLink);
+                    tabs.appendChild(tab);
 
-                // Create the tab pane
-                const tabPane = document.createElement('div');
-                tabPane.className = 'tab-pane fade' + (first ? ' show active' : '');
-                tabPane.id = tabName;
-                tabPane.setAttribute('role', 'tabpanel');
-                tabPane.setAttribute('aria-labelledby', tabName + '-tab');
+                    const tabPane = document.createElement('div');
+                    tabPane.className = 'tab-pane fade';
+                    tabPane.id = tabName;
+                    tabPane.setAttribute('role', 'tabpanel');
+                    tabPane.setAttribute('aria-labelledby', tabName + '-tab');
+                    content.appendChild(tabPane);
 
-                if (tabName === 'Info') {
-                    // Populate the Info tab
-                    populateInfoTab(data, tabPane);
-                } else if (data[tabName]) {
-                    // Populate other tabs
-                    if (tabName === 'target') {
-                        populateTargetTab(data[tabName], tabPane);
-                    } else {
-                        createTabContent(data[tabName], tabPane);
+                    // Populate the content based on the hierarchy
+                    let currentData = data;
+                    for (const subcategory of hierarchy[tabName]) {
+                        if (currentData.hasOwnProperty(subcategory)) {
+                            currentData = currentData[subcategory];
+                        } else {
+                            currentData = null;
+                            break;
+                        }
+                    }
+
+                    if (currentData) {
+                        createTabContent(currentData, tabPane);
                     }
                 }
-
-                content.appendChild(tabPane);
-                first = false;
-            });
-        }
-
-
-        function populateInfoTab(data, container) {
-            const infoFields = ['analysis_id', 'score', 'category'];
-            const table = document.createElement('table');
-            table.classList.add('table', 'table-striped');
-            const tbody = document.createElement('tbody');
-
-            infoFields.forEach(field => {
-                if (data.hasOwnProperty(field)) {
-                    const row = document.createElement('tr');
-                    const keyCell = document.createElement('td');
-                    keyCell.textContent = field;
-                    const valueCell = document.createElement('td');
-                    valueCell.textContent = data[field];
-                    row.appendChild(keyCell);
-                    row.appendChild(valueCell);
-                    tbody.appendChild(row);
-                }
-            });
-
-            table.appendChild(tbody);
-            container.appendChild(table);
-        }
-
-
-        function populateTargetTab(targetData, container) {
-            const table = document.createElement('table');
-            table.classList.add('table', 'table-striped'); // Bootstrap classes for styling
-
-            // Create table header
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            const headerKey = document.createElement('th');
-            headerKey.textContent = 'Info';
-            const headerValue = document.createElement('th');
-            headerValue.textContent = 'Value';
-            headerRow.appendChild(headerKey);
-            headerRow.appendChild(headerValue);
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            // Create table body
-            const tbody = document.createElement('tbody');
-
-            Object.keys(targetData).forEach(key => {
-                const row = document.createElement('tr');
-                const keyCell = document.createElement('td');
-                keyCell.textContent = key;
-                const valueCell = document.createElement('td');
-
-                // Special handling for arrays and objects
-                if (Array.isArray(targetData[key])) {
-                    valueCell.textContent = targetData[key].map(item => JSON.stringify(item)).join(', ');
-                } else if (typeof targetData[key] === 'object' && targetData[key] !== null) {
-                    valueCell.textContent = JSON.stringify(targetData[key]);
-                } else {
-                    valueCell.textContent = targetData[key];
-                }
-
-                row.appendChild(keyCell);
-                row.appendChild(valueCell);
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
-            container.appendChild(table);
+            }
         }
 
         function createTabContent(data, container) {
@@ -197,7 +133,10 @@
             if (selectedData) {
                 populateFields(selectedData.data);
             } else {
-                preAnalysisFields.innerHTML = '';
+                const tabs = document.getElementById('analysisTabs');
+                const content = document.getElementById('tabContent');
+                tabs.innerHTML = '';
+                content.innerHTML = '';
             }
         });
 
