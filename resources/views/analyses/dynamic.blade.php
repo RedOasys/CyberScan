@@ -277,6 +277,85 @@
             }
         }
 
+        function generateTabsAndContent(data) {
+            // Clear existing content
+            const tabs = document.getElementById('myTab');
+            const content = document.getElementById('myTabContent');
+            tabs.innerHTML = '';
+            content.innerHTML = '';
+
+            // Example: Creating a tab for 'Signatures'
+            createTab(tabs, content, 'Signatures', data.signatures);
+
+            // Further tabs can be added similarly for other sections like IOCs, Files, etc.
+
+            // Activate the first tab by default
+            if (tabs.children.length > 0) {
+                tabs.children[0].querySelector('a').classList.add('active');
+                content.children[0].classList.add('show', 'active');
+            }
+        }
+
+        function createTab(tabsContainer, contentContainer, tabName, data) {
+            // Create tab
+            const tab = document.createElement('li');
+            tab.className = 'nav-item';
+            const tabLink = document.createElement('a');
+            tabLink.className = 'nav-link';
+            tabLink.id = `${tabName}-tab`;
+            tabLink.href = `#${tabName}`;
+            tabLink.setAttribute('data-toggle', 'tab');
+            tabLink.setAttribute('role', 'tab');
+            tabLink.textContent = tabName;
+            tab.appendChild(tabLink);
+            tabsContainer.appendChild(tab);
+
+            // Create tab content
+            const tabPane = document.createElement('div');
+            tabPane.className = 'tab-pane fade';
+            tabPane.id = tabName;
+            tabPane.setAttribute('role', 'tabpanel');
+            tabPane.setAttribute('aria-labelledby', `${tabName}-tab`);
+
+            // Depending on the data type, you can create different UI elements here
+            if (tabName === 'Signatures') {
+                createSignaturesContent(tabPane, data);
+            }
+
+            contentContainer.appendChild(tabPane);
+        }
+
+        function createSignaturesContent(container, data) {
+            // Create table for signatures
+            const table = document.createElement('table');
+            table.className = 'table table-striped';
+            const thead = document.createElement('thead');
+            const trHead = document.createElement('tr');
+            ['Name', 'Description', 'Score'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            data.forEach(signature => {
+                const tr = document.createElement('tr');
+                ['name', 'description', 'score'].forEach(key => {
+                    const td = document.createElement('td');
+                    td.textContent = signature[key];
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+        generateTabsAndContent(analysisData);
+
+
+
 
 
         document.addEventListener('DOMContentLoaded', function () {
