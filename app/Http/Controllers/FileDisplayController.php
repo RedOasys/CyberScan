@@ -43,42 +43,37 @@ class FileDisplayController extends Controller
     }
     public function fetchAllFiles(Request $request)
     {
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 10);
-        $search = $request->input('search.value', '');
+        $start = $request->input('start'); // Starting point of records
+        $length = $request->input('length'); // Number of records to fetch
+        $searchValue = $request->input('search.value'); // Get the search value
         $order = $request->input('order', []);
 
-        // Query for getting total records
-        $totalQuery = FileUpload::query();
-        $totalRecords = $totalQuery->count();
-
-        // Query for getting filtered data
-        $filesQuery = FileUpload::query()
+        // Build the initial query
+        $query = FileUpload::with('staticAnalysis')
             ->leftJoin('static_analyses', 'file_uploads.id', '=', 'static_analyses.file_upload_id')
-            ->select('file_uploads.*', 'static_analyses.id as analysis_id')
-            ->with('staticAnalysis');
+            ->select('file_uploads.*', 'static_analyses.id as analysis_id');
 
-        // Apply search filter
-        if (!empty($search)) {
-            $filesQuery->where(function($query) use ($search) {
-                $query->where('file_uploads.file_name', 'LIKE', "%{$search}%")
-                    ->orWhere('file_uploads.md5_hash', 'LIKE', "%{$search}%");
+        // Filter query based on the search value
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('file_uploads.file_name', 'LIKE', "%{$searchValue}%")
+                    ->orWhere('file_uploads.md5_hash', 'LIKE', "%{$searchValue}%");
             });
         }
 
+        // Get filtered count
+        $totalFilteredRecords = $query->count();
 
-        $totalFilteredRecords = $filesQuery->count();
+        // Apply pagination and get results
+        $files = $query->skip($start)->take($length)->get();
 
-        // Apply pagination
-        $files = $filesQuery->skip($start)->take($length)->get();
-
-        // Map data for DataTables
+        // Map the data for DataTables
         $data = $files->map(function ($file) {
             $analysis = $file->staticAnalysis; // Get the related StaticAnalysis object
-
             $analysisId = $analysis ? $analysis->id : 'N/A'; // Check for null
 
             return [
+                'DT_RowId' => 'row_' . $file->id,
                 'file_id' => $file->id,
                 'file_name' => $file->file_name,
                 'md5_hash' => $file->md5_hash,
@@ -86,6 +81,7 @@ class FileDisplayController extends Controller
                 'actions' => $analysis ? view('partials.analysis_actions', compact('file', 'analysis'))->render() : 'No Actions'
             ];
         });
+
         if (!empty($order)) {
             $orderColumnIndex = $order[0]['column']; // Column index
             $orderDirection = $order[0]['dir']; // asc or desc
@@ -94,8 +90,10 @@ class FileDisplayController extends Controller
             $columns = ['file_id', 'file_name', 'md5_hash', 'file_size_kb']; // Adjust this array based on your actual columns
             $orderColumn = $columns[$orderColumnIndex];
 
-            $filesQuery->orderBy($orderColumn, $orderDirection);
+            $query->orderBy($orderColumn, $orderDirection);
         }
+
+        $totalRecords = FileUpload::count();
 
         return response()->json([
             "draw" => intval($request->input('draw')),
