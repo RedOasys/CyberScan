@@ -143,11 +143,38 @@
 
             const selectedImport = imports[selectedIndex];
             if (selectedImport) {
+                // Create a table
+                const table = document.createElement('table');
+                table.classList.add('table');
+
+                // Create table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const headerAddress = document.createElement('th');
+                headerAddress.textContent = 'Address';
+                const headerName = document.createElement('th');
+                headerName.textContent = 'Name';
+                headerRow.appendChild(headerAddress);
+                headerRow.appendChild(headerName);
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // Create table body
+                const tbody = document.createElement('tbody');
+
                 selectedImport.imports.forEach(importDetail => {
-                    const detail = document.createElement('p');
-                    detail.innerHTML = `<strong>Address:</strong> ${importDetail.address}, <strong>Name:</strong> ${importDetail.name}`;
-                    detailsContainer.appendChild(detail);
+                    const row = document.createElement('tr');
+                    const addressCell = document.createElement('td');
+                    addressCell.textContent = importDetail.address;
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = importDetail.name;
+                    row.appendChild(addressCell);
+                    row.appendChild(nameCell);
+                    tbody.appendChild(row);
                 });
+
+                table.appendChild(tbody);
+                detailsContainer.appendChild(table);
             }
 
             container.appendChild(detailsContainer);
