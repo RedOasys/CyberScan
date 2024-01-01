@@ -186,13 +186,13 @@
                 // Handle arrays
                 const list = document.createElement('ul');
                 list.classList.add('list-unstyled');
-                data.forEach((item) => {
+                data.forEach(item => {
                     const listItem = document.createElement('li');
-                    createTabContent(item, listItem); // Recursive call
+                    createTabContent(item, listItem); // Recursive call for each item
                     list.appendChild(listItem);
                 });
                 container.appendChild(list);
-            } else if (typeof data === 'object') {
+            } else if (typeof data === 'object' && data !== null) {
                 // Handle objects
                 for (const key in data) {
                     if (data.hasOwnProperty(key)) {
@@ -203,9 +203,16 @@
                         label.textContent = key + ': ';
                         subContainer.appendChild(label);
 
-                        const valueContainer = document.createElement('div');
-                        createTabContent(data[key], valueContainer); // Recursive call
-                        subContainer.appendChild(valueContainer);
+                        if (typeof data[key] === 'object' && data[key] !== null) {
+                            const valueContainer = document.createElement('div');
+                            createTabContent(data[key], valueContainer); // Recursive call for nested objects
+                            subContainer.appendChild(valueContainer);
+                        } else {
+                            // Handle primitive data types within an object
+                            const value = document.createElement('span');
+                            value.textContent = data[key];
+                            subContainer.appendChild(value);
+                        }
 
                         container.appendChild(subContainer);
                     }
