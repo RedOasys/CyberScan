@@ -77,8 +77,8 @@
                     if (tabName === 'target') {
                         populateTargetTab(data[tabName], tabPane);
                     }
-                    if (tabName === 'static') {
-                        createDropdownContent(data['static'], tabPane);
+                    if (tabName === 'static' && data['static'] && data['static'].pe) {
+                        populateStaticTab(data['static'], tabPane);
                     }
                     else {
                         createTabContent(data[tabName], tabPane);
@@ -88,6 +88,81 @@
                 content.appendChild(tabPane);
                 first = false;
             });
+        }
+
+        function populateStaticTab(staticData, container) {
+            const staticFields = ['peid_signatures', 'pe_imports', 'pe_exports', 'pe_sections', 'pe_resources', 'pe_imphash', 'pe_timestamp'];
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped');
+            const tbody = document.createElement('tbody');
+
+            staticFields.forEach(field => {
+                const row = document.createElement('tr');
+                const keyCell = document.createElement('td');
+                keyCell.textContent = field;
+                const valueCell = document.createElement('td');
+
+                if (field === 'peid_signatures') {
+                    valueCell.textContent = staticData.pe[field].join(', '); // Assuming it's an array
+                } else if (staticData.pe[field]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-primary';
+                    btn.textContent = 'View Details';
+                    btn.setAttribute('data-bs-toggle', 'modal');
+                    btn.setAttribute('data-bs-target', `#${field}Modal`);
+                    valueCell.appendChild(btn);
+                    createModal(field, staticData.pe[field], container);
+                }
+
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function createModal(id, data, container) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = `${id}Modal`;
+            modal.setAttribute('tabindex', '-1');
+            modal.setAttribute('aria-labelledby', `${id}ModalLabel`);
+            modal.setAttribute('aria-hidden', 'true');
+
+            const modalDialog = document.createElement('div');
+            modalDialog.className = 'modal-dialog';
+            modal.appendChild(modalDialog);
+
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            modalDialog.appendChild(modalContent);
+
+            const modalHeader = document.createElement('div');
+            modalHeader.className = 'modal-header';
+            modalContent.appendChild(modalHeader);
+
+            const modalTitle = document.createElement('h5');
+            modalTitle.className = 'modal-title';
+            modalTitle.id = `${id}ModalLabel`;
+            modalTitle.textContent = id;
+            modalHeader.appendChild(modalTitle);
+
+            const closeButton = document.createElement('button');
+            closeButton.className = 'btn-close';
+            closeButton.setAttribute('data-bs-dismiss', 'modal');
+            closeButton.setAttribute('aria-label', 'Close');
+            modalHeader.appendChild(closeButton);
+
+            const modalBody = document.createElement('div');
+            modalBody.className = 'modal-body';
+            modalContent.appendChild(modalBody);
+
+            // Populate modal body based on data
+            modalBody.textContent = JSON.stringify(data, null, 2); // For simplicity, just stringify the data
+
+            container.appendChild(modal);
         }
         function createDropdownContent(data, container, level = 0) {
             if (typeof data === 'object' && data !== null) {
