@@ -39,58 +39,47 @@
 
 
         function populateFields(data) {
+            // Clear existing content
             const tabs = document.getElementById('analysisTabs');
             const content = document.getElementById('tabContent');
             tabs.innerHTML = '';
             content.innerHTML = '';
 
-            // Define which tabs to display
-            const tabsToDisplay = ['Info', 'Target', 'Static'];
-
-            tabsToDisplay.forEach(tabName => {
-                if (data.hasOwnProperty(tabName.toLowerCase())) {
+            let first = true;
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
                     // Create the tab
                     const tab = document.createElement('li');
                     tab.className = 'nav-item';
                     const tabLink = document.createElement('a');
-                    tabLink.className = 'nav-link';
-                    tabLink.id = tabName + '-tab';
-                    tabLink.href = '#' + tabName.toLowerCase();
+                    tabLink.className = 'nav-link' + (first ? ' active' : '');
+                    tabLink.id = key + '-tab';
+                    tabLink.href = '#' + key;
                     tabLink.setAttribute('data-toggle', 'tab');
                     tabLink.setAttribute('role', 'tab');
-                    tabLink.textContent = tabName;
+                    tabLink.textContent = key.charAt(0).toUpperCase() + key.slice(1);
                     tab.appendChild(tabLink);
                     tabs.appendChild(tab);
 
                     // Create the tab pane
                     const tabPane = document.createElement('div');
-                    tabPane.className = 'tab-pane fade';
-                    tabPane.id = tabName.toLowerCase();
+                    tabPane.className = 'tab-pane fade' + (first ? ' show active' : '');
+                    tabPane.id = key;
                     tabPane.setAttribute('role', 'tabpanel');
-                    tabPane.setAttribute('aria-labelledby', tabName + '-tab');
+                    tabPane.setAttribute('aria-labelledby', key + '-tab');
 
-                    if (tabName === 'Info') {
-                        populateInfoTab(data, tabPane);
-                    } else if (tabName === 'Target') {
-                        populateTargetTab(data.target, tabPane);
-                    } else if (tabName === 'Static') {
-                        populateStaticTab(data.static, tabPane);
+                    // Special handling for the 'target' tab
+                    if (key === 'target') {
+                        populateTargetTab(data[key], tabPane);
+                    } else {
+                        // General handling for other tabs
+                        createTabContent(data[key], tabPane);
                     }
 
                     content.appendChild(tabPane);
+                    first = false;
                 }
-            });
-        }
-
-        function populateInfoTab(data, container) {
-            const infoFields = ['analysis_id', 'score', 'category'];
-            infoFields.forEach(key => {
-                if (data[key]) {
-                    const field = document.createElement('p');
-                    field.innerHTML = `<strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${data[key]}`;
-                    container.appendChild(field);
-                }
-            });
+            }
         }
 
         function populateTargetTab(targetData, container) {
