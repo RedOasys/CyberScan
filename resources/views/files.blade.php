@@ -221,7 +221,7 @@
                         var allFilesTable = $('#allFilesTable').DataTable({
                             processing: true,
                             responsive: true,
-
+                            pageLength: -1,
                             ajax: "{{ route('fetchAllFiles') }}",
                             columns: [
                                 {data: "file_id"},
