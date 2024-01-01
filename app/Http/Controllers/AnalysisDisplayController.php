@@ -36,7 +36,9 @@ class AnalysisDisplayController extends Controller
                 'target' => [
                     'filename' => $parsedData['target']['filename'] ?? null,
                     'orig_filename' => $parsedData['target']['orig_filename'] ?? null,
-                    'platforms' => $targetPlatform,
+                    'platforms' => [
+                        $targetPlatform,
+                    ],
                     'size' => $parsedData['target']['size'] ?? null,
                     'filetype' => $parsedData['target']['filetype'] ?? null,
                     'media_type' => $parsedData['target']['media_type'] ?? null,
