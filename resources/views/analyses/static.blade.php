@@ -101,47 +101,42 @@
             });
         }
 
-        function populateStaticTab(container) {
-            const staticData = @json($staticData); // Assuming $staticData is available in your blade
-
+        function populateStaticTab(staticData, container) {
             if (!staticData || typeof staticData !== 'object') {
                 container.textContent = 'No static data available';
+                return;
+            }
+
+            // Assuming staticData is structured as shown in your JSON
+            const peData = staticData.pe;
+
+            if (!peData || typeof peData !== 'object') {
+                container.textContent = 'No PE data available';
                 return;
             }
 
             const table = document.createElement('table');
             table.classList.add('table', 'table-striped'); // Bootstrap classes for styling
 
-            // Create table header
+            // Creating table header
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            const headerKey = document.createElement('th');
-            headerKey.textContent = 'Key';
-            const headerValue = document.createElement('th');
-            headerValue.textContent = 'Value';
-            headerRow.appendChild(headerKey);
-            headerRow.appendChild(headerValue);
+            ['Field', 'Value'].forEach(headerTitle => {
+                const headerCell = document.createElement('th');
+                headerCell.textContent = headerTitle;
+                headerRow.appendChild(headerCell);
+            });
             thead.appendChild(headerRow);
             table.appendChild(thead);
 
-            // Create table body
+            // Creating table body
             const tbody = document.createElement('tbody');
-
-            Object.keys(staticData).forEach(key => {
+            Object.keys(peData).forEach(key => {
                 const row = document.createElement('tr');
                 const keyCell = document.createElement('td');
                 keyCell.textContent = key;
                 const valueCell = document.createElement('td');
-
-                // Special handling for arrays and objects
-                if (Array.isArray(staticData[key])) {
-                    valueCell.textContent = staticData[key].map(item => JSON.stringify(item)).join(', ');
-                } else if (typeof staticData[key] === 'object' && staticData[key] !== null) {
-                    valueCell.textContent = JSON.stringify(staticData[key]);
-                } else {
-                    valueCell.textContent = staticData[key];
-                }
-
+                valueCell.textContent = Array.isArray(peData[key]) ? peData[key].join(', ') : JSON.stringify(peData[key]);
                 row.appendChild(keyCell);
                 row.appendChild(valueCell);
                 tbody.appendChild(row);
@@ -271,11 +266,11 @@
 
         analysisSelect.addEventListener('change', function () {
             const selectedId = this.value;
-            const selectedData = analysisData.find(item => item.id == selectedId);
-            if (selectedData) {
-                populateFields(selectedData.data);
+            const selectedAnalysis = analysisData.find(item => item.id == selectedId);
+            if (selectedAnalysis && selectedAnalysis.data) {
+                populateStaticTab(selectedAnalysis.data.static, document.getElementById('staticTabContainer'));
             } else {
-                preAnalysisFields.innerHTML = '';
+                preAnalysisFields.innerHTML = 'No data available for selected analysis';
             }
         });
 
