@@ -100,9 +100,14 @@
                 keyCell.textContent = field;
                 const valueCell = document.createElement('td');
 
-                if (field === 'peid_signatures') {
-                    valueCell.textContent = staticData.pe[field].join(', '); // Assuming it's an array
+                // Display values directly for specific fields
+                if (['pe_imphash', 'pe_timestamp', 'pe_exports'].includes(field)) {
+                    valueCell.textContent = Array.isArray(staticData.pe[field]) ? staticData.pe[field].join(', ') : staticData.pe[field];
+                } else if (field === 'peid_signatures') {
+                    // Handle peid_signatures separately
+                    valueCell.textContent = staticData.pe[field].join(', ');
                 } else if (staticData.pe[field]) {
+                    // For other fields, use a button and modal
                     const btn = document.createElement('button');
                     btn.className = 'btn btn-primary';
                     btn.textContent = 'View Details';
