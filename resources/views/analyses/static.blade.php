@@ -76,7 +76,11 @@
                     // Populate other tabs
                     if (tabName === 'target') {
                         populateTargetTab(data[tabName], tabPane);
-                    } else {
+                    }
+                    if (tabName === 'static') {
+                        createDropdownContent(data['static'], tabPane);
+                    }
+                    else {
                         createTabContent(data[tabName], tabPane);
                     }
                 }
@@ -84,6 +88,43 @@
                 content.appendChild(tabPane);
                 first = false;
             });
+        }
+        function createDropdownContent(data, container, level = 0) {
+            if (typeof data === 'object' && data !== null) {
+                Object.keys(data).forEach((key, index) => {
+                    // Create a button to toggle the dropdown
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-info mb-1';
+                    button.type = 'button';
+                    button.setAttribute('data-bs-toggle', 'collapse');
+                    button.setAttribute('data-bs-target', `#collapse${level}-${index}`);
+                    button.setAttribute('aria-expanded', 'false');
+                    button.style.marginLeft = `${level * 20}px`; // Indent nested levels
+                    button.textContent = key;
+
+                    // Create a div for the dropdown content
+                    const dropdownContent = document.createElement('div');
+                    dropdownContent.id = `collapse${level}-${index}`;
+                    dropdownContent.className = 'collapse';
+
+                    if (typeof data[key] === 'object' && data[key] !== null) {
+                        createDropdownContent(data[key], dropdownContent, level + 1); // Recursive call for nested data
+                    } else {
+                        // Handle primitive data types
+                        const value = document.createElement('span');
+                        value.textContent = data[key];
+                        dropdownContent.appendChild(value);
+                    }
+
+                    container.appendChild(button);
+                    container.appendChild(dropdownContent);
+                });
+            } else {
+                // Handle primitive data types at the root level
+                const value = document.createElement('span');
+                value.textContent = data;
+                container.appendChild(value);
+            }
         }
 
 
