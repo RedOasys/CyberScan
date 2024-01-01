@@ -162,13 +162,20 @@
             modalBody.className = 'modal-body';
             modalContent.appendChild(modalBody);
 
-            // Check if the data is for 'pe_imports' and handle it accordingly
             if (id === 'pe_imports' && Array.isArray(data)) {
                 modalBody.textContent = ''; // Clear default text content
-                data.forEach(dllImport => {
-                    const dllName = document.createElement('h5');
-                    dllName.textContent = dllImport.dll;
-                    modalBody.appendChild(dllName);
+                data.forEach((dllImport, index) => {
+                    const dllButton = document.createElement('button');
+                    dllButton.className = 'btn btn-link';
+                    dllButton.type = 'button';
+                    dllButton.setAttribute('data-bs-toggle', 'collapse');
+                    dllButton.setAttribute('data-bs-target', `#collapse${index}`);
+                    dllButton.setAttribute('aria-expanded', 'false');
+                    dllButton.textContent = dllImport.dll;
+
+                    const importsCollapse = document.createElement('div');
+                    importsCollapse.id = `collapse${index}`;
+                    importsCollapse.className = 'collapse';
 
                     const importsList = document.createElement('ul');
                     dllImport.imports.forEach(importItem => {
@@ -176,10 +183,12 @@
                         listItem.textContent = `${importItem.name} (${importItem.address})`;
                         importsList.appendChild(listItem);
                     });
-                    modalBody.appendChild(importsList);
+                    importsCollapse.appendChild(importsList);
+
+                    modalBody.appendChild(dllButton);
+                    modalBody.appendChild(importsCollapse);
                 });
             } else {
-                // For other data, just stringify
                 modalBody.textContent = JSON.stringify(data, null, 2);
             }
 
