@@ -62,11 +62,15 @@ class FileDisplayController extends Controller
             });
         }
 
+
         // Get filtered count
         $recordsFiltered = $query->count();
 
-        // Apply pagination
-        $files = $query->skip($start)->take($length)->get();
+        if ($length == -1) {
+            $files = $query->get(); // Get all files if length is -1
+        } else {
+            $files = $query->skip($start)->take($length)->get();
+        }
         // Map the data for DataTables
         $data = $files->map(function ($file) {
             $analysis = $file->staticAnalysis; // Adjust this based on your relationship
