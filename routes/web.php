@@ -70,8 +70,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analyses/dynamic', [AnalysisDisplayController::class, 'dynamic'])->name('analysis.dynamic');
     Route::get('/analysis/{task_id}/screenshot/{filename}', [AnalysisController::class, 'getScreenshot']);
 
-
-    // Route to generate and download the PDF
-    Route::get('/analysis/detections/pdf', [DetectionController::class, 'exportPdf'])->name('detections.pdf');
 });
 
