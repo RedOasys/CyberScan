@@ -133,24 +133,6 @@
             modal.setAttribute('tabindex', '-1');
             modal.setAttribute('aria-labelledby', `${id}ModalLabel`);
             modal.setAttribute('aria-hidden', 'true');
-            if (id === 'pe_imports' && Array.isArray(data)) {
-                data.forEach(dllImport => {
-                    const dllName = document.createElement('h5');
-                    dllName.textContent = dllImport.dll;
-                    modalBody.appendChild(dllName);
-
-                    const importsList = document.createElement('ul');
-                    dllImport.imports.forEach(importItem => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = `${importItem.name} (${importItem.address})`;
-                        importsList.appendChild(listItem);
-                    });
-                    modalBody.appendChild(importsList);
-                });
-            } else {
-                // For other data, just stringify
-                modalBody.textContent = JSON.stringify(data, null, 2);
-            }
 
             const modalDialog = document.createElement('div');
             modalDialog.className = 'modal-dialog';
@@ -180,8 +162,26 @@
             modalBody.className = 'modal-body';
             modalContent.appendChild(modalBody);
 
-            // Populate modal body based on data
-            modalBody.textContent = JSON.stringify(data, null, 2); // For simplicity, just stringify the data
+            // Check if the data is for 'pe_imports' and handle it accordingly
+            if (id === 'pe_imports' && Array.isArray(data)) {
+                modalBody.textContent = ''; // Clear default text content
+                data.forEach(dllImport => {
+                    const dllName = document.createElement('h5');
+                    dllName.textContent = dllImport.dll;
+                    modalBody.appendChild(dllName);
+
+                    const importsList = document.createElement('ul');
+                    dllImport.imports.forEach(importItem => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${importItem.name} (${importItem.address})`;
+                        importsList.appendChild(listItem);
+                    });
+                    modalBody.appendChild(importsList);
+                });
+            } else {
+                // For other data, just stringify
+                modalBody.textContent = JSON.stringify(data, null, 2);
+            }
 
             container.appendChild(modal);
         }
