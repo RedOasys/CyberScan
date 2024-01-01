@@ -9,27 +9,16 @@ class AnalysisDisplayController extends Controller
 {
     public function Static()
     {
-        // Retrieve all PreAnalysis records and decode their JSON data
-        $preAnalyses = PreAnalysis::all()->map(function ($analysis) {
+        $analyses = PreAnalysis::all()->map(function ($analysis) {
             $analysis->parsed_data = json_decode($analysis->data, true);
-            return $analysis;
-        });
-        $analyses = PreAnalysis::all();
-
-        // Create the analysisData array
-        $analysisData = $preAnalyses->map(function ($analysis) {
-            // Determine the analysis_id; use task_id if analysis_id is not set
-            $analysisId = $analysis->parsed_data['analysis_id'] ?? str_replace('_1', '', $analysis->parsed_data['task_id']);
-
             return [
                 'id' => $analysis->id,
-                'analysis_id' => $analysisId,
+                'analysis_id' => $analysis->parsed_data['analysis_id'] ?? str_replace('_1', '', $analysis->parsed_data['task_id']),
                 'data' => $analysis->parsed_data,
             ];
         });
 
-        // Pass the preAnalyses and analysisData to the view
-        return view('analyses.static', compact('preAnalyses', 'analyses'));
+        return view('analyses.static', compact('analyses'));
     }
 
     public function dynamic()

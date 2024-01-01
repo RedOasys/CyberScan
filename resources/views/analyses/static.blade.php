@@ -8,7 +8,7 @@
             <select id="analysis_id" class="form-select mb-3">
                 <option value="">Select an Analysis</option>
                 @foreach($analyses as $analysis)
-                    <option value="{{ $analysis->id }}">{{ $analysis->name }}</option>
+                    <option value="{{ $analysis['id'] }}">{{ $analysis['analysis_id'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -36,7 +36,8 @@
     <script>
         const analysisSelect = document.getElementById('analysis_id');
         const preAnalysisFields = document.getElementById('preAnalysisFields');
-        const analysisData = {!! $analysisData->toJson() !!};
+        const analysisData = @json($analyses); // Use @json for proper JSON encoding
+
 
         function populateFields(data) {
             // Clear existing content
