@@ -183,6 +183,35 @@
             table.appendChild(tbody);
             return table;
         }
+        function populateDropdowns(staticData, container) {
+
+            const peImports = staticData.pe?.pe_imports;
+            const dllSelect = document.createElement('select');
+            dllSelect.classList.add('form-select', 'mb-3');
+
+            peImports.forEach(importEntry => {
+                const option = document.createElement('option');
+                option.value = importEntry.dll;
+                option.textContent = importEntry.dll;
+                dllSelect.appendChild(option);
+            });
+
+            dllSelect.addEventListener('change', () => {
+                const selectedDll = dllSelect.value;
+                const importsData = peImports.find(entry => entry.dll === selectedDll)?.imports;
+                displayDetails(importsData, container);
+            });
+
+            container.appendChild(dllSelect);
+            displayDetails(peImports[0].imports, container); // Default to first DLL's imports
+        }
+        function displayDetails(data, container) {
+            container.innerHTML = ''; // Clear previous details
+            if (!data) return;
+
+            const table = createDataTable(data); // Reuse the createDataTable function
+            container.appendChild(table);
+        }
 
         function populateInfoTab(data, container) {
             const infoFields = ['analysis_id', 'score', 'category'];
