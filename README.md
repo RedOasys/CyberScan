@@ -16,9 +16,9 @@ To connect to the deployed environment, follow these steps:
 
 3. **Connect to the SSH Host:**
    - Open your SSH client and enter the following information:
-     - Host Name: cyberscanosis.live
-     - Port: 22 (default for SSH)
-     - Private Key File: Select the path to your private key file.
+     - Host Name: `cyberscanosis.live`
+     - Port: `22` (default for SSH)
+     - Private Key File: `Select the path to your private key file.`
 
 4. **Authenticate with the Key:**
    - Connect to the deployed environment using the key.
