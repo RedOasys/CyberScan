@@ -47,9 +47,7 @@ class FileDisplayController extends Controller
 
         // Build the initial query
         $query = FileUpload::with('staticAnalysis')
-            ->whereHas('staticAnalysis', function ($q) {
-                $q->where('state', '=', 'finished'); // Adjust this to your actual logic
-            })
+            
             ->orderBy('id', 'desc');
 
         // Filter query based on the search value
