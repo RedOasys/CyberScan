@@ -21,7 +21,7 @@ To connect to the deployed environment, follow these steps:
      - Private Key File: Select the path to your private key file.
 
 4. **Authenticate with the Key:**
-   - When prompted, type the passphrase associated with the private key (if one was set).
+   - Connect to the deployed environment using the key.
 
 5. **Access the Shell:**
    - Once connected, you'll have a command-line interface to interact with the deployed environment.
