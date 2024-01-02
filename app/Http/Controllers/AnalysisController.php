@@ -263,8 +263,8 @@ class AnalysisController extends Controller
     public function taskQueueData(Request $request)
     {
         // Fetch parameters from DataTables request
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 10);
+        $start = $request->input('start');
+        $length = $request->input('length');
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the query
