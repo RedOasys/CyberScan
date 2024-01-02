@@ -8,29 +8,30 @@ CyberScanosis is a comprehensive Malware Analysis Toolkit developed as a part of
 
 To connect to the deployed environment, follow these steps:
 
-Obtain the Private Key:
+1. **Obtain the Private Key:**
+   - Locate the private key file (.pem or .ppk) that was provided within the zip file.
 
-Locate the private key file (.pem or .ppk) that was provided within the zip file.
-Download an SSH Client:
+2. **Download an SSH Client:**
+   - If you don't have one already, download an SSH client like PuTTY or Git Bash.
 
-If you don't have one already, download an SSH client like PuTTY or Git Bash.
-Connect to the SSH Host:
+3. **Connect to the SSH Host:**
+   - Open your SSH client and enter the following information:
+     - Host Name: cyberscanosis.live
+     - Port: 22 (default for SSH)
+     - Private Key File: Select the path to your private key file.
 
-Open your SSH client and enter the following information:
-Host Name: cyberscanosis.live
-Port: 22 (default for SSH)
-Private Key File: Select the path to your private key file.
-Authenticate with the Key:
+4. **Authenticate with the Key:**
+   - When prompted, type the passphrase associated with the private key (if one was set).
 
-When prompted, type the passphrase associated with the private key (if one was set).
-Access the Shell:
+5. **Access the Shell:**
+   - Once connected, you'll have a command-line interface to interact with the deployed environment.
 
-Once connected, you'll have a command-line interface to interact with the deployed environment.
-Important Notes:
+**Important Notes:**
 
-Private Key Security: Keep the private key file secure and confidential. Do not share it with unauthorized individuals.
-Firewall Restrictions: Ensure that your local firewall allows SSH connections on port 22.
-Troubleshooting: If you encounter issues connecting, double-check the host name, port number, and private key file. Verify that the SSH service is running on the server.
+- **Private Key Security:** Keep the private key file secure and confidential. Do not share it with unauthorized individuals.
+- **Firewall Restrictions:** Ensure that your local firewall allows SSH connections on port 22.
+- **Troubleshooting:** If you encounter issues connecting, double-check the host name, port number, and private key file. Verify that the SSH service is running on the server.
+
 
 
 ## Cuckoo3 Installation Guide
