@@ -263,8 +263,8 @@ class AnalysisController extends Controller
     public function taskQueueData(Request $request)
     {
         // Fetch parameters from DataTables request
-        $start = $request->input('start');
-        $length = $request->input('length');
+        $start = $request->input('start', 0);
+        $length = $request->input('length', null); // Default to null
         $searchValue = $request->input('search.value'); // Get the search value
 
         // Build the query
@@ -286,8 +286,12 @@ class AnalysisController extends Controller
         $recordsTotal = StaticAnalysis::count();
         $recordsFiltered = $query->count();
 
-        // Apply pagination
-        $analyses = $query->skip($start)->take($length)->get();
+        // Apply pagination only if length is provided
+        if ($length !== null) {
+            $query = $query->skip($start)->take($length);
+        }
+
+        $analyses = $query->get();
 
         // Map the data for DataTables
         $data = $analyses->map(function ($analysis) {
