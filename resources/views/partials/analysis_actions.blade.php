@@ -6,11 +6,17 @@
         <!-- PreAnalysis Info -->
         <li>
             <a class="dropdown-item" href="{{ route('analysis.tasks.result', ['analysisId' => $analysis->analysis_id]) }}">
-                PreAnalysis Info
+                Pre Analysis Info
             </a>
         </li>
         <!-- Placeholder for PostAnalysis Info -->
-        <li><a class="dropdown-item" href="#">PostAnalysis Info</a></li>
+        <li>
+
+
+            <a class="dropdown-item" href="{{ route('analysis.dynamic')}}">Dynamic Analysis Info</a>
+
+
+        </li>
         <!-- Virustotal Info -->
         <li>
             @if(!empty($analysis->md5))

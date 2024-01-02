@@ -22,19 +22,21 @@
             <!-- Dropdown to Select Analysis -->
             <label for="analysis_id">Select Analysis:</label>
             <select id="analysis_id" class="form-select mb-3">
-                <option value="">Select an Analysis</option>
-                @foreach($analyses as $analysis)
-                    <option value="{{ $analysis->id }}">{{ $analysis->parsed_data['task_id'] }}</option>
+                @foreach($analyses as $key => $analysis)
+                    <option value="{{ $analysis->id }}" {{ $key === 0 ? 'selected' : '' }}>{{ $analysis->parsed_data['task_id'] }}</option>
                 @endforeach
             </select>
         </div>
     </div>
 
+
+
+
     <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-header bg-primary text-white">
                 <h2 class="mb-0">
-                    Dynamic Analysis Information
+                    Dynamic Analysis Results
                 </h2>
             </div>
             <div id="dynamicFields" class="card-body">
@@ -62,6 +64,7 @@
         const analysisSelect = document.getElementById('analysis_id');
         const dynamicFields = document.getElementById('dynamicFields');
         const analysisData = {!! $analysisData->toJson() !!}; // Use $analysisData here
+        const initialSelectedAnalysisId = {{ $selectedAnalysis->id ?? 'null' }};
 
         function generateFields(data) {
             const initialFields = ['task_id', 'score', 'tags', 'families'];
@@ -280,7 +283,16 @@
 
 
         document.addEventListener('DOMContentLoaded', function () {
+            const analysisSelect = document.getElementById('analysis_id');
+
+            // Set the initial selected ID
+            if (initialSelectedAnalysisId) {
+                analysisSelect.value = initialSelectedAnalysisId;
+                handlePopulateCards();
+            }
+
             analysisSelect.addEventListener('change', handlePopulateCards);
+
         });
 
         // Populate card fields with data for the initial selected analysis (if any)

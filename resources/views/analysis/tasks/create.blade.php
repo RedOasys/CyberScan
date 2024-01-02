@@ -45,7 +45,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary" id="submit-button">Submit Task</button>
-            <button type="button" class="btn btn-secondary" id="analyze-all-button">Analyze All</button>
+            <button type="button" class="btn btn-secondary d-none" id="analyze-all-button" >Analyze All</button>
         </form>
 
         {{-- Analysis Information Section --}}

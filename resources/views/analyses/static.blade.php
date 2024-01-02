@@ -6,9 +6,8 @@
             <!-- Dropdown to Select Analysis -->
             <label for="analysis_id">Select Analysis:</label>
             <select id="analysis_id" class="form-select mb-3">
-                <option value="">Select an Analysis</option>
-                @foreach($analyses as $analysis)
-                    <option value="{{ $analysis['id'] }}">{{ $analysis['analysis_id'] }}</option>
+                @foreach($analyses as $key => $analysis)
+                    <option value="{{ $analysis['id'] }}" @if($key === 0) selected @endif>{{ $analysis['analysis_id'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -17,7 +16,7 @@
     <div class="col-md-12">
         <div class="card mb-5">
             <div class="card-header bg-primary text-white">
-                <h2 class="mb-0">PreAnalysis Information</h2>
+                <h2 class="mb-0">Static Analysis Results</h2>
             </div>
             <div class="card-body">
                 <ul class="nav nav-tabs" id="analysisTabs"></ul> <!-- Tabs -->

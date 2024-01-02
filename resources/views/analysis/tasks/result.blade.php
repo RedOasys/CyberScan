@@ -47,8 +47,9 @@
                 </div>
                 <a href="javascript:void(0)" onclick="updateAnalysis('{{ $analysis->analysis_id }}')" class="btn btn-secondary">Refresh</a>
 
-
-                <a href="{{ route('analysis.virustotal', ['md5' => $analysis->md5]) }}" class="btn btn-warning">Check VirusTotal</a>
+                <a href="{{ route('analysis.static') }}" class="btn  btn btn-outline-dark">View Detailed Static Analysis</a>
+                <a href="{{ route('analysis.dynamic') }}" class="btn  btn btn-outline-info">View Dynamic Analysis</a>
+                <a href="{{ route('analysis.virustotal', ['md5' => $analysis->md5]) }}" class="btn btn-warning d-none">Check VirusTotal</a>
                 <a href="{{ route('analysis.tasks.create') }}" class="btn btn-primary">Create New Task</a>
             </div>
         </div>
