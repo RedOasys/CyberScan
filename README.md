@@ -259,7 +259,7 @@ extension=zip
 
 Clone the repository from GitHub.
 ```bash
-git clone https://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@github.com/RedOasys/MalSys.git
+git clone https://[PAT_TOKEN]@github.com/RedOasys/MalSys.git
 ```
 
 
@@ -420,7 +420,7 @@ This guide outlines the steps to deploy the MalSys website on an Azure virtual m
 
 6. **Clone Project:**
    - Navigate to web directory: `cd /var/www/html`
-   - Clone project from GitHub: `git clone https://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@github.com/RedOasys/MalSys.git`
+   - Clone project from GitHub: `git clone https://[PAT_TOKEN]@github.com/RedOasys/MalSys.git`
    - Enter project directory: `cd MalSys`
 
 7. **Configure Environment:**
